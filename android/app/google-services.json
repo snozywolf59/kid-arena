@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "761714612527",
+    "project_id": "kid-arena",
+    "storage_bucket": "kid-arena.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:761714612527:android:263fa8cec9a2f667a329da",
+        "android_client_info": {
+          "package_name": "com.example.kid_arena"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCnwNypnk9in6VBwNba2xBgOSCPHmYL_LM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
