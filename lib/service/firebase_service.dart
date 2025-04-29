@@ -9,6 +9,7 @@ abstract class AuthService {
     String password,
     String gender,
     String role,
+    String? dateOfBirth,
   );
   getUserData(String uid);
 }
@@ -41,6 +42,7 @@ class AuthServiceImpl implements AuthService {
     String password,
     String gender,
     String role,
+    String? dateOfBirth,
   ) async {
     try {
       UserCredential credential = await _auth.createUserWithEmailAndPassword(
@@ -54,6 +56,7 @@ class AuthServiceImpl implements AuthService {
         'username': username,
         'gender': gender,
         'role': role,
+        'dateOfBirth': dateOfBirth,
         'createdAt': FieldValue.serverTimestamp(),
         'email': "$username@kidarena.com",
       });

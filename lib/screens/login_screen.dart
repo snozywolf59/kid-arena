@@ -3,6 +3,7 @@ import 'package:kid_arena/constants/image.dart';
 import 'package:kid_arena/screens/register_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:kid_arena/screens/student/home_student.dart';
+import 'package:kid_arena/screens/teacher/home_teacher.dart';
 import 'package:kid_arena/service/firebase_service.dart';
 import 'package:kid_arena/service/getIt.dart';
 
@@ -52,19 +53,20 @@ class _LoginScreenState extends State<LoginScreen> {
             final role = userData['role'] as String;
 
             if (role == 'student') {
-              Navigator.pushReplacement(
+              Navigator.pushAndRemoveUntil(
                 context,
                 MaterialPageRoute(
                   builder: (context) => const StudentHomePage(),
                 ),
+                (_) => false
               );
             } else if (role == 'teacher') {
-              print('teacher đăng nhập');
-              // TODO: Navigate to teacher home screen
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: Text('Chức năng giáo viên đang được phát triển'),
+              Navigator.pushAndRemoveUntil(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const TeacherHomePage(),
                 ),
+                (_) => false
               );
             }
           }

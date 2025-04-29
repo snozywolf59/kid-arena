@@ -14,12 +14,27 @@ class RegisterScreen extends StatefulWidget {
 class _RegisterScreenState extends State<RegisterScreen> {
   String? selectedGender;
   String? selectedRole;
+  DateTime? selectedDate;
   final _formKey = GlobalKey<FormState>();
   final _nameController = TextEditingController();
   final _usernameController = TextEditingController();
   final _passwordController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
   bool _isLoading = false;
+
+  Future<void> _selectDate(BuildContext context) async {
+    final DateTime? picked = await showDatePicker(
+      context: context,
+      initialDate: DateTime.now(),
+      firstDate: DateTime(1900),
+      lastDate: DateTime.now(),
+    );
+    if (picked != null && picked != selectedDate) {
+      setState(() {
+        selectedDate = picked;
+      });
+    }
+  }
 
   @override
   void dispose() {
@@ -43,6 +58,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
           _passwordController.text.toString(),
           selectedGender.toString(),
           selectedRole.toString(),
+          selectedDate?.toIso8601String(),
         );
 
         if (mounted) {
@@ -151,6 +167,30 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     return null;
                   },
                 ),
+                const SizedBox(height: 20),
+                InkWell(
+                  onTap: () => _selectDate(context),
+                  child: InputDecorator(
+                    decoration: const InputDecoration(
+                      labelText: 'Ngày sinh',
+                      prefixIcon: Icon(Icons.calendar_today),
+                      border: OutlineInputBorder(),
+                    ),
+                    child: Text(
+                      selectedDate == null
+                          ? 'Chọn ngày sinh'
+                          : '${selectedDate!.day}/${selectedDate!.month}/${selectedDate!.year}',
+                    ),
+                  ),
+                ),
+                if (selectedDate == null)
+                  const Padding(
+                    padding: EdgeInsets.only(left: 12.0, top: 4.0),
+                    child: Text(
+                      'Vui lòng chọn ngày sinh',
+                      style: TextStyle(color: Colors.red, fontSize: 12),
+                    ),
+                  ),
                 const SizedBox(height: 20),
                 DropdownButtonFormField<String>(
                   decoration: const InputDecoration(
