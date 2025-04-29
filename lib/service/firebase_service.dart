@@ -1,11 +1,24 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-class FirebaseService {
+abstract class AuthService {
+  login(String username, String password);
+  register(
+    String fullName,
+    String username,
+    String password,
+    String gender,
+    String role,
+  );
+  getUserData(String uid);
+}
+
+class AuthServiceImpl implements AuthService {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
   // Đăng nhập
+  @override
   Future<User?> login(String username, String password) async {
     try {
       // Trong thực tế cần query username trước để lấy email
@@ -21,6 +34,7 @@ class FirebaseService {
   }
 
   // Đăng ký
+  @override
   Future<User?> register(
     String fullName,
     String username,
@@ -52,6 +66,7 @@ class FirebaseService {
   }
 
   // Lấy thông tin người dùng
+  @override
   Future<DocumentSnapshot> getUserData(String uid) async {
     return await _firestore.collection('users').doc(uid).get();
   }

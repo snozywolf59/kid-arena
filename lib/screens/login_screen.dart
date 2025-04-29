@@ -2,8 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:kid_arena/constants/image.dart';
 import 'package:kid_arena/screens/register_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:kid_arena/screens/student/home_student.dart';
+import 'package:kid_arena/service/firebase_service.dart';
+import 'package:kid_arena/service/getIt.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -14,13 +15,13 @@ class LoginScreen extends StatefulWidget {
 
 class _LoginScreenState extends State<LoginScreen> {
   final _formKey = GlobalKey<FormState>();
-  final _emailController = TextEditingController();
+  final _usernameController = TextEditingController();
   final _passwordController = TextEditingController();
   bool _isLoading = false;
 
   @override
   void dispose() {
-    _emailController.dispose();
+    _usernameController.dispose();
     _passwordController.dispose();
     super.dispose();
   }
@@ -32,19 +33,13 @@ class _LoginScreenState extends State<LoginScreen> {
       });
 
       try {
-        // Đăng nhập với Firebase Auth
-        final UserCredential userCredential = await FirebaseAuth.instance
-            .signInWithEmailAndPassword(
-              email: _emailController.text.trim(),
-              password: _passwordController.text,
-            );
+        final User user = await getIt<AuthService>().login(
+          _usernameController.text.toString(),
+          _passwordController.text.toString(),
+        );
 
         // Lấy thông tin role của user từ Firestore
-        final userDoc =
-            await FirebaseFirestore.instance
-                .collection('users')
-                .doc(userCredential.user!.uid)
-                .get();
+        final userDoc = await getIt<AuthService>().getUserData(user.uid);
 
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
@@ -59,9 +54,12 @@ class _LoginScreenState extends State<LoginScreen> {
             if (role == 'student') {
               Navigator.pushReplacement(
                 context,
-                MaterialPageRoute(builder: (context) => const HomePage()),
+                MaterialPageRoute(
+                  builder: (context) => const StudentHomePage(),
+                ),
               );
             } else if (role == 'teacher') {
+              print('teacher đăng nhập');
               // TODO: Navigate to teacher home screen
               ScaffoldMessenger.of(context).showSnackBar(
                 const SnackBar(
@@ -78,14 +76,16 @@ class _LoginScreenState extends State<LoginScreen> {
         } else if (e.code == 'wrong-password') {
           message = 'Mật khẩu không đúng';
         } else if (e.code == 'invalid-email') {
-          message = 'Email không hợp lệ';
+          message = 'Tên đăng nhập không hợp lệ';
         }
         ScaffoldMessenger.of(
           context,
         ).showSnackBar(SnackBar(content: Text(message)));
       } catch (e) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Đã xảy ra lỗi không xác định')),
+          SnackBar(
+            content: Text('Đã xảy ra lỗi không xác định: ${e.toString()}'),
+          ),
         );
       } finally {
         if (mounted) {
@@ -112,18 +112,15 @@ class _LoginScreenState extends State<LoginScreen> {
                 Image.asset(ImageLink.logoImage, width: 100, height: 100),
                 const SizedBox(height: 30),
                 TextFormField(
-                  controller: _emailController,
+                  controller: _usernameController,
                   decoration: const InputDecoration(
-                    labelText: 'Email',
+                    labelText: 'Tên đăng nhập',
                     prefixIcon: Icon(Icons.person),
                     border: OutlineInputBorder(),
                   ),
                   validator: (value) {
                     if (value == null || value.isEmpty) {
-                      return 'Vui lòng nhập email';
-                    }
-                    if (!value.contains('@')) {
-                      return 'Email không hợp lệ';
+                      return 'Vui lòng nhập tên đăng nhập';
                     }
                     return null;
                   },

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:kid_arena/service/firebase_service.dart';
+import 'package:kid_arena/service/getIt.dart';
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});
@@ -35,24 +37,13 @@ class _RegisterScreenState extends State<RegisterScreen> {
       });
 
       try {
-        // Create user with email and password
-        final UserCredential userCredential = await FirebaseAuth.instance
-            .createUserWithEmailAndPassword(
-              email: _usernameController.text.trim(),
-              password: _passwordController.text,
-            );
-
-        // Add user data to Firestore
-        await FirebaseFirestore.instance
-            .collection('users')
-            .doc(userCredential.user!.uid)
-            .set({
-              'name': _nameController.text.trim(),
-              'email': _usernameController.text.trim(),
-              'gender': selectedGender,
-              'role': selectedRole,
-              'createdAt': FieldValue.serverTimestamp(),
-            });
+        final User _user = await getIt<AuthService>().register(
+          _nameController.text.toString().trim(),
+          _usernameController.text.toString(),
+          _passwordController.text.toString(),
+          selectedGender.toString(),
+          selectedRole.toString(),
+        );
 
         if (mounted) {
           ScaffoldMessenger.of(
@@ -113,16 +104,14 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 TextFormField(
                   controller: _usernameController,
                   decoration: const InputDecoration(
-                    labelText: 'Email',
+                    labelText: 'Tên đăng nhập',
                     prefixIcon: Icon(Icons.person),
                   ),
                   validator: (value) {
                     if (value == null || value.isEmpty) {
                       return 'Vui lòng nhập email';
                     }
-                    if (!value.contains('@')) {
-                      return 'Email không hợp lệ';
-                    }
+
                     return null;
                   },
                 ),

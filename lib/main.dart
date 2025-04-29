@@ -2,11 +2,12 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:kid_arena/firebase_options.dart';
 import 'package:kid_arena/screens/splash_screen.dart';
+import 'package:kid_arena/service/getIt.dart';
 
 void main() async {
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+  await getItInit();
   runApp(const MyApp());
-  
 }
 
 class MyApp extends StatelessWidget {
