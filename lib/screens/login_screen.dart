@@ -4,8 +4,8 @@ import 'package:kid_arena/screens/register_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:kid_arena/screens/student/home_student.dart';
 import 'package:kid_arena/screens/teacher/home_teacher.dart';
-import 'package:kid_arena/service/firebase_service.dart';
-import 'package:kid_arena/service/getIt.dart';
+import 'package:kid_arena/services/auth_service.dart';
+import 'package:kid_arena/services/getIt.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});

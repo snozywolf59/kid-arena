@@ -12,6 +12,8 @@ abstract class AuthService {
     String? dateOfBirth,
   );
   getUserData(String uid);
+
+  getCurrentUserRole();
 }
 
 class AuthServiceImpl implements AuthService {
@@ -72,6 +74,21 @@ class AuthServiceImpl implements AuthService {
   @override
   Future<DocumentSnapshot> getUserData(String uid) async {
     return await _firestore.collection('users').doc(uid).get();
+  }
+  
+  @override
+  Future<String> getCurrentUserRole() async {
+    try {
+      final user = _auth.currentUser;
+      if (user != null) {
+        final userData = await _firestore.collection('users').doc(user.uid).get();
+        return userData.get('role') as String;
+      }
+      return '';
+    } catch (e) {
+      print("Error getting user role: $e");
+      return '';
+    }
   }
 
   // Thêm các hàm khác cho chức năng thi cử...
