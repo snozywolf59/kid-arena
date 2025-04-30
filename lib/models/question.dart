@@ -1,5 +1,5 @@
 class Question {
-  final String correctAnswer;
+  final int correctAnswer;
   final List<String> options;
   final String questionText;
 
@@ -11,7 +11,7 @@ class Question {
 
   factory Question.fromMap(Map<String, dynamic> map) {
     return Question(
-      correctAnswer: map['correctAnswer'] ?? '',
+      correctAnswer: map['correctAnswer'] ?? 0,
       options: List<String>.from(map['options'] ?? []),
       questionText: map['questionText'] ?? '',
     );

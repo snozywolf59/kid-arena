@@ -5,10 +5,9 @@ import 'package:kid_arena/screens/splash_screen.dart';
 import 'package:kid_arena/services/getIt.dart';
 
 void main() async {
-  runApp(const MyApp());
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   await getItInit();
-  
+  runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
@@ -19,10 +18,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Kid Arena',
       debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        
-        visualDensity: VisualDensity.adaptivePlatformDensity,
-      ),
+      theme: ThemeData(visualDensity: VisualDensity.adaptivePlatformDensity),
       home: const SplashScreen(),
     );
   }
