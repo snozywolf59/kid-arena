@@ -52,7 +52,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
       });
 
       try {
-        final User _user = await getIt<AuthService>().register(
+        final User user = await getIt<AuthService>().register(
           _nameController.text.toString().trim(),
           _usernameController.text.toString(),
           _passwordController.text.toString(),
@@ -74,10 +74,14 @@ class _RegisterScreenState extends State<RegisterScreen> {
         } else if (e.code == 'email-already-in-use') {
           message = 'Email đã được sử dụng';
         }
+        if (!mounted) {
+          return;
+        }
         ScaffoldMessenger.of(
           context,
         ).showSnackBar(SnackBar(content: Text(message)));
       } catch (e) {
+        if (!mounted) return;
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Đã xảy ra lỗi không xác định')),
         );

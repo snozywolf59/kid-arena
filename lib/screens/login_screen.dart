@@ -58,7 +58,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 MaterialPageRoute(
                   builder: (context) => const StudentHomePage(),
                 ),
-                (_) => false
+                (_) => false,
               );
             } else if (role == 'teacher') {
               Navigator.pushAndRemoveUntil(
@@ -66,7 +66,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 MaterialPageRoute(
                   builder: (context) => const TeacherHomePage(),
                 ),
-                (_) => false
+                (_) => false,
               );
             }
           }
@@ -80,6 +80,7 @@ class _LoginScreenState extends State<LoginScreen> {
         } else if (e.code == 'invalid-email') {
           message = 'Tên đăng nhập không hợp lệ';
         }
+        if (!mounted) return;
         ScaffoldMessenger.of(
           context,
         ).showSnackBar(SnackBar(content: Text(message)));

@@ -4,6 +4,7 @@ import 'package:kid_arena/services/class_service.dart';
 import 'package:kid_arena/services/getIt.dart';
 import 'package:kid_arena/screens/teacher/add_class_screen.dart';
 import 'package:kid_arena/screens/teacher/manage_students_screen.dart';
+import 'package:kid_arena/screens/teacher/class_detail_screen.dart';
 
 class ClassListScreen extends StatefulWidget {
   const ClassListScreen({super.key});
@@ -105,6 +106,14 @@ class _ClassListScreenState extends State<ClassListScreen> {
         title: Text(classroom.name),
         subtitle: Text(classroom.description),
         trailing: _buildClassActions(classroom),
+        onTap: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => ClassDetailScreen(classroom: classroom),
+            ),
+          );
+        },
       ),
     );
   }

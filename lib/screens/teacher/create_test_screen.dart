@@ -1,11 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:kid_arena/models/question.dart';
 import 'package:kid_arena/models/test.dart';
+import 'package:kid_arena/models/class.dart';
 import 'package:kid_arena/services/test_service.dart';
+import 'package:kid_arena/services/class_service.dart';
+import 'package:kid_arena/services/getIt.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 class CreateTestScreen extends StatefulWidget {
-  const CreateTestScreen({super.key});
+  final String? classId;
+
+  const CreateTestScreen({super.key, this.classId});
 
   @override
   State<CreateTestScreen> createState() => _CreateTestScreenState();
@@ -17,7 +22,12 @@ class _CreateTestScreenState extends State<CreateTestScreen> {
   final TestService _testService = TestService();
   String _testTitle = '';
   String _testDescription = '';
+  int _duration = 60; // Default duration in minutes
+  DateTime _startTime = DateTime.now();
+  DateTime _endTime = DateTime.now().add(const Duration(days: 1));
   bool _isLoading = false;
+  String? _selectedClassId;
+  List<Class> _classes = [];
 
   String _currentQuestionText = '';
   int _currentCorrectAnswer = 0;
@@ -32,11 +42,85 @@ class _CreateTestScreenState extends State<CreateTestScreen> {
   ];
 
   @override
+  void initState() {
+    super.initState();
+    _selectedClassId = widget.classId;
+    if (widget.classId == null) {
+      _loadClasses();
+    }
+  }
+
+  Future<void> _loadClasses() async {
+    try {
+      final classes = await getIt<ClassService>().getClasses().first;
+      setState(() {
+        _classes = classes;
+        if (classes.isNotEmpty) {
+          _selectedClassId = classes.first.id;
+        }
+      });
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Lỗi khi tải danh sách lớp: $e')),
+        );
+      }
+    }
+  }
+
+  @override
   void dispose() {
     for (var controller in _optionControllers) {
       controller.dispose();
     }
     super.dispose();
+  }
+
+  Future<void> _selectDateTime(bool isStartTime) async {
+    final DateTime? pickedDate = await showDatePicker(
+      context: context,
+      initialDate: isStartTime ? _startTime : _endTime,
+      firstDate: DateTime.now(),
+      lastDate: DateTime.now().add(const Duration(days: 365)),
+    );
+    if (pickedDate != null) {
+      final TimeOfDay? pickedTime = await showTimePicker(
+        context: context,
+        initialTime: TimeOfDay.fromDateTime(
+          isStartTime ? _startTime : _endTime,
+        ),
+      );
+      if (pickedTime != null) {
+        setState(() {
+          final DateTime newDateTime = DateTime(
+            pickedDate.year,
+            pickedDate.month,
+            pickedDate.day,
+            pickedTime.hour,
+            pickedTime.minute,
+          );
+          if (isStartTime) {
+            _startTime = newDateTime;
+            if (_endTime.isBefore(_startTime)) {
+              _endTime = _startTime.add(const Duration(days: 1));
+            }
+          } else {
+            if (newDateTime.isAfter(_startTime)) {
+              _endTime = newDateTime;
+            } else {
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(
+                  content: Text(
+                    'Thời gian kết thúc phải sau thời gian bắt đầu',
+                  ),
+                  backgroundColor: Colors.red,
+                ),
+              );
+            }
+          }
+        });
+      }
+    }
   }
 
   void _addQuestion() {
@@ -164,6 +248,13 @@ class _CreateTestScreenState extends State<CreateTestScreen> {
       return;
     }
 
+    if (_selectedClassId == null) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Vui lòng chọn lớp học')));
+      return;
+    }
+
     setState(() {
       _isLoading = true;
     });
@@ -173,6 +264,10 @@ class _CreateTestScreenState extends State<CreateTestScreen> {
         id: '', // Will be set by Firestore
         title: _testTitle,
         description: _testDescription,
+        duration: _duration,
+        startTime: _startTime,
+        endTime: _endTime,
+        classId: _selectedClassId!,
         questions: _questions,
         teacherId: FirebaseAuth.instance.currentUser?.uid ?? '',
         createdAt: DateTime.now(),
@@ -215,6 +310,34 @@ class _CreateTestScreenState extends State<CreateTestScreen> {
             child: ListView(
               padding: const EdgeInsets.all(16),
               children: [
+                if (widget.classId == null) ...[
+                  DropdownButtonFormField<String>(
+                    decoration: const InputDecoration(
+                      labelText: 'Chọn lớp học',
+                      border: OutlineInputBorder(),
+                    ),
+                    value: _selectedClassId,
+                    items:
+                        _classes.map((Class classroom) {
+                          return DropdownMenuItem<String>(
+                            value: classroom.id,
+                            child: Text(classroom.name),
+                          );
+                        }).toList(),
+                    onChanged: (String? value) {
+                      setState(() {
+                        _selectedClassId = value;
+                      });
+                    },
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Vui lòng chọn lớp học';
+                      }
+                      return null;
+                    },
+                  ),
+                  const SizedBox(height: 16),
+                ],
                 TextFormField(
                   decoration: const InputDecoration(
                     labelText: 'Tiêu đề bài thi',
@@ -228,6 +351,7 @@ class _CreateTestScreenState extends State<CreateTestScreen> {
                   },
                   onChanged: (value) => _testTitle = value,
                 ),
+
                 const SizedBox(height: 16),
                 TextFormField(
                   decoration: const InputDecoration(
@@ -236,6 +360,59 @@ class _CreateTestScreenState extends State<CreateTestScreen> {
                   ),
                   maxLines: 3,
                   onChanged: (value) => _testDescription = value,
+                ),
+                const SizedBox(height: 16),
+                Row(
+                  children: [
+                    Expanded(
+                      child: TextFormField(
+                        decoration: const InputDecoration(
+                          labelText: 'Thời gian làm bài (phút)',
+                          border: OutlineInputBorder(),
+                        ),
+                        keyboardType: TextInputType.number,
+                        initialValue: _duration.toString(),
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Vui lòng nhập thời gian';
+                          }
+                          final number = int.tryParse(value);
+                          if (number == null || number <= 0) {
+                            return 'Thời gian phải lớn hơn 0';
+                          }
+                          return null;
+                        },
+                        onChanged: (value) {
+                          _duration = int.tryParse(value) ?? 60;
+                        },
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 16),
+                Row(
+                  children: [
+                    Expanded(
+                      child: ListTile(
+                        title: const Text('Thời gian bắt đầu'),
+                        subtitle: Text(
+                          '${_startTime.day}/${_startTime.month}/${_startTime.year} ${_startTime.hour}:${_startTime.minute.toString().padLeft(2, '0')}',
+                        ),
+                        trailing: const Icon(Icons.calendar_today),
+                        onTap: () => _selectDateTime(true),
+                      ),
+                    ),
+                    Expanded(
+                      child: ListTile(
+                        title: const Text('Thời gian kết thúc'),
+                        subtitle: Text(
+                          '${_endTime.day}/${_endTime.month}/${_endTime.year} ${_endTime.hour}:${_endTime.minute.toString().padLeft(2, '0')}',
+                        ),
+                        trailing: const Icon(Icons.calendar_today),
+                        onTap: () => _selectDateTime(false),
+                      ),
+                    ),
+                  ],
                 ),
                 const SizedBox(height: 24),
                 Row(
@@ -325,14 +502,14 @@ class _CreateTestScreenState extends State<CreateTestScreen> {
                                     ],
                                   ),
                                 );
-                              }).toList(),
+                              }),
                             ],
                           ),
                         ),
                       ],
                     ),
                   );
-                }).toList(),
+                }),
                 const SizedBox(height: 24),
                 ElevatedButton(
                   onPressed: _isLoading ? null : _saveTest,

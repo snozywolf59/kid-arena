@@ -5,42 +5,56 @@ class Test {
   final String id;
   final String title;
   final String description;
+  final int duration;
+  final DateTime startTime;
+  final DateTime endTime;
+  final String classId;
   final List<Question> questions;
-  final String teacherId;
   final DateTime createdAt;
+  final String teacherId;
 
   const Test({
     required this.id,
     required this.title,
     required this.description,
+    required this.duration,
+    required this.startTime,
+    required this.endTime,
+    required this.classId,
     required this.questions,
-    required this.teacherId,
     required this.createdAt,
+    required this.teacherId,
   });
 
-  factory Test.fromMap(Map<String, dynamic> map) {
+  factory Test.fromFirestore(DocumentSnapshot doc) {
+    Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
+
     return Test(
-      id: map['id'] ?? '',
-      title: map['title'] ?? '',
-      description: map['description'] ?? '',
+      id: doc.id,
+      title: data['title'] ?? '',
+      description: data['description'] ?? '',
+      duration: data['duration'] ?? 0,
+      startTime: (data['startTime'] as Timestamp).toDate(),
+      endTime: (data['endTime'] as Timestamp).toDate(),
+      classId: data['classId'],
       questions:
-          (map['questions'] as List<dynamic>?)
-              ?.map((q) => Question.fromMap(q as Map<String, dynamic>))
-              .toList() ??
-          [],
-      teacherId: map['teacherId'] ?? '',
-      createdAt: (map['createdAt'] as Timestamp?)?.toDate() ?? DateTime.now(),
+          (data['questions'] as List).map((q) => Question.fromMap(q)).toList(),
+      createdAt: (data['createdAt'] as Timestamp).toDate(),
+      teacherId: data['teacherId'] ?? '',
     );
   }
 
   Map<String, dynamic> toMap() {
     return {
-      'id': id,
       'title': title,
       'description': description,
+      'duration': duration,
+      'startTime': Timestamp.fromDate(startTime),
+      'endTime': Timestamp.fromDate(endTime),
+      'classId': classId,
       'questions': questions.map((q) => q.toMap()).toList(),
+      'createdAt': Timestamp.fromDate(createdAt),
       'teacherId': teacherId,
-      'createdAt': createdAt,
     };
   }
 }

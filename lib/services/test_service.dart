@@ -23,11 +23,7 @@ class TestService {
         .orderBy('createdAt', descending: true)
         .snapshots()
         .map((snapshot) {
-          return snapshot.docs.map((doc) {
-            final data = doc.data();
-            data['id'] = doc.id;
-            return Test.fromMap(data);
-          }).toList();
+          return snapshot.docs.map((doc) => Test.fromFirestore(doc)).toList();
         });
   }
 
@@ -57,9 +53,7 @@ class TestService {
     try {
       final doc = await _firestore.collection(_collection).doc(testId).get();
       if (doc.exists) {
-        final data = doc.data()!;
-        data['id'] = doc.id;
-        return Test.fromMap(data);
+        return Test.fromFirestore(doc);
       }
       return null;
     } catch (e) {
