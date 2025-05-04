@@ -62,6 +62,42 @@ class _CreateTestScreenState extends State<CreateTestScreen> {
     super.dispose();
   }
 
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Tạo bài thi'),
+        bottom: PreferredSize(
+          preferredSize: const Size.fromHeight(4),
+          child: SizedBox(
+            height: 4,
+            child: LinearProgressIndicator(
+              value: (_currentPage + 1) / 2,
+              backgroundColor: Colors.grey[300],
+              valueColor: AlwaysStoppedAnimation<Color>(
+                Theme.of(context).primaryColor,
+              ),
+            ),
+          ),
+        ),
+      ),
+      body: Stack(
+        children: [
+          PageView(
+            controller: _pageController,
+            onPageChanged: (index) => setState(() => _currentPage = index),
+            children: [_buildTestInfoPanel(), _buildQuestionsPanel()],
+          ),
+          if (_isLoading)
+            Container(
+              color: Colors.black.withAlpha(125),
+              child: const Center(child: CircularProgressIndicator()),
+            ),
+        ],
+      ),
+    );
+  }
+
   Future<void> _loadClasses() async {
     try {
       final classes = await getIt<ClassService>().getClasses().first;
@@ -560,38 +596,6 @@ class _CreateTestScreenState extends State<CreateTestScreen> {
           ),
         ),
       ],
-    );
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Tạo bài thi'),
-        bottom: PreferredSize(
-          preferredSize: const Size.fromHeight(4),
-          child: AnimatedContainer(
-            duration: const Duration(milliseconds: 300),
-            height: 4,
-            width: MediaQuery.of(context).size.width * (_currentPage + 1) / 2,
-            color: Theme.of(context).primaryColor,
-          ),
-        ),
-      ),
-      body: Stack(
-        children: [
-          PageView(
-            controller: _pageController,
-            onPageChanged: (index) => setState(() => _currentPage = index),
-            children: [_buildTestInfoPanel(), _buildQuestionsPanel()],
-          ),
-          if (_isLoading)
-            Container(
-              color: Colors.black.withAlpha(125),
-              child: const Center(child: CircularProgressIndicator()),
-            ),
-        ],
-      ),
     );
   }
 }

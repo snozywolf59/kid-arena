@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:kid_arena/models/user.dart';
 
 abstract class AuthService {
   login(String username, String password);
@@ -11,7 +12,11 @@ abstract class AuthService {
     String role,
     String? dateOfBirth,
   );
+
+  logout();
   getUserData(String uid);
+
+  getCurrentUserData();
 
   getCurrentUserRole();
 }
@@ -70,18 +75,33 @@ class AuthServiceImpl implements AuthService {
     }
   }
 
-  // Lấy thông tin người dùng
   @override
-  Future<DocumentSnapshot> getUserData(String uid) async {
-    return await _firestore.collection('users').doc(uid).get();
+  void logout() {
+    _auth.signOut();
   }
-  
+
+  @override
+  Future<AppUser> getUserData(String uid) async {
+    DocumentSnapshot user = await _firestore.collection('users').doc(uid).get();
+    return AppUser.fromFirebase(user);
+  }
+
+  @override
+  Future<AppUser> getCurrentUserData() async {
+    var currentUserId = _auth.currentUser?.uid;
+    if (currentUserId == null) {
+      throw FirebaseAuthException(code: '200');
+    }
+    return getUserData(currentUserId);
+  }
+
   @override
   Future<String> getCurrentUserRole() async {
     try {
       final user = _auth.currentUser;
       if (user != null) {
-        final userData = await _firestore.collection('users').doc(user.uid).get();
+        final userData =
+            await _firestore.collection('users').doc(user.uid).get();
         return userData.get('role') as String;
       }
       return '';
@@ -90,6 +110,4 @@ class AuthServiceImpl implements AuthService {
       return '';
     }
   }
-
-  // Thêm các hàm khác cho chức năng thi cử...
 }
