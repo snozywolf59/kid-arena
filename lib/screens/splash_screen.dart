@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:kid_arena/constants/image.dart';
-import 'package:kid_arena/screens/login_screen.dart';
-import 'package:kid_arena/screens/register_screen.dart';
+import 'package:kid_arena/screens/auth/login_screen.dart';
+import 'package:kid_arena/screens/auth/register_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:kid_arena/screens/student/home_student.dart';
 import 'package:kid_arena/screens/teacher/home_teacher.dart';

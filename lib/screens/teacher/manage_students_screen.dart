@@ -30,6 +30,16 @@ class _ManageStudentsScreenState extends State<ManageStudentsScreen> {
     super.dispose();
   }
 
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Quản lý học sinh - ${widget.classroom.name}'),
+      ),
+      body: _buildBody(),
+    );
+  }
+
   Future<void> _loadStudents() async {
     setState(() {
       _isLoading = true;
@@ -131,7 +141,7 @@ class _ManageStudentsScreenState extends State<ManageStudentsScreen> {
             child: TextField(
               controller: _studentIdController,
               decoration: const InputDecoration(
-                labelText: 'ID học sinh',
+                labelText: 'Nhập username học sinh',
                 border: OutlineInputBorder(),
               ),
             ),
@@ -176,16 +186,6 @@ class _ManageStudentsScreenState extends State<ManageStudentsScreen> {
 
     return Column(
       children: [_buildAddStudentForm(), Expanded(child: _buildStudentList())],
-    );
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Quản lý học sinh - ${widget.classroom.name}'),
-      ),
-      body: _buildBody(),
     );
   }
 }

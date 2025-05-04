@@ -27,6 +27,16 @@ class TestService {
         });
   }
 
+  Stream<List<Test>> getTestsForClass(String classId) {
+    return _firestore
+        .collection(_collection)
+        .where('classId', isEqualTo: classId)
+        .snapshots()
+        .map((snapshot) {
+          return snapshot.docs.map((doc) => Test.fromFirestore(doc)).toList();
+        });
+  }
+
   // Update a test
   Future<void> updateTest(Test test) async {
     try {

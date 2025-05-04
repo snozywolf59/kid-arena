@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:kid_arena/screens/auth/profile_screen.dart';
 import 'package:kid_arena/screens/teacher/class_list_screen.dart';
 import 'package:kid_arena/screens/teacher/test_list_screen.dart';
 
@@ -12,7 +13,12 @@ class TeacherHomePage extends StatefulWidget {
 class _TeacherHomePageState extends State<TeacherHomePage> {
   int _selectedIndex = 0;
 
-  final List<Widget> _pages = [const HomeTeacher(), ClassListScreen(), const TestListScreen()];
+  final List<Widget> _pages = [
+    const HomeTeacher(),
+    ClassListScreen(),
+    const TestListScreen(),
+    const ProfileScreen(),
+  ];
 
   void _onItemTapped(int index) {
     setState(() {

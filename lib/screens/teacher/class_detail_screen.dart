@@ -54,7 +54,7 @@ class _ClassDetailScreenState extends State<ClassDetailScreen>
       // Load tests
       final tests =
           await getIt<TestService>()
-              .getTestsForTeacher(widget.classroom.teacherId)
+              .getTestsForClass(widget.classroom.id)
               .first;
       setState(() {
         _tests = tests;
@@ -205,7 +205,7 @@ class _ClassDetailScreenState extends State<ClassDetailScreen>
             await _loadData();
           }
         },
-        child: Icon(_tabController.index == 0 ? Icons.person_add : Icons.add),
+        child: Icon(Icons.add),
       ),
     );
   }

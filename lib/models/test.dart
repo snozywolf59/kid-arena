@@ -12,6 +12,7 @@ class Test {
   final List<Question> questions;
   final DateTime createdAt;
   final String teacherId;
+  final String subject;
 
   const Test({
     required this.id,
@@ -24,6 +25,7 @@ class Test {
     required this.questions,
     required this.createdAt,
     required this.teacherId,
+    required this.subject
   });
 
   factory Test.fromFirestore(DocumentSnapshot doc) {
@@ -41,6 +43,7 @@ class Test {
           (data['questions'] as List).map((q) => Question.fromMap(q)).toList(),
       createdAt: (data['createdAt'] as Timestamp).toDate(),
       teacherId: data['teacherId'] ?? '',
+      subject: data['subject']
     );
   }
 
@@ -55,6 +58,7 @@ class Test {
       'questions': questions.map((q) => q.toMap()).toList(),
       'createdAt': Timestamp.fromDate(createdAt),
       'teacherId': teacherId,
+      'subject': subject
     };
   }
 }
