@@ -3,7 +3,7 @@ import 'package:kid_arena/constants/image.dart';
 import 'package:kid_arena/screens/auth/login_screen.dart';
 import 'package:kid_arena/screens/auth/register_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:kid_arena/screens/student/home_student.dart';
+import 'package:kid_arena/screens/student/welcome.dart';
 import 'package:kid_arena/screens/teacher/home_teacher.dart';
 import 'package:kid_arena/services/auth_service.dart';
 import 'package:kid_arena/services/getIt.dart';
@@ -47,7 +47,7 @@ class _SplashScreenState extends State<SplashScreen> {
         builder:
             (context) =>
                 role == 'student'
-                    ? const StudentHomePage()
+                    ? const StudentWelcomeScreen()
                     : const TeacherHomePage(),
       ),
       (route) => false,
