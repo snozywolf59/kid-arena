@@ -46,22 +46,11 @@ class TestCard extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 8),
-              Text(
-                description,
-                style: TextStyle(fontSize: 16, color: Colors.grey[600]),
-              ),
-              const SizedBox(height: 16),
               Row(
                 children: [
-                  const Icon(
-                    Icons.people_outline,
-                    size: 16,
-                    color: Colors.grey,
-                  ),
-                  const SizedBox(width: 4),
                   Text(
-                    '1.2k students',
-                    style: TextStyle(color: Colors.grey[600], fontSize: 14),
+                    description,
+                    style: TextStyle(fontSize: 16, color: Colors.grey[600]),
                   ),
                   const Spacer(),
                   _buildStartButton(),

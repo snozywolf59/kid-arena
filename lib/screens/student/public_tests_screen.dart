@@ -1,40 +1,146 @@
 import 'package:flutter/material.dart';
 import 'package:kid_arena/constants/subject.dart';
+import 'package:kid_arena/models/public_test.dart';
+import 'package:kid_arena/models/question.dart';
 import 'package:kid_arena/widgets/student/subject_card.dart';
+import 'package:kid_arena/widgets/student/test_card.dart';
 
-
-
-List<Exam> getExamsBySubject(Subject subject) {
+List<PublicTest> getExamsBySubject(Subject subject) {
   if (subject == Subject.mathematics) {
     return [
-      Exam(title: 'Đại số lớp 7', level: 'Dễ', time: '30 phút'),
-      Exam(title: 'Hình học lớp 7', level: 'Trung bình', time: '45 phút'),
-      Exam(title: 'Ôn tập cuối kỳ', level: 'Khó', time: '60 phút'),
+      PublicTest(
+        id: 'math_1',
+        title: 'Đại số lớp 7',
+        description: 'Dễ',
+        duration: 30,
+        subject: subject.name,
+        questions: [
+          Question(
+            questionText: 'Giải phương trình: 2x + 5 = 15',
+            options: ['x = 5', 'x = 10', 'x = 7.5', 'x = 8'],
+            correctAnswer: 0,
+          ),
+          Question(
+            questionText: 'Tính: (3x + 2)(x - 1)',
+            options: [
+              '3x² - x - 2',
+              '3x² + x - 2',
+              '3x² - x + 2',
+              '3x² + x + 2',
+            ],
+            correctAnswer: 0,
+          ),
+        ],
+        createdAt: DateTime.now(),
+      ),
+      PublicTest(
+        id: 'math_2',
+        title: 'Hình học lớp 7',
+        description: 'Trung bình',
+        duration: 45,
+        subject: subject.name,
+        questions: [
+          Question(
+            questionText:
+                'Tính diện tích hình chữ nhật có chiều dài 5cm và chiều rộng 3cm',
+            options: ['15cm²', '16cm²', '14cm²', '17cm²'],
+            correctAnswer: 0,
+          ),
+          Question(
+            questionText: 'Tính chu vi hình tròn có bán kính 4cm',
+            options: ['25.12cm', '25.13cm', '25.14cm', '25.15cm'],
+            correctAnswer: 0,
+          ),
+        ],
+        createdAt: DateTime.now(),
+      ),
     ];
   }
   if (subject == Subject.literature) {
     return [
-      Exam(title: 'Tác phẩm văn học lớp 7', level: 'Dễ', time: '30 phút'),
-      Exam(title: 'Văn bản thuyết minh', level: 'Trung bình', time: '45 phút'),
+      PublicTest(
+        id: 'lit_1',
+        title: 'Tác phẩm văn học lớp 7',
+        description: 'Dễ',
+        duration: 30,
+        subject: subject.name,
+        questions: [
+          Question(
+            questionText: 'Tác giả của bài thơ "Qua Đèo Ngang" là ai?',
+            options: [
+              'Bà Huyện Thanh Quan',
+              'Nguyễn Du',
+              'Hồ Xuân Hương',
+              'Nguyễn Trãi',
+            ],
+            correctAnswer: 0,
+          ),
+        ],
+        createdAt: DateTime.now(),
+      ),
     ];
   }
   if (subject == Subject.english) {
     return [
-      Exam(title: 'Ngữ pháp cơ bản', level: 'Dễ', time: '20 phút'),
-      Exam(title: 'Từ vựng chủ đề', level: 'Trung bình', time: '30 phút'),
-      Exam(title: 'Ôn tập tổng hợp', level: 'Khó', time: '45 phút'),
+      PublicTest(
+        id: 'eng_1',
+        title: 'Ngữ pháp cơ bản',
+        description: 'Dễ',
+        duration: 20,
+        subject: subject.name,
+        questions: [
+          Question(
+            questionText: 'Chọn đáp án đúng: She ___ to school every day.',
+            options: ['go', 'goes', 'going', 'went'],
+            correctAnswer: 1,
+          ),
+        ],
+        createdAt: DateTime.now(),
+      ),
     ];
   }
   if (subject == Subject.naturalScience) {
     return [
-      Exam(title: 'Cơ học đơn giản', level: 'Dễ', time: '30 phút'),
-      Exam(title: 'Quang học', level: 'Trung bình', time: '40 phút'),
+      PublicTest(
+        id: 'sci_1',
+        title: 'Cơ học đơn giản',
+        description: 'Dễ',
+        duration: 30,
+        subject: subject.name,
+        questions: [
+          Question(
+            questionText: 'Đơn vị đo lực là gì?',
+            options: ['Newton', 'Pascal', 'Joule', 'Watt'],
+            correctAnswer: 0,
+          ),
+        ],
+        createdAt: DateTime.now(),
+      ),
     ];
   }
   if (subject == Subject.socialScience) {
     return [
-      Exam(title: 'Lịch sử đơn giản', level: 'Dễ', time: '30 phút'),
-      Exam(title: 'Địa lý', level: 'Trung bình', time: '40 phút'),
+      PublicTest(
+        id: 'soc_1',
+        title: 'Lịch sử đơn giản',
+        description: 'Dễ',
+        duration: 30,
+        subject: subject.name,
+        questions: [
+          Question(
+            questionText:
+                'Năm 1945, sự kiện nào đánh dấu sự kết thúc của Chiến tranh thế giới thứ hai?',
+            options: [
+              'Nhật Bản đầu hàng',
+              'Đức đầu hàng',
+              'Ý đầu hàng',
+              'Pháp đầu hàng',
+            ],
+            correctAnswer: 0,
+          ),
+        ],
+        createdAt: DateTime.now(),
+      ),
     ];
   }
   return [];
@@ -179,14 +285,6 @@ class PublicTestsScreen extends StatelessWidget {
   }
 }
 
-class Exam {
-  final String title;
-  final String level;
-  final String time;
-
-  Exam({required this.title, required this.level, required this.time});
-}
-
 class ExamsScreen extends StatelessWidget {
   final Subject subject;
 
@@ -212,7 +310,7 @@ class ExamsScreen extends StatelessWidget {
                         borderRadius: BorderRadius.circular(12),
                         boxShadow: [
                           BoxShadow(
-                            color: Colors.grey.withOpacity(0.1),
+                            color: Colors.grey.withAlpha(26),
                             spreadRadius: 1,
                             blurRadius: 5,
                             offset: const Offset(0, 3),
@@ -247,7 +345,7 @@ class ExamsScreen extends StatelessWidget {
                     Container(
                       padding: const EdgeInsets.all(12),
                       decoration: BoxDecoration(
-                        color: Colors.white.withOpacity(0.2),
+                        color: Colors.white.withAlpha(51),
                         borderRadius: BorderRadius.circular(12),
                       ),
                       child: Icon(subject.icon, color: Colors.white, size: 32),
@@ -269,7 +367,7 @@ class ExamsScreen extends StatelessWidget {
                           Text(
                             'Hãy chọn một bài thi để bắt đầu ôn tập',
                             style: TextStyle(
-                              color: Colors.white.withOpacity(0.9),
+                              color: Colors.white.withAlpha(230),
                               fontSize: 14,
                             ),
                           ),
@@ -296,9 +394,11 @@ class ExamsScreen extends StatelessWidget {
                 itemCount: getExamsBySubject(subject).length,
                 itemBuilder: (context, index) {
                   final exam = getExamsBySubject(subject)[index];
-                  return ExamCard(
-                    exam: exam,
-                    color: subject.color,
+                  return TestCard(
+                    title: exam.title,
+                    description: exam.description,
+                    subject: subject.name,
+                    duration: exam.duration,
                     onTap: () {
                       // Chuyển đến màn hình làm bài thi
                       ScaffoldMessenger.of(context).showSnackBar(
@@ -311,126 +411,6 @@ class ExamsScreen extends StatelessWidget {
                   );
                 },
               ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class ExamCard extends StatelessWidget {
-  final Exam exam;
-  final Color color;
-  final VoidCallback onTap;
-
-  const ExamCard({
-    Key? key,
-    required this.exam,
-    required this.color,
-    required this.onTap,
-  }) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    Color levelColor;
-    switch (exam.level) {
-      case 'Dễ':
-        levelColor = Colors.green;
-        break;
-      case 'Trung bình':
-        levelColor = Colors.orange;
-        break;
-      case 'Khó':
-        levelColor = Colors.red;
-        break;
-      default:
-        levelColor = Colors.blue;
-    }
-
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        margin: const EdgeInsets.only(bottom: 16),
-        padding: const EdgeInsets.all(16),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(16),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.grey.withOpacity(0.1),
-              spreadRadius: 1,
-              blurRadius: 5,
-              offset: const Offset(0, 3),
-            ),
-          ],
-        ),
-        child: Row(
-          children: [
-            Container(
-              padding: const EdgeInsets.all(12),
-              decoration: BoxDecoration(
-                color: color.withOpacity(0.1),
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: Icon(Icons.description, color: color, size: 24),
-            ),
-            const SizedBox(width: 16),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    exam.title,
-                    style: const TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 16,
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  Row(
-                    children: [
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 8,
-                          vertical: 4,
-                        ),
-                        decoration: BoxDecoration(
-                          color: levelColor.withOpacity(0.1),
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        child: Text(
-                          exam.level,
-                          style: TextStyle(
-                            color: levelColor,
-                            fontSize: 12,
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
-                      ),
-                      const SizedBox(width: 12),
-                      Icon(
-                        Icons.access_time,
-                        color: Colors.grey[600],
-                        size: 14,
-                      ),
-                      const SizedBox(width: 4),
-                      Text(
-                        exam.time,
-                        style: TextStyle(color: Colors.grey[600], fontSize: 12),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            ),
-            Container(
-              padding: const EdgeInsets.all(8),
-              decoration: BoxDecoration(
-                color: color.withOpacity(0.1),
-                shape: BoxShape.circle,
-              ),
-              child: Icon(Icons.arrow_forward, color: color, size: 20),
             ),
           ],
         ),
