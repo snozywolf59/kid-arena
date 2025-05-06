@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:kid_arena/constants/image.dart';
 import 'package:kid_arena/screens/auth/register_screen.dart';
@@ -41,7 +43,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
         // Lấy thông tin role của user từ Firestore
         final userDoc = await getIt<AuthService>().getUserData(user.uid);
-
+        log('${user.uid} logged in');
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(content: Text('Đăng nhập thành công!')),

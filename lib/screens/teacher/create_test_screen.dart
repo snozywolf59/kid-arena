@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:kid_arena/constants/subject.dart';
 import 'package:kid_arena/models/question.dart';
 import 'package:kid_arena/models/test.dart';
 import 'package:kid_arena/models/class.dart';
@@ -382,15 +383,22 @@ class _CreateTestScreenState extends State<CreateTestScreen> {
   }
 
   Widget _buildSubjectInput() {
-    return TextFormField(
+    return DropdownButtonFormField<String>(
       decoration: const InputDecoration(
         labelText: 'Môn học',
         border: OutlineInputBorder(),
       ),
-      validator:
-          (value) =>
-              value == null || value.isEmpty ? 'Vui lòng nhập môn học' : null,
-      onChanged: (value) => _subject = value,
+      value: _subject,
+      items: Subject.values.map((subject) => DropdownMenuItem<String>(
+            value: subject.name,
+            child: Row(
+              children: [
+                Icon(subject.icon, color: subject.color),
+                Text(subject.name),
+              ],
+            ),
+          )).toList(),
+      onChanged: (value) => _subject = value ?? 'Mixed',
     );
   }
 

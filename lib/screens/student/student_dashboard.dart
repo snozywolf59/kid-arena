@@ -20,7 +20,6 @@ class _StudentDashboardState extends State<StudentDashboard> {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     _selectedIndex = widget.index;
   }
@@ -67,9 +66,9 @@ class _StudentDashboardState extends State<StudentDashboard> {
             label: 'Hồ sơ',
           ),
         ],
-        selectedItemColor: Colors.deepOrange,
-        unselectedItemColor: Colors.grey,
-        backgroundColor: Colors.white,
+        selectedItemColor: Theme.of(context).colorScheme.primary,
+        unselectedItemColor: Theme.of(context).colorScheme.onSurface.withAlpha(160),
+        backgroundColor: Theme.of(context).colorScheme.surface,
         type: BottomNavigationBarType.fixed,
         selectedFontSize: 12,
         unselectedFontSize: 12,

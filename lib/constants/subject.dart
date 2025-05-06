@@ -1,14 +1,28 @@
+import 'package:flutter/material.dart';
+import 'package:kid_arena/screens/student/public_tests_screen.dart';
+
 enum Subject {
-  mathematics('Toán', '📊'),
-  science('Khoa học', '🔬'),
-  literature('Văn học', '📚'),
-  history('Lịch sử', '🏛️'),
-  foreignLanguage('Tiếng Anh', '🌐'),
-  mixed('Tổng hợp', '🔍');
+  mathematics(
+    name: 'Toán học',
+    icon: Icons.calculate,
+    color: Color(0xFF61A3FE),
+  ),
+  literature(name: 'Ngữ văn', icon: Icons.menu_book, color: Color(0xFFFF8C42)),
+  english(name: 'Tiếng Anh', icon: Icons.translate, color: Color(0xFF6A5AE0)),
+  naturalScience(
+    name: 'Khoa học tự nhiên',
+    icon: Icons.eco,
+    color: Color(0xFF4CD97B),
+  ),
+  socialScience(
+    name: 'Khoa học xã hội',
+    icon: Icons.people,
+    color: Color(0xFFE15FED),
+  );
 
+  final String name;
+  final IconData icon;
+  final Color color;
 
-  final String displayName;
-  final String emoji;
-
-  const Subject(this.displayName, this.emoji);
+  const Subject({required this.name, required this.icon, required this.color});
 }

@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 
 class AppTheme {
-  static const _primaryColor = Color(0xFF2196F3);
-  static const _secondaryColor = Color(0xFF03A9F4);
-  static const _errorColor = Color(0xFFD32F2F);
-  static const _lightBackground = Color(0xFFFAFAFA);
-  static const _lightSurface = Colors.white;
-  static const _darkBackground = Color(0xFF121212);
-  static const _darkSurface = Color(0xFF1E1E1E);
+  // Modern green color palette
+  static const _primaryColor = Color(0xFF2E7D32); // Deep green
+  static const _secondaryColor = Color(0xFF4CAF50); // Medium green
+  static const _accentColor = Color(0xFF81C784); // Light green
+  static const _errorColor = Color(0xFFE57373); // Soft red
+  static const _lightSurface = Color(0xFFF5F5F5); // Light gray background
+  static const _darkSurface = Color(0xFF1A1A1A); // Darker background
 
   static ThemeData lightTheme = ThemeData(
     useMaterial3: true,
@@ -15,49 +15,55 @@ class AppTheme {
     colorScheme: const ColorScheme.light(
       primary: _primaryColor,
       secondary: _secondaryColor,
+      tertiary: _accentColor,
       error: _errorColor,
       surface: _lightSurface,
       onPrimary: Colors.white,
       onSecondary: Colors.white,
-      onSurface: Colors.black87,
+      onSurface: Color(0xFF2C2C2C),
+      background: Colors.white,
     ),
     appBarTheme: const AppBarTheme(
       elevation: 0,
       centerTitle: true,
       backgroundColor: _lightSurface,
-      foregroundColor: Colors.black87,
-      iconTheme: IconThemeData(color: Colors.black87),
+      foregroundColor: _primaryColor,
+      iconTheme: IconThemeData(color: _primaryColor),
     ),
     cardTheme: CardTheme(
-      elevation: 2,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      elevation: 1,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+      color: Colors.white,
     ),
     elevatedButtonTheme: ElevatedButtonThemeData(
       style: ElevatedButton.styleFrom(
         elevation: 0,
-        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        backgroundColor: _primaryColor,
+        foregroundColor: Colors.white,
       ),
     ),
     inputDecorationTheme: InputDecorationTheme(
       filled: true,
-      fillColor: Colors.grey[100],
+      fillColor: Colors.grey[50],
       border: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(12),
-        borderSide: BorderSide.none,
+        borderRadius: BorderRadius.circular(16),
+        borderSide: BorderSide(color: Colors.grey[200]!),
       ),
       enabledBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(12),
-        borderSide: BorderSide.none,
+        borderRadius: BorderRadius.circular(16),
+        borderSide: BorderSide(color: Colors.grey[200]!),
       ),
       focusedBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(12),
-        borderSide: const BorderSide(color: _primaryColor),
+        borderRadius: BorderRadius.circular(16),
+        borderSide: const BorderSide(color: _primaryColor, width: 2),
       ),
       errorBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(16),
         borderSide: const BorderSide(color: _errorColor),
       ),
+      contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
     ),
   );
 
@@ -67,11 +73,13 @@ class AppTheme {
     colorScheme: const ColorScheme.dark(
       primary: _primaryColor,
       secondary: _secondaryColor,
+      tertiary: _accentColor,
       error: _errorColor,
       surface: _darkSurface,
       onPrimary: Colors.white,
       onSecondary: Colors.white,
       onSurface: Colors.white,
+      background: Color(0xFF121212),
     ),
     appBarTheme: const AppBarTheme(
       elevation: 0,
@@ -81,35 +89,39 @@ class AppTheme {
       iconTheme: IconThemeData(color: Colors.white),
     ),
     cardTheme: CardTheme(
-      elevation: 2,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      elevation: 1,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+      color: const Color(0xFF2C2C2C),
     ),
     elevatedButtonTheme: ElevatedButtonThemeData(
       style: ElevatedButton.styleFrom(
         elevation: 0,
-        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        backgroundColor: _primaryColor,
+        foregroundColor: Colors.white,
       ),
     ),
     inputDecorationTheme: InputDecorationTheme(
       filled: true,
       fillColor: const Color(0xFF2C2C2C),
       border: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(12),
-        borderSide: BorderSide.none,
+        borderRadius: BorderRadius.circular(16),
+        borderSide: const BorderSide(color: Color(0xFF404040)),
       ),
       enabledBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(12),
-        borderSide: BorderSide.none,
+        borderRadius: BorderRadius.circular(16),
+        borderSide: const BorderSide(color: Color(0xFF404040)),
       ),
       focusedBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(12),
-        borderSide: const BorderSide(color: _primaryColor),
+        borderRadius: BorderRadius.circular(16),
+        borderSide: const BorderSide(color: _primaryColor, width: 2),
       ),
       errorBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(16),
         borderSide: const BorderSide(color: _errorColor),
       ),
+      contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
     ),
   );
 }

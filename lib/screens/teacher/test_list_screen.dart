@@ -3,7 +3,6 @@ import 'package:kid_arena/models/test.dart';
 import 'package:kid_arena/screens/teacher/create_test_screen.dart';
 import 'package:kid_arena/services/getIt.dart';
 import 'package:kid_arena/services/test_service.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 
 class TestListScreen extends StatefulWidget {
   const TestListScreen({super.key});
@@ -14,14 +13,13 @@ class TestListScreen extends StatefulWidget {
 
 class _TestListScreenState extends State<TestListScreen> {
   final TestService _testService = getIt<TestService>();
-  final String _teacherId = FirebaseAuth.instance.currentUser?.uid ?? '';
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text('Danh sách bài thi')),
       body: StreamBuilder<List<Test>>(
-        stream: _testService.getTestsForTeacher(_teacherId),
+        stream: _testService.getTestsForTeacher(),
         builder: (context, snapshot) {
           if (snapshot.hasError) {
             return Center(child: SelectableText('Error: ${snapshot.error}'));
