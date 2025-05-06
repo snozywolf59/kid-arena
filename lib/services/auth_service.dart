@@ -1,16 +1,30 @@
+import 'dart:developer';
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:kid_arena/models/user.dart';
 
 abstract class AuthService {
   login(String username, String password);
-  register(
+  registerTeacher(
     String fullName,
     String username,
     String password,
     String gender,
     String role,
     String? dateOfBirth,
+  );
+
+  registerStudent(
+    String fullName,
+    String username,
+    String password,
+    String gender,
+    String role,
+    String? dateOfBirth,
+    int? grade,
+    String? className,
+    String? schoolName,
   );
 
   logout();
@@ -43,7 +57,7 @@ class AuthServiceImpl implements AuthService {
 
   // Đăng ký
   @override
-  Future<User?> register(
+  Future<User?> registerTeacher(
     String fullName,
     String username,
     String password,
@@ -52,12 +66,14 @@ class AuthServiceImpl implements AuthService {
     String? dateOfBirth,
   ) async {
     try {
+      if (role != 'teacher') throw Exception('Not a teacher');
       UserCredential credential = await _auth.createUserWithEmailAndPassword(
         email: "$username@kidarena.com",
         password: password,
       );
 
       // Lưu thông tin người dùng vào Firestore
+
       await _firestore.collection('users').doc(credential.user?.uid).set({
         'fullName': fullName,
         'username': username,
@@ -67,13 +83,13 @@ class AuthServiceImpl implements AuthService {
         'createdAt': FieldValue.serverTimestamp(),
         'email': "$username@kidarena.com",
       });
-
       return credential.user;
     } catch (e) {
-      print("Register error: $e");
+      log("Register error: $e");
       return null;
     }
   }
+  
 
   @override
   void logout() {
@@ -106,8 +122,37 @@ class AuthServiceImpl implements AuthService {
       }
       return '';
     } catch (e) {
-      print("Error getting user role: $e");
+      log("Error getting user role: $e");
       return '';
+    }
+  }
+  
+  @override
+  Future<User?> registerStudent(String fullName, String username, String password, String gender, String role, String? dateOfBirth, int? grade, String? className, String? schoolName) async {
+    try {
+      if (role != 'student') throw Exception('Not a student');
+
+      UserCredential credential = await _auth.createUserWithEmailAndPassword(
+        email: "$username@kidarena.com",
+        password: password,
+      );
+
+      await _firestore.collection('users').doc(credential.user?.uid).set({
+        'fullName': fullName,
+        'username': username,
+        'gender': gender,
+        'role': role,
+        'dateOfBirth': dateOfBirth,
+        'grade': grade,
+        'className': className,
+        'schoolName': schoolName,
+        'createdAt': FieldValue.serverTimestamp(),
+        'email': "$username@kidarena.com",
+      });
+      return credential.user;
+    } catch (e) {
+      log("Register error: $e");
+      return null;
     }
   }
 }

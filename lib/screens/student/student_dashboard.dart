@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:kid_arena/screens/student/assigned_tests_screen.dart';
 import 'package:kid_arena/screens/student/leaderboard_screen.dart';
+import 'package:kid_arena/screens/student/my_classes_screen.dart';
 import 'package:kid_arena/screens/student/progress_screen.dart';
 import 'package:kid_arena/screens/student/public_tests_screen.dart';
 import 'package:kid_arena/screens/student/student_profile_screen.dart';
@@ -24,12 +25,12 @@ class _StudentDashboardState extends State<StudentDashboard> {
     _selectedIndex = widget.index;
   }
 
-  final List<Widget> _pages = [
-    const PublicTestsScreen(),
-    const AssignedTestsScreen(),
-    const LeaderboardScreen(),
-    const ProgressScreen(),
-    const StudentProfileScreen(),
+  final List<Widget> _pages = const [
+    PublicTestsScreen(),
+    AssignedTestsScreen(),
+    MyClassesScreen(),
+    LeaderboardScreen(),
+    StudentProfileScreen(),
   ];
 
   @override
@@ -53,13 +54,14 @@ class _StudentDashboardState extends State<StudentDashboard> {
             label: 'Bài kiểm tra',
           ),
           BottomNavigationBarItem(
+            icon: Icon(Icons.school_outlined),
+            label: 'Lớp học',
+          ),
+          BottomNavigationBarItem(
             icon: Icon(Icons.leaderboard_outlined),
             label: 'Bảng xếp hạng',
           ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.trending_up_outlined),
-            label: 'Tiến độ',
-          ),
+
           BottomNavigationBarItem(
             icon: Icon(Icons.person_outline),
             label: 'Hồ sơ',

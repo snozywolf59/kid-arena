@@ -87,7 +87,7 @@ class _ClassDetailScreenState extends State<ClassDetailScreen>
         final student = _students[index];
         return ListTile(
           leading: const CircleAvatar(child: Icon(Icons.person)),
-          title: Text(student.name),
+          title: Text(student.fullName),
           subtitle: Text('Username: ${student.username}'),
         );
       },

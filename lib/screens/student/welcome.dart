@@ -1,10 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:kid_arena/blocs/theme/theme_bloc.dart';
+import 'package:kid_arena/blocs/theme/theme_event.dart';
+import 'package:kid_arena/blocs/theme/theme_state.dart';
 import 'package:kid_arena/screens/student/public_tests_screen.dart';
 import 'package:kid_arena/screens/student/assigned_tests_screen.dart';
 import 'package:kid_arena/screens/student/student_dashboard.dart';
 import 'package:kid_arena/screens/student/test_history_screen.dart';
 import 'package:kid_arena/screens/student/leaderboard_screen.dart';
 import 'package:kid_arena/screens/student/progress_screen.dart';
+import 'package:kid_arena/screens/student/my_classes_screen.dart';
 
 class StudentWelcomeScreen extends StatelessWidget {
   const StudentWelcomeScreen({super.key});
@@ -26,6 +31,20 @@ class StudentWelcomeScreen extends StatelessWidget {
                   icon: const Icon(Icons.notifications_outlined),
                   onPressed: () {
                     // TODO: Implement notifications
+                  },
+                ),
+                BlocBuilder<ThemeBloc, ThemeState>(
+                  builder: (context, state) {
+                    return IconButton(
+                      icon: Icon(
+                        state.isDarkMode
+                            ? Icons.light_mode
+                            : Icons.dark_mode,
+                      ),
+                      onPressed: () {
+                        context.read<ThemeBloc>().add(ThemeToggled());
+                      },
+                    );
                   },
                 ),
                 const SizedBox(width: 8),
@@ -98,6 +117,18 @@ class StudentWelcomeScreen extends StatelessWidget {
                       context,
                       MaterialPageRoute(
                         builder: (context) => const StudentDashboard(index: 4),
+                      ),
+                    ),
+                  ),
+                  _buildFeatureCard(
+                    context,
+                    'My Classes',
+                    Icons.class_outlined,
+                    Colors.teal,
+                    () => Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const MyClassesScreen(),
                       ),
                     ),
                   ),

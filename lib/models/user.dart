@@ -43,3 +43,22 @@ class AppUser {
     };
   }
 }
+
+class Student extends AppUser {
+  int grade;
+  String className;
+  String schoolName;
+
+  Student({
+    required this.grade,
+    required this.className,
+    required this.schoolName,
+    required super.id,
+    required super.fullName,
+    required super.gender,
+    required super.role,
+    required super.username,
+    required super.email,
+    required super.createdAt,
+  });
+}

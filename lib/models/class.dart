@@ -4,7 +4,7 @@ class Class {
   final String id;
   final String name;
   final String description;
-  final List<dynamic> studentIds;
+  final List<dynamic> students;
   final String teacherId;
   final DateTime createdAt;
 
@@ -12,7 +12,7 @@ class Class {
     required this.id,
     required this.name,
     required this.description,
-    required this.studentIds,
+    required this.students,
     required this.teacherId,
     required this.createdAt,
   });
@@ -24,7 +24,7 @@ class Class {
       id: doc.id,
       name: data['name'] ?? '',
       description: data['description'] ?? '',
-      studentIds: data['studentIds'] ?? [],
+      students: data['students'] ?? [],
       teacherId: data['teacherId'] ?? '',
       createdAt: (data['createdAt'] as Timestamp).toDate(),
     );
@@ -34,7 +34,7 @@ class Class {
     return {
       'name': name,
       'description': description,
-      'studentIds': studentIds,
+      'students': students,
       'teacherId': teacherId,
       'createdAt': Timestamp.fromDate(createdAt),
     };

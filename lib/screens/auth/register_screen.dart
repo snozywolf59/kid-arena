@@ -20,6 +20,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
   final _usernameController = TextEditingController();
   final _passwordController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
+  final _gradeController = TextEditingController();
+  final _classNameController = TextEditingController();
+  final _schoolNameController = TextEditingController();
   bool _isLoading = false;
 
   Future<void> _selectDate(BuildContext context) async {
@@ -52,20 +55,34 @@ class _RegisterScreenState extends State<RegisterScreen> {
       });
 
       try {
-        final User user = await getIt<AuthService>().register(
-          _nameController.text.toString().trim(),
-          _usernameController.text.toString(),
-          _passwordController.text.toString(),
-          selectedGender.toString(),
-          selectedRole.toString(),
-          selectedDate?.toIso8601String(),
-        );
+        if (selectedRole == 'teacher') {
+          await getIt<AuthService>().registerTeacher(
+            _nameController.text.toString().trim(),
+            _usernameController.text.toString(),
+            _passwordController.text.toString(),
+            selectedGender.toString(),
+            selectedRole.toString(),
+            selectedDate?.toIso8601String(),
+          );
+        } else if (selectedRole == 'student') {
+          await getIt<AuthService>().registerStudent(
+            _nameController.text.toString().trim(),
+            _usernameController.text.toString(),
+            _passwordController.text.toString(),
+            selectedGender.toString(),
+            selectedRole.toString(),
+            selectedDate?.toIso8601String(),
+            int.parse(_gradeController.text.toString()),
+            _classNameController.text.toString(),
+            _schoolNameController.text.toString(),
+          );
 
-        if (mounted) {
-          ScaffoldMessenger.of(
-            context,
-          ).showSnackBar(const SnackBar(content: Text('Đăng ký thành công!')));
-          Navigator.pop(context);
+          if (mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(content: Text('Đăng ký thành công!')),
+            );
+            Navigator.pop(context);
+          }
         }
       } on FirebaseAuthException catch (e) {
         String message = 'Đã xảy ra lỗi';
@@ -247,6 +264,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     return null;
                   },
                 ),
+                if (selectedRole == 'student') _buildStudentAdditionalForm(),
                 const SizedBox(height: 30),
                 SizedBox(
                   width: double.infinity,
@@ -271,6 +289,28 @@ class _RegisterScreenState extends State<RegisterScreen> {
           ),
         ),
       ),
+    );
+  }
+
+  Widget _buildStudentAdditionalForm() {
+    return Column(
+      children: [
+        const SizedBox(height: 20),
+        TextFormField(
+          controller: _gradeController,
+          decoration: const InputDecoration(labelText: 'Lớp'),
+        ),
+        const SizedBox(height: 20),
+        TextFormField(
+          controller: _classNameController,
+          decoration: const InputDecoration(labelText: 'Tên lớp'),
+        ),
+        const SizedBox(height: 20),
+        TextFormField(
+          controller: _schoolNameController,
+          decoration: const InputDecoration(labelText: 'Tên trường'),
+        ),
+      ],
     );
   }
 }

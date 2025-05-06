@@ -157,7 +157,7 @@ class _ClassListScreenState extends State<ClassListScreen> {
     }
 
     return StreamBuilder<List<Class>>(
-      stream: getIt<ClassService>().getClasses(),
+      stream: getIt<ClassService>().getClassesForTeacherUser(),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return _buildLoadingIndicator();

@@ -100,7 +100,8 @@ class _CreateTestScreenState extends State<CreateTestScreen> {
 
   Future<void> _loadClasses() async {
     try {
-      final classes = await getIt<ClassService>().getClasses().first;
+      final classes =
+          await getIt<ClassService>().getClassesForTeacherUser().first;
       setState(() {
         _classes = classes;
         if (classes.isNotEmpty) {

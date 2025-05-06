@@ -11,7 +11,7 @@ class ClassService {
   String? get currentUserId => _auth.currentUser?.uid;
 
   // Lấy danh sách lớp học do người dùng quản lý
-  Stream<List<Class>> getClasses() {
+  Stream<List<Class>> getClassesForTeacherUser() {
     return _firestore
         .collection('classes')
         .where('teacherId', isEqualTo: currentUserId)
@@ -50,22 +50,28 @@ class ClassService {
     }
   }
 
-  // Thêm học sinh vào lớp
-  Future<void> addStudentToClass(String classId, String studentId) async {
+  /// Thêm học sinh vào lớp.
+  /// Giáo viên nhập username học sinh. Tìm id doc học sinh trong firebase.
+  Future<void> addStudentToClass(String classId, String studentUsername) async {
     try {
-      // Kiểm tra xem học sinh đã tồn tại trong lớp chưa
       Class? classData = await getClassById(classId);
       if (classData == null) {
         throw Exception('Không tìm thấy lớp học');
       }
-
-      if (classData.studentIds.contains(studentId)) {
+      final QuerySnapshot studentDoc =
+          await _firestore
+              .collection('users')
+              .where('username', isEqualTo: studentUsername)
+              .limit(1)
+              .get();
+      String studentId = studentDoc.docs.first.id;
+      if (classData.students.contains(studentId)) {
         throw Exception('Học sinh đã có trong lớp');
       }
 
       // Thêm học sinh vào lớp
       await _firestore.collection('classes').doc(classId).update({
-        'studentIds': FieldValue.arrayUnion([studentId]),
+        'students': FieldValue.arrayUnion([studentId]),
       });
     } catch (e) {
       throw Exception('Không thể thêm học sinh vào lớp: $e');
@@ -101,7 +107,7 @@ class ClassService {
       }
 
       List<Student> students = [];
-      for (String studentId in classData.studentIds) {
+      for (String studentId in classData.students) {
         DocumentSnapshot doc =
             await _firestore.collection('users').doc(studentId).get();
         if (doc.exists) {
@@ -112,5 +118,16 @@ class ClassService {
     } catch (e) {
       throw Exception('Không thể lấy danh sách học sinh: $e');
     }
+  }
+
+  Stream<List<Class>> getClassesForStudentUser() {
+    return _firestore
+        .collection('classes')
+        .where('students', arrayContains: currentUserId)
+        .snapshots()
+        .map(
+          (snapshot) =>
+              snapshot.docs.map((doc) => Class.fromFirestore(doc)).toList(),
+        );
   }
 }

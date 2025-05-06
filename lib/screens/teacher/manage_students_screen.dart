@@ -32,12 +32,7 @@ class _ManageStudentsScreenState extends State<ManageStudentsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Quản lý học sinh - ${widget.classroom.name}'),
-      ),
-      body: _buildBody(),
-    );
+    return _buildBody();
   }
 
   Future<void> _loadStudents() async {
@@ -165,8 +160,8 @@ class _ManageStudentsScreenState extends State<ManageStudentsScreen> {
 
   Widget _buildStudentListItem(Student student) {
     return ListTile(
-      leading: CircleAvatar(child: Text(student.name[0])),
-      title: Text(student.name),
+      leading: CircleAvatar(child: Text(student.fullName[0])),
+      title: Text(student.fullName),
       subtitle: Text(student.username),
       trailing: IconButton(
         icon: const Icon(Icons.delete),
