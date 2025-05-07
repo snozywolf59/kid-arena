@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:kid_arena/constants/subject.dart';
 import 'package:kid_arena/models/public_test.dart';
 import 'package:kid_arena/models/student_answer.dart';
 import 'package:kid_arena/models/test.dart';
@@ -79,54 +80,91 @@ class TestService {
     }
   }
 
-  Future<void> submitTest(Test test, List<int> answers) async {
+  Future<void> submitTest(
+    Test test,
+    List<int> answers,
+    double timeTaken,
+  ) async {
     try {
-      
-  
-        double score = 0;
-        for (int i = 0; i < test.questions.length; i++) {
-          if (test.questions[i].correctAnswer == answers[i]) {
-            score++;
-          }
+      double score = 0;
+      for (int i = 0; i < test.questions.length; i++) {
+        if (test.questions[i].correctAnswer == answers[i]) {
+          score++;
         }
-        score = score / test.questions.length;
-        final studentAnswer = StudentAnswer(
-            id: test.id,
-          studentId: FirebaseAuth.instance.currentUser?.uid ?? '',
-          answers: answers,
-          testId: test.id,
-          submittedAt: DateTime.now(),
-        );
-        final result = await _firestore.collection('student_answers').add({
-          ...studentAnswer.toMap(),
-          'score': score,
-        });
-        if (result.id.isNotEmpty) {
-          return;
-        } else {
-          throw Exception('Failed to submit test: No document ID returned');
-        }
-  
+      }
+      score = score / test.questions.length;
+      final studentAnswer = StudentAnswer(
+        id: test.id,
+        studentId: FirebaseAuth.instance.currentUser?.uid ?? '',
+        answers: answers,
+        testId: test.id,
+        submittedAt: DateTime.now(),
+        timeTaken: timeTaken,
+      );
+      final result = await _firestore.collection('student_answers').add({
+        ...studentAnswer.toMap(),
+        'score': double.parse(score.toStringAsFixed(2)),
+      });
+      if (result.id.isNotEmpty) {
+        return;
+      } else {
+        throw Exception('Failed to submit test: No document ID returned');
+      }
     } catch (e) {
       throw Exception('Failed to submit test: $e');
     }
   }
 
-
   //////////////////////////////
   //// PUBLIC TESTS SERVICE ////
   //////////////////////////////
 
-  Future<List<PublicTest>> getPublicTestsBySubject(String subject) async {
-    final snapshot = await _firestore.collection('public_tests').where('subject', isEqualTo: subject).get();
+  Future<List<PublicTest>> getPublicTestsBySubject(Subject subject) async {
+    final snapshot =
+        await _firestore
+            .collection('public_tests')
+            .where('subject', isEqualTo: subject.name)
+            .get();
     return snapshot.docs.map((doc) => PublicTest.fromFirestore(doc)).toList();
   }
 
   Future<List<PublicTest>> getPublicTestsByGrade(int grade) async {
-    final snapshot = await _firestore.collection('public_tests').where('grade', isEqualTo: grade).get();
+    final snapshot =
+        await _firestore
+            .collection('public_tests')
+            .where('grade', isEqualTo: grade)
+            .get();
     return snapshot.docs.map((doc) => PublicTest.fromFirestore(doc)).toList();
   }
-  
-  
 
+  // Get student answers for public tests
+  Future<List<StudentAnswer>> getStudentAnswersForPublicTests(
+    String studentId,
+  ) async {
+    final snapshot =
+        await _firestore
+            .collection('student_answers')
+            .where('studentId', isEqualTo: studentId)
+            .orderBy('score', descending: true)
+            .get();
+    return snapshot.docs
+        .map((doc) => StudentAnswer.fromFirestore(doc))
+        .toList();
+  }
+
+  // Get student answer for a specific public test
+  Future<StudentAnswer?> getStudentAnswerForPublicTest(
+    String studentId,
+    String testId,
+  ) async {
+    final snapshot =
+        await _firestore
+            .collection('student_answers')
+            .where('studentId', isEqualTo: studentId)
+            .where('testId', isEqualTo: testId)
+            .get();
+
+    if (snapshot.docs.isEmpty) return null;
+    return StudentAnswer.fromFirestore(snapshot.docs.first);
+  }
 }

@@ -80,7 +80,7 @@ class ProgressScreen extends StatelessWidget {
           width: 80,
           height: 80,
           decoration: BoxDecoration(
-            color: color.withOpacity(0.1),
+            color: color.withAlpha(26),
             shape: BoxShape.circle,
             border: Border.all(color: color, width: 3),
           ),
@@ -150,7 +150,7 @@ class ProgressScreen extends StatelessWidget {
         const SizedBox(height: 8),
         LinearProgressIndicator(
           value: score / 100,
-          backgroundColor: color.withOpacity(0.1),
+          backgroundColor: color.withAlpha(26),
           valueColor: AlwaysStoppedAnimation<Color>(color),
           borderRadius: BorderRadius.circular(10),
           minHeight: 8,
@@ -210,7 +210,7 @@ class ProgressScreen extends StatelessWidget {
         Container(
           padding: const EdgeInsets.all(8),
           decoration: BoxDecoration(
-            color: color.withOpacity(0.1),
+            color: color.withAlpha(26),
             borderRadius: BorderRadius.circular(12),
           ),
           child: Icon(Icons.assignment_outlined, color: color),
@@ -238,7 +238,7 @@ class ProgressScreen extends StatelessWidget {
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
           decoration: BoxDecoration(
-            color: color.withOpacity(0.1),
+            color: color.withAlpha(26),
             borderRadius: BorderRadius.circular(20),
           ),
           child: Text(

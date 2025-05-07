@@ -3,7 +3,7 @@ import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:kid_arena/models/user.dart';
 import 'package:kid_arena/services/auth_service.dart';
-import 'package:kid_arena/services/getIt.dart';
+import 'package:kid_arena/services/get_it.dart';
 
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({super.key});
@@ -204,8 +204,8 @@ class ProfileScreen extends StatelessWidget {
                 Chip(
                   backgroundColor:
                       user.role == 'admin'
-                          ? Colors.deepPurple.withOpacity(0.2)
-                          : Colors.blue.withOpacity(0.2),
+                          ? Colors.deepPurple.withAlpha(51)
+                          : Colors.blue.withAlpha(51),
                   label: Text(
                     user.role.toUpperCase(),
                     style: TextStyle(

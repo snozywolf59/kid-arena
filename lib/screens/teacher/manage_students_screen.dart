@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:kid_arena/models/class.dart';
 import 'package:kid_arena/models/student.dart';
 import 'package:kid_arena/services/class_service.dart';
-import 'package:kid_arena/services/getIt.dart';
+import 'package:kid_arena/services/get_it.dart';
 
 class ManageStudentsScreen extends StatefulWidget {
   final Class classroom;

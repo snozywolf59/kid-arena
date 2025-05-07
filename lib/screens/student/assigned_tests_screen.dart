@@ -69,7 +69,7 @@ class AssignedTestsScreen extends StatelessWidget {
           padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(16),
-            border: Border.all(color: color.withOpacity(0.3), width: 2),
+            border: Border.all(color: color.withAlpha(75), width: 2),
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,

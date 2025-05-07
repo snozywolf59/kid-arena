@@ -85,7 +85,7 @@ class LeaderboardScreen extends StatelessWidget {
             width: 80,
             height: 80,
             decoration: BoxDecoration(
-              color: color.withOpacity(0.1),
+              color: color.withAlpha(26),
               shape: BoxShape.circle,
               border: Border.all(color: color, width: 3),
             ),
@@ -167,7 +167,7 @@ class LeaderboardScreen extends StatelessWidget {
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
               decoration: BoxDecoration(
-                color: Colors.blue.withOpacity(0.1),
+                color: Colors.blue.withAlpha(26),
                 borderRadius: BorderRadius.circular(20),
               ),
               child: Text(

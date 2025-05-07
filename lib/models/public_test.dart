@@ -12,6 +12,7 @@ class PublicTest {
   final String subject;
   final List<Question> questions;
   final DateTime createdAt;
+  final int grade;
 
   PublicTest({
     required this.id,
@@ -21,6 +22,7 @@ class PublicTest {
     required this.subject,
     required this.questions,
     required this.createdAt,
+    required this.grade,
   });
   Map<String, dynamic> toMap() {
     return {
@@ -30,6 +32,7 @@ class PublicTest {
       'subject': subject,
       'questions': questions.map((q) => q.toMap()).toList(),
       'createdAt': createdAt,
+      'grade': grade,
     };
   }
 
@@ -51,6 +54,7 @@ class PublicTest {
           data['createdAt'] != null
               ? (data['createdAt'] as Timestamp).toDate()
               : DateTime.now(),
+      grade: data['grade'] ?? 0,
     );
   }
 }
@@ -70,7 +74,7 @@ void main() async {
       options: ['Hi', 'Good morning', 'Thanks', 'Goodbye'],
     ),
     Question(
-      questionText: 'How do you ask someone’s name?',
+      questionText: 'How do you ask someone\'s name?',
       correctAnswer: 1,
       options: [
         'How old are you?',
@@ -101,7 +105,7 @@ void main() async {
         'What is your name?',
         'Yes, I am.',
         'Goodbye!',
-        'I’m fine, thank you.',
+        "I'm fine, thank you.",
       ],
     ),
     Question(
@@ -131,6 +135,7 @@ void main() async {
     subject: subject.name,
     questions: questions,
     createdAt: DateTime.now(),
+    grade: 1,
   );
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   await FirebaseFirestore.instance.collection('public_tests').add(test.toMap());

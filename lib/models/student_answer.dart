@@ -6,6 +6,8 @@ class StudentAnswer {
   final List<int> answers;
   final String testId;
   final DateTime submittedAt;
+  final double timeTaken;
+  final double score;
 
   StudentAnswer({
     required this.id,
@@ -13,6 +15,8 @@ class StudentAnswer {
     required this.answers,
     required this.testId,
     required this.submittedAt,
+    required this.timeTaken,
+    this.score = 0,
   });
 
   factory StudentAnswer.fromFirestore(DocumentSnapshot doc) {
@@ -23,6 +27,8 @@ class StudentAnswer {
       answers: List<int>.from(data['answers'] ?? []),
       testId: data['testId'] ?? '',
       submittedAt: (data['submittedAt'] as Timestamp).toDate(),
+      timeTaken: data['timeTaken'] ?? 0,
+      score: data['score'] ?? 0,
     );
   }
 
@@ -32,6 +38,8 @@ class StudentAnswer {
       'answers': answers,
       'testId': testId,
       'submittedAt': Timestamp.fromDate(submittedAt),
+      'timeTaken': timeTaken,
+      'score': score,
     };
   }
 
@@ -41,6 +49,8 @@ class StudentAnswer {
     List<int>? answers,
     String? testId,
     DateTime? submittedAt,
+    double? timeTaken,
+    double? score,
   }) {
     return StudentAnswer(
       id: id ?? this.id,
@@ -48,6 +58,8 @@ class StudentAnswer {
       answers: answers ?? this.answers,
       testId: testId ?? this.testId,
       submittedAt: submittedAt ?? this.submittedAt,
+      timeTaken: timeTaken ?? this.timeTaken,
+      score: score ?? this.score,
     );
   }
 }

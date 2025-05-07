@@ -70,7 +70,7 @@ class TestHistoryScreen extends StatelessWidget {
                 Container(
                   padding: const EdgeInsets.all(8),
                   decoration: BoxDecoration(
-                    color: color.withOpacity(0.1),
+                    color: color.withAlpha(26),
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: Icon(Icons.history_outlined, color: color),
@@ -113,7 +113,7 @@ class TestHistoryScreen extends StatelessWidget {
                     vertical: 6,
                   ),
                   decoration: BoxDecoration(
-                    color: color.withOpacity(0.1),
+                    color: color.withAlpha(26),
                     borderRadius: BorderRadius.circular(20),
                   ),
                   child: Row(
@@ -135,7 +135,7 @@ class TestHistoryScreen extends StatelessWidget {
             const SizedBox(height: 16),
             LinearProgressIndicator(
               value: score / 100,
-              backgroundColor: color.withOpacity(0.1),
+              backgroundColor: color.withAlpha(26),
               valueColor: AlwaysStoppedAnimation<Color>(color),
               borderRadius: BorderRadius.circular(10),
               minHeight: 8,

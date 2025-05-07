@@ -3,7 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:kid_arena/models/class.dart';
 import 'package:kid_arena/models/user.dart';
 import 'package:kid_arena/services/auth_service.dart';
-import 'package:kid_arena/services/getIt.dart';
+import 'package:kid_arena/services/get_it.dart';
 
 class ClassCard extends StatelessWidget {
   final Class classData;

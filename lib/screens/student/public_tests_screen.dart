@@ -1,9 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:kid_arena/constants/subject.dart';
 import 'package:kid_arena/models/public_test.dart';
 import 'package:kid_arena/models/question.dart';
+import 'package:kid_arena/models/student_answer.dart';
 import 'package:kid_arena/widgets/student/subject_card.dart';
 import 'package:kid_arena/widgets/student/test_card.dart';
+import 'package:kid_arena/services/test_service.dart';
+import 'package:kid_arena/services/get_it.dart';
 
 List<PublicTest> getExamsBySubject(Subject subject) {
   if (subject == Subject.mathematics) {
@@ -14,6 +18,7 @@ List<PublicTest> getExamsBySubject(Subject subject) {
         description: 'Dễ',
         duration: 30,
         subject: subject.name,
+        grade: 1,
         questions: [
           Question(
             questionText: 'Giải phương trình: 2x + 5 = 15',
@@ -53,6 +58,7 @@ List<PublicTest> getExamsBySubject(Subject subject) {
           ),
         ],
         createdAt: DateTime.now(),
+        grade: 1,
       ),
     ];
   }
@@ -64,6 +70,7 @@ List<PublicTest> getExamsBySubject(Subject subject) {
         description: 'Dễ',
         duration: 30,
         subject: subject.name,
+        grade: 1,
         questions: [
           Question(
             questionText: 'Tác giả của bài thơ "Qua Đèo Ngang" là ai?',
@@ -96,6 +103,7 @@ List<PublicTest> getExamsBySubject(Subject subject) {
           ),
         ],
         createdAt: DateTime.now(),
+        grade: 1,
       ),
     ];
   }
@@ -115,6 +123,7 @@ List<PublicTest> getExamsBySubject(Subject subject) {
           ),
         ],
         createdAt: DateTime.now(),
+        grade: 1,
       ),
     ];
   }
@@ -126,6 +135,7 @@ List<PublicTest> getExamsBySubject(Subject subject) {
         description: 'Dễ',
         duration: 30,
         subject: subject.name,
+        grade: 1,
         questions: [
           Question(
             questionText:
@@ -285,136 +295,266 @@ class PublicTestsScreen extends StatelessWidget {
   }
 }
 
-class ExamsScreen extends StatelessWidget {
+class ExamsScreen extends StatefulWidget {
   final Subject subject;
 
   const ExamsScreen({super.key, required this.subject});
 
   @override
+  State<ExamsScreen> createState() => _ExamsScreenState();
+}
+
+class _ExamsScreenState extends State<ExamsScreen> {
+  final TestService _testService = getIt<TestService>();
+  List<PublicTest> _tests = [];
+  List<StudentAnswer> _studentAnswers = [];
+  bool _isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadData();
+  }
+
+  Future<void> _loadData() async {
+    setState(() => _isLoading = true);
+    try {
+      final studentId = FirebaseAuth.instance.currentUser?.uid;
+      if (studentId == null) return;
+
+      final tests = getExamsBySubject(widget.subject);
+      final answers = await _testService.getStudentAnswersForPublicTests(
+        studentId,
+      );
+
+      setState(() {
+        _tests = tests;
+        _studentAnswers = answers;
+        _isLoading = false;
+      });
+    } catch (e) {
+      setState(() => _isLoading = false);
+      if (mounted) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Lỗi khi tải dữ liệu: $e')));
+      }
+    }
+  }
+
+  List<PublicTest> _getUncompletedTests() {
+    final completedTestIds = _studentAnswers.map((a) => a.testId).toSet();
+    return _tests.where((test) => !completedTestIds.contains(test.id)).toList();
+  }
+
+  List<PublicTest> _getCompletedTests() {
+    final completedTestIds = _studentAnswers.map((a) => a.testId).toSet();
+    return _tests.where((test) => completedTestIds.contains(test.id)).toList();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: SafeArea(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Padding(
-              padding: const EdgeInsets.all(16),
-              child: Row(
-                children: [
-                  GestureDetector(
-                    onTap: () => Navigator.pop(context),
-                    child: Container(
-                      padding: const EdgeInsets.all(8),
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(12),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.grey.withAlpha(26),
-                            spreadRadius: 1,
-                            blurRadius: 5,
-                            offset: const Offset(0, 3),
-                          ),
-                        ],
-                      ),
-                      child: const Icon(Icons.arrow_back, color: Colors.black),
-                    ),
-                  ),
-                  const SizedBox(width: 16),
-                  Text(
-                    subject.name,
-                    style: const TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            const SizedBox(height: 16),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 24),
-              child: Container(
-                padding: const EdgeInsets.all(20),
-                decoration: BoxDecoration(
-                  color: subject.color,
-                  borderRadius: BorderRadius.circular(20),
-                ),
+    if (_isLoading) {
+      return Scaffold(body: Center(child: CircularProgressIndicator()));
+    }
+
+    return DefaultTabController(
+      length: 2,
+      child: Scaffold(
+        body: SafeArea(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Padding(
+                padding: const EdgeInsets.all(16),
                 child: Row(
                   children: [
-                    Container(
-                      padding: const EdgeInsets.all(12),
-                      decoration: BoxDecoration(
-                        color: Colors.white.withAlpha(51),
-                        borderRadius: BorderRadius.circular(12),
+                    GestureDetector(
+                      onTap: () => Navigator.pop(context),
+                      child: Container(
+                        padding: const EdgeInsets.all(8),
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(12),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.grey.withAlpha(26),
+                              spreadRadius: 1,
+                              blurRadius: 5,
+                              offset: const Offset(0, 3),
+                            ),
+                          ],
+                        ),
+                        child: const Icon(
+                          Icons.arrow_back,
+                          color: Colors.black,
+                        ),
                       ),
-                      child: Icon(subject.icon, color: Colors.white, size: 32),
                     ),
                     const SizedBox(width: 16),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          const Text(
-                            'Bắt đầu học',
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontWeight: FontWeight.bold,
-                              fontSize: 20,
-                            ),
-                          ),
-                          const SizedBox(height: 4),
-                          Text(
-                            'Hãy chọn một bài thi để bắt đầu ôn tập',
-                            style: TextStyle(
-                              color: Colors.white.withAlpha(230),
-                              fontSize: 14,
-                            ),
-                          ),
-                        ],
+                    Text(
+                      widget.subject.name,
+                      style: const TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
                       ),
                     ),
                   ],
                 ),
               ),
-            ),
-            const SizedBox(height: 32),
-            Padding(
-              padding: const EdgeInsets.only(left: 24),
-              child: const Text(
-                'Danh sách bài thi',
-                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-              ),
-            ),
-            const SizedBox(height: 16),
-            Expanded(
-              child: ListView.builder(
-                physics: const BouncingScrollPhysics(),
+              const SizedBox(height: 16),
+              Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 24),
-                itemCount: getExamsBySubject(subject).length,
-                itemBuilder: (context, index) {
-                  final exam = getExamsBySubject(subject)[index];
-                  return TestCard(
-                    title: exam.title,
-                    description: exam.description,
-                    subject: subject.name,
-                    duration: exam.duration,
-                    onTap: () {
-                      // Chuyển đến màn hình làm bài thi
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: Text('Bạn đã chọn bài thi: ${exam.title}'),
-                          behavior: SnackBarBehavior.floating,
+                child: Container(
+                  padding: const EdgeInsets.all(20),
+                  decoration: BoxDecoration(
+                    color: widget.subject.color,
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  child: Row(
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.all(12),
+                        decoration: BoxDecoration(
+                          color: Colors.white.withAlpha(51),
+                          borderRadius: BorderRadius.circular(12),
                         ),
-                      );
-                    },
-                  );
-                },
+                        child: Icon(
+                          widget.subject.icon,
+                          color: Colors.white,
+                          size: 32,
+                        ),
+                      ),
+                      const SizedBox(width: 16),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const Text(
+                              'Bắt đầu học',
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 20,
+                              ),
+                            ),
+                            const SizedBox(height: 4),
+                            Text(
+                              'Hãy chọn một bài thi để bắt đầu ôn tập',
+                              style: TextStyle(
+                                color: Colors.white.withAlpha(230),
+                                fontSize: 14,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
               ),
-            ),
-          ],
+              const SizedBox(height: 24),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 24),
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: Colors.grey[200],
+                    borderRadius: BorderRadius.circular(25),
+                  ),
+                  child: TabBar(
+                    labelColor: Colors.white,
+                    unselectedLabelColor: Colors.grey[600],
+                    indicator: BoxDecoration(
+                      color: widget.subject.color,
+                      borderRadius: BorderRadius.circular(25),
+                    ),
+                    tabs: const [
+                      Tab(text: 'Chưa làm'),
+                      Tab(text: 'Đã hoàn thành'),
+                    ],
+                  ),
+                ),
+              ),
+              const SizedBox(height: 16),
+              Expanded(
+                child: TabBarView(
+                  children: [
+                    // Tab 1: Uncompleted Tests
+                    _uncompletedTests(),
+                    // Tab 2: Completed Tests
+                    _completedTests(),
+                  ],
+                ),
+              ),
+            ],
+          ),
         ),
       ),
+    );
+  }
+
+  ListView _completedTests() {
+    return ListView.builder(
+      physics: const BouncingScrollPhysics(),
+      padding: const EdgeInsets.symmetric(horizontal: 24),
+      itemCount: _getCompletedTests().length,
+      itemBuilder: (context, index) {
+        final exam = _getCompletedTests()[index];
+        final studentAnswer = _studentAnswers.firstWhere(
+          (answer) => answer.testId == exam.id,
+          orElse:
+              () => StudentAnswer(
+                id: '',
+                studentId: '',
+                answers: [],
+                testId: exam.id,
+                submittedAt: DateTime.now(),
+                timeTaken: 0,
+              ),
+        );
+        return TestCard(
+          title: exam.title,
+          description: exam.description,
+          subject: widget.subject.name,
+          duration: exam.duration,
+          isCompleted: true,
+          score: studentAnswer.score,
+          timeTaken: studentAnswer.timeTaken,
+          onTap: () {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text('Xem lại bài thi: ${exam.title}'),
+                behavior: SnackBarBehavior.floating,
+              ),
+            );
+          },
+        );
+      },
+    );
+  }
+
+  ListView _uncompletedTests() {
+    return ListView.builder(
+      physics: const BouncingScrollPhysics(),
+      padding: const EdgeInsets.symmetric(horizontal: 24),
+      itemCount: _getUncompletedTests().length,
+      itemBuilder: (context, index) {
+        final exam = _getUncompletedTests()[index];
+        return TestCard(
+          title: exam.title,
+          description: exam.description,
+          subject: widget.subject.name,
+          duration: exam.duration,
+          onTap: () {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text('Bạn đã chọn bài thi: ${exam.title}'),
+                behavior: SnackBarBehavior.floating,
+              ),
+            );
+          },
+        );
+      },
     );
   }
 }

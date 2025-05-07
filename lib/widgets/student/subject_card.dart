@@ -25,7 +25,7 @@ class _SubjectCardState extends State<SubjectCard> {
           borderRadius: BorderRadius.circular(20),
           boxShadow: [
             BoxShadow(
-              color: Colors.grey.withOpacity(0.1),
+              color: Colors.grey.withAlpha(26),
               spreadRadius: 1,
               blurRadius: 5,
               offset: const Offset(0, 3),
@@ -38,7 +38,7 @@ class _SubjectCardState extends State<SubjectCard> {
             Container(
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
-                color: widget.subject.color.withOpacity(0.1),
+                color: widget.subject.color.withAlpha(26),
                 shape: BoxShape.circle,
               ),
               child: Icon(

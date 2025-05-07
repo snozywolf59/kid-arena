@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:kid_arena/models/class.dart';
 import 'package:kid_arena/services/class_service.dart';
-import 'package:kid_arena/services/getIt.dart';
+import 'package:kid_arena/services/get_it.dart';
 import 'package:kid_arena/widgets/student/class_card.dart';
 
 class MyClassesScreen extends StatelessWidget {

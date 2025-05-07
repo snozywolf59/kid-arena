@@ -6,6 +6,9 @@ class TestCard extends StatelessWidget {
   final String subject;
   final int duration;
   final VoidCallback onTap;
+  final bool isCompleted;
+  final double? score;
+  final double? timeTaken;
 
   const TestCard({
     super.key,
@@ -14,6 +17,9 @@ class TestCard extends StatelessWidget {
     required this.subject,
     required this.duration,
     required this.onTap,
+    this.isCompleted = false,
+    this.score,
+    this.timeTaken,
   });
 
   @override
@@ -46,12 +52,19 @@ class TestCard extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 8),
+              Text(
+                description,
+                style: TextStyle(fontSize: 16, color: Colors.grey[600]),
+              ),
+              if (isCompleted && score != null) ...[
+                const SizedBox(height: 16),
+                _buildScoreIndicator(),
+              ],
+              const SizedBox(height: 16),
               Row(
                 children: [
-                  Text(
-                    description,
-                    style: TextStyle(fontSize: 16, color: Colors.grey[600]),
-                  ),
+                  if (isCompleted && timeTaken != null)
+                    Expanded(child: _buildTimeTakenChip()),
                   const Spacer(),
                   _buildStartButton(),
                 ],
@@ -67,7 +80,7 @@ class TestCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
       decoration: BoxDecoration(
-        color: Colors.blue.withOpacity(0.1),
+        color: Colors.blue.withAlpha(25),
         borderRadius: BorderRadius.circular(20),
       ),
       child: Text(
@@ -81,7 +94,7 @@ class TestCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
       decoration: BoxDecoration(
-        color: Colors.green.withOpacity(0.1),
+        color: Colors.green.withAlpha(26),
         borderRadius: BorderRadius.circular(20),
       ),
       child: Row(
@@ -100,16 +113,75 @@ class TestCard extends StatelessWidget {
     );
   }
 
+  Widget _buildScoreIndicator() {
+    final scoreColor =
+        score! >= 0.8
+            ? Colors.green
+            : score! >= 0.6
+            ? Colors.orange
+            : Colors.red;
+
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      decoration: BoxDecoration(
+        color: scoreColor.withAlpha(50),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: scoreColor.withAlpha(75)),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(Icons.emoji_events_outlined, color: scoreColor, size: 20),
+          const SizedBox(width: 8),
+          Text(
+            'Điểm số: ${(score! * 100).toStringAsFixed(1)}%',
+            style: TextStyle(
+              color: scoreColor,
+              fontWeight: FontWeight.bold,
+              fontSize: 16,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildTimeTakenChip() {
+    final minutes = (timeTaken! / 60).floor();
+    final seconds = (timeTaken! % 60).floor();
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+      decoration: BoxDecoration(
+        color: Colors.purple.withAlpha(26),
+        borderRadius: BorderRadius.circular(20),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(Icons.timer_outlined, size: 16, color: Colors.purple[700]),
+          const SizedBox(width: 4),
+          Text(
+            'Thời gian: ${minutes}m ${seconds}s',
+            style: TextStyle(
+              color: Colors.purple[700],
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   Widget _buildStartButton() {
     return ElevatedButton(
       onPressed: onTap,
       style: ElevatedButton.styleFrom(
-        backgroundColor: Colors.blue,
+        backgroundColor: isCompleted ? Colors.green : Colors.blue,
         foregroundColor: Colors.white,
         padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       ),
-      child: const Text('Start Test'),
+      child: Text(isCompleted ? 'Xem lại' : 'Bắt đầu'),
     );
   }
 }

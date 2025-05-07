@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 import 'package:kid_arena/services/auth_service.dart';
-import 'package:kid_arena/services/getIt.dart';
+import 'package:kid_arena/services/get_it.dart';
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});

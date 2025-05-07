@@ -41,7 +41,7 @@ class _StudentProfileScreenState extends State<StudentProfileScreen>
                       end: Alignment.bottomCenter,
                       colors: [
                         Theme.of(context).colorScheme.primary,
-                        Theme.of(context).colorScheme.primary.withOpacity(0.8),
+                        Theme.of(context).colorScheme.primary.withAlpha(200),
                       ],
                     ),
                   ),
@@ -222,7 +222,7 @@ class _StudentProfileScreenState extends State<StudentProfileScreen>
             Container(
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
-                color: color.withOpacity(0.1),
+                color: color.withAlpha(26),
                 borderRadius: BorderRadius.circular(12),
               ),
               child: Icon(icon, color: color, size: 32),
