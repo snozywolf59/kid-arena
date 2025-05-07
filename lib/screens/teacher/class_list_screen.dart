@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:kid_arena/models/class.dart';
 import 'package:kid_arena/services/class_service.dart';
@@ -5,6 +7,7 @@ import 'package:kid_arena/services/get_it.dart';
 import 'package:kid_arena/screens/teacher/add_class_screen.dart';
 import 'package:kid_arena/screens/teacher/manage_students_screen.dart';
 import 'package:kid_arena/screens/teacher/class_detail_screen.dart';
+import 'package:kid_arena/utils/page_transitions.dart';
 
 class ClassListScreen extends StatefulWidget {
   const ClassListScreen({super.key});
@@ -85,7 +88,7 @@ class _ClassListScreenState extends State<ClassListScreen> {
   void _navigateToAddClass() {
     Navigator.push(
       context,
-      MaterialPageRoute(builder: (context) => const AddClassScreen()),
+      PageTransitions.slideTransition(const AddClassScreen()),
     );
   }
 
@@ -109,8 +112,8 @@ class _ClassListScreenState extends State<ClassListScreen> {
         onTap: () {
           Navigator.push(
             context,
-            MaterialPageRoute(
-              builder: (context) => ClassDetailScreen(classroom: classroom),
+            PageTransitions.slideTransition(
+              ClassDetailScreen(classroom: classroom),
             ),
           );
         },
@@ -164,7 +167,7 @@ class _ClassListScreenState extends State<ClassListScreen> {
         }
 
         if (snapshot.hasError) {
-          print(snapshot.error.toString());
+          log(snapshot.error.toString());
           return _buildErrorWidget(snapshot.error.toString());
         }
 

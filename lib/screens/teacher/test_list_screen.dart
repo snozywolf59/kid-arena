@@ -3,6 +3,7 @@ import 'package:kid_arena/models/test.dart';
 import 'package:kid_arena/screens/teacher/create_test_screen.dart';
 import 'package:kid_arena/services/get_it.dart';
 import 'package:kid_arena/services/test_service.dart';
+import 'package:kid_arena/utils/page_transitions.dart';
 
 class TestListScreen extends StatefulWidget {
   const TestListScreen({super.key});
@@ -117,7 +118,7 @@ class _TestListScreenState extends State<TestListScreen> {
                         if (shouldDelete == true) {
                           try {
                             await _testService.deleteTest(test.id);
-                            if (mounted) {
+                            if (context.mounted) {
                               ScaffoldMessenger.of(context).showSnackBar(
                                 const SnackBar(
                                   content: Text('Đã xóa bài thi thành công'),
@@ -125,7 +126,7 @@ class _TestListScreenState extends State<TestListScreen> {
                               );
                             }
                           } catch (e) {
-                            if (mounted) {
+                            if (context.mounted) {
                               ScaffoldMessenger.of(context).showSnackBar(
                                 SnackBar(
                                   content: Text('Lỗi khi xóa bài thi: $e'),
@@ -148,7 +149,7 @@ class _TestListScreenState extends State<TestListScreen> {
         onPressed: () async {
           await Navigator.push(
             context,
-            MaterialPageRoute(builder: (context) => const CreateTestScreen()),
+            PageTransitions.slideTransition(const CreateTestScreen()),
           );
         },
         child: const Icon(Icons.add),

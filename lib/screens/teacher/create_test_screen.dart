@@ -124,7 +124,7 @@ class _CreateTestScreenState extends State<CreateTestScreen> {
       lastDate: DateTime.now().add(const Duration(days: 365)),
     );
 
-    if (pickedDate == null) return;
+    if (pickedDate == null || !mounted) return;
 
     final pickedTime = await showTimePicker(
       context: context,

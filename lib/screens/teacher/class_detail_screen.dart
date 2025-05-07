@@ -7,6 +7,7 @@ import 'package:kid_arena/services/test_service.dart';
 import 'package:kid_arena/services/get_it.dart';
 import 'package:kid_arena/screens/teacher/manage_students_screen.dart';
 import 'package:kid_arena/screens/teacher/create_test_screen.dart';
+import 'package:kid_arena/utils/page_transitions.dart';
 
 class ClassDetailScreen extends StatefulWidget {
   final Class classroom;
@@ -143,7 +144,7 @@ class _ClassDetailScreenState extends State<ClassDetailScreen>
                   try {
                     await getIt<TestService>().deleteTest(test.id);
                     await _loadData();
-                    if (mounted) {
+                    if (context.mounted) {
                       ScaffoldMessenger.of(context).showSnackBar(
                         const SnackBar(
                           content: Text('Đã xóa bài thi thành công'),
@@ -151,7 +152,7 @@ class _ClassDetailScreenState extends State<ClassDetailScreen>
                       );
                     }
                   } catch (e) {
-                    if (mounted) {
+                    if (context.mounted) {
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(content: Text('Lỗi khi xóa bài thi: $e')),
                       );
@@ -186,10 +187,8 @@ class _ClassDetailScreenState extends State<ClassDetailScreen>
             // Navigate to manage students screen
             await Navigator.push(
               context,
-              MaterialPageRoute(
-                builder:
-                    (context) =>
-                        ManageStudentsScreen(classroom: widget.classroom),
+              PageTransitions.slideTransition(
+                ManageStudentsScreen(classroom: widget.classroom),
               ),
             );
             await _loadData();
@@ -197,9 +196,8 @@ class _ClassDetailScreenState extends State<ClassDetailScreen>
             // Navigate to create test screen
             await Navigator.push(
               context,
-              MaterialPageRoute(
-                builder:
-                    (context) => CreateTestScreen(classId: widget.classroom.id),
+              PageTransitions.slideTransition(
+                CreateTestScreen(classId: widget.classroom.id),
               ),
             );
             await _loadData();

@@ -8,6 +8,7 @@ import 'package:kid_arena/screens/student/welcome.dart';
 import 'package:kid_arena/screens/teacher/home_teacher.dart';
 import 'package:kid_arena/services/auth_service.dart';
 import 'package:kid_arena/services/get_it.dart';
+import 'package:kid_arena/utils/page_transitions.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -87,6 +88,7 @@ class _LoginScreenState extends State<LoginScreen> {
           context,
         ).showSnackBar(SnackBar(content: Text(message)));
       } catch (e) {
+        if (!mounted) return;
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('Đã xảy ra lỗi không xác định: ${e.toString()}'),
@@ -177,8 +179,8 @@ class _LoginScreenState extends State<LoginScreen> {
                       onPressed: () {
                         Navigator.push(
                           context,
-                          MaterialPageRoute(
-                            builder: (context) => const RegisterScreen(),
+                          PageTransitions.slideTransition(
+                            const RegisterScreen(),
                           ),
                         );
                       },

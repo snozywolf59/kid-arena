@@ -7,6 +7,7 @@ import 'package:kid_arena/screens/student/welcome.dart';
 import 'package:kid_arena/screens/teacher/home_teacher.dart';
 import 'package:kid_arena/services/auth_service.dart';
 import 'package:kid_arena/services/get_it.dart';
+import 'package:kid_arena/utils/page_transitions.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -82,7 +83,7 @@ class _SplashScreenState extends State<SplashScreen> {
               onPressed: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => const LoginScreen()),
+                  PageTransitions.slideTransition(const LoginScreen()),
                 );
               },
               style: ElevatedButton.styleFrom(

@@ -3,14 +3,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:kid_arena/blocs/theme/theme_bloc.dart';
 import 'package:kid_arena/blocs/theme/theme_event.dart';
 import 'package:kid_arena/blocs/theme/theme_state.dart';
-import 'package:kid_arena/screens/student/public_tests_screen.dart';
-import 'package:kid_arena/screens/student/assigned_tests_screen.dart';
 import 'package:kid_arena/screens/student/student_dashboard.dart';
-import 'package:kid_arena/screens/student/test_history_screen.dart';
-import 'package:kid_arena/screens/student/leaderboard_screen.dart';
-import 'package:kid_arena/screens/student/progress_screen.dart';
 import 'package:kid_arena/screens/student/my_classes_screen.dart';
-
+import 'package:kid_arena/utils/page_transitions.dart';
 class StudentWelcomeScreen extends StatelessWidget {
   const StudentWelcomeScreen({super.key});
 
@@ -37,9 +32,7 @@ class StudentWelcomeScreen extends StatelessWidget {
                   builder: (context, state) {
                     return IconButton(
                       icon: Icon(
-                        state.isDarkMode
-                            ? Icons.light_mode
-                            : Icons.dark_mode,
+                        state.isDarkMode ? Icons.light_mode : Icons.dark_mode,
                       ),
                       onPressed: () {
                         context.read<ThemeBloc>().add(ThemeToggled());
@@ -67,8 +60,8 @@ class StudentWelcomeScreen extends StatelessWidget {
                     Colors.blue,
                     () => Navigator.push(
                       context,
-                      MaterialPageRoute(
-                        builder: (context) => const StudentDashboard(index: 0),
+                      PageTransitions.slideTransition(
+                        const StudentDashboard(index: 0),
                       ),
                     ),
                   ),
@@ -79,8 +72,8 @@ class StudentWelcomeScreen extends StatelessWidget {
                     Colors.green,
                     () => Navigator.push(
                       context,
-                      MaterialPageRoute(
-                        builder: (context) => const StudentDashboard(index: 1),
+                      PageTransitions.slideTransition(
+                        const StudentDashboard(index: 1),
                       ),
                     ),
                   ),
@@ -91,8 +84,8 @@ class StudentWelcomeScreen extends StatelessWidget {
                     Colors.orange,
                     () => Navigator.push(
                       context,
-                      MaterialPageRoute(
-                        builder: (context) => const StudentDashboard(index: 2),
+                      PageTransitions.slideTransition(
+                        const StudentDashboard(index: 2),
                       ),
                     ),
                   ),
@@ -103,8 +96,8 @@ class StudentWelcomeScreen extends StatelessWidget {
                     Colors.purple,
                     () => Navigator.push(
                       context,
-                      MaterialPageRoute(
-                        builder: (context) => const StudentDashboard(index: 3),
+                      PageTransitions.slideTransition(
+                        const StudentDashboard(index: 3),
                       ),
                     ),
                   ),
@@ -115,8 +108,8 @@ class StudentWelcomeScreen extends StatelessWidget {
                     Colors.red,
                     () => Navigator.push(
                       context,
-                      MaterialPageRoute(
-                        builder: (context) => const StudentDashboard(index: 4),
+                      PageTransitions.slideTransition(
+                        const StudentDashboard(index: 4),
                       ),
                     ),
                   ),

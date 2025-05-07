@@ -50,7 +50,7 @@ class AuthServiceImpl implements AuthService {
       );
       return credential.user;
     } catch (e) {
-      print("Login error: $e");
+      log("Login error: $e");
       return null;
     }
   }
@@ -126,12 +126,21 @@ class AuthServiceImpl implements AuthService {
       return '';
     }
   }
-  
+
   @override
-  Future<User?> registerStudent(String fullName, String username, String password, String gender, String role, String? dateOfBirth, int? grade, String? className, String? schoolName) async {
+  Future<User?> registerStudent(
+    String fullName,
+    String username,
+    String password,
+    String gender,
+    String role,
+    String? dateOfBirth,
+    int? grade,
+    String? className,
+    String? schoolName,
+  ) async {
     try {
       if (role != 'student') throw Exception('Not a student');
-
       UserCredential credential = await _auth.createUserWithEmailAndPassword(
         email: "$username@kidarena.com",
         password: password,

@@ -8,6 +8,7 @@ import 'package:kid_arena/widgets/student/subject_card.dart';
 import 'package:kid_arena/widgets/student/test_card.dart';
 import 'package:kid_arena/services/test_service.dart';
 import 'package:kid_arena/services/get_it.dart';
+import 'package:kid_arena/utils/page_transitions.dart';
 
 List<PublicTest> getExamsBySubject(Subject subject) {
   if (subject == Subject.mathematics) {
@@ -276,10 +277,8 @@ class PublicTestsScreen extends StatelessWidget {
                       onTap: () {
                         Navigator.push(
                           context,
-                          MaterialPageRoute(
-                            builder:
-                                (context) =>
-                                    ExamsScreen(subject: Subject.values[index]),
+                          PageTransitions.slideTransition(
+                            ExamsScreen(subject: Subject.values[index]),
                           ),
                         );
                       },
