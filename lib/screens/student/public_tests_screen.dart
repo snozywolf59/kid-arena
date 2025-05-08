@@ -4,6 +4,7 @@ import 'package:kid_arena/constants/subject.dart';
 import 'package:kid_arena/models/public_test.dart';
 import 'package:kid_arena/models/question.dart';
 import 'package:kid_arena/models/student_answer.dart';
+import 'package:kid_arena/screens/student/quiz_screen.dart';
 import 'package:kid_arena/widgets/student/subject_card.dart';
 import 'package:kid_arena/widgets/student/test_card.dart';
 import 'package:kid_arena/services/test_service.dart';
@@ -545,10 +546,10 @@ class _ExamsScreenState extends State<ExamsScreen> {
           subject: widget.subject.name,
           duration: exam.duration,
           onTap: () {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text('Bạn đã chọn bài thi: ${exam.title}'),
-                behavior: SnackBarBehavior.floating,
+            Navigator.push(
+              context,
+              PageTransitions.slideTransition(
+                QuizScreen(test: exam),
               ),
             );
           },
