@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:kid_arena/models/class.dart';
 import 'package:kid_arena/models/student.dart';
-import 'package:kid_arena/models/test.dart';
+import 'package:kid_arena/models/test/index.dart';
 import 'package:kid_arena/services/class_service.dart';
 import 'package:kid_arena/services/test_service.dart';
 import 'package:kid_arena/services/get_it.dart';
@@ -23,7 +23,7 @@ class _ClassDetailScreenState extends State<ClassDetailScreen>
   late TabController _tabController;
   bool _isLoading = false;
   List<Student> _students = [];
-  List<Test> _tests = [];
+  List<PrivateTest> _tests = [];
 
   @override
   void initState() {

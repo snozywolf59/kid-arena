@@ -4,7 +4,7 @@ import 'package:kid_arena/blocs/theme/theme_bloc.dart';
 import 'package:kid_arena/blocs/theme/theme_event.dart';
 import 'package:kid_arena/blocs/theme/theme_state.dart';
 import 'package:kid_arena/screens/student/student_dashboard.dart';
-import 'package:kid_arena/screens/student/my_classes_screen.dart';
+import 'package:kid_arena/screens/student/class/my_classes_screen.dart';
 import 'package:kid_arena/utils/page_transitions.dart';
 class StudentWelcomeScreen extends StatelessWidget {
   const StudentWelcomeScreen({super.key});

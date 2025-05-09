@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:kid_arena/constants/subject.dart';
-import 'package:kid_arena/models/public_test.dart';
+import 'package:kid_arena/models/test/public_test.dart';
 
 class SubjectCard extends StatefulWidget {
   final Subject subject;

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:kid_arena/models/test.dart';
+import 'package:kid_arena/models/test/private_test.dart';
 import 'package:kid_arena/screens/teacher/create_test_screen.dart';
 import 'package:kid_arena/services/get_it.dart';
 import 'package:kid_arena/services/test_service.dart';
@@ -19,7 +19,7 @@ class _TestListScreenState extends State<TestListScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text('Danh sách bài thi')),
-      body: StreamBuilder<List<Test>>(
+      body: StreamBuilder<List<PrivateTest>>(
         stream: _testService.getTestsForTeacher(),
         builder: (context, snapshot) {
           if (snapshot.hasError) {

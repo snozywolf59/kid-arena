@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:kid_arena/models/test/index.dart';
 import 'dart:async';
 import 'package:percent_indicator/percent_indicator.dart';
-import '../../widgets/student/option_widget.dart';
+import '../../../widgets/student/option_widget.dart';
 import 'result_screen.dart'; 
-import '../../models/public_test.dart';
-import '../../models/student_answer.dart';
+import '../../../models/student_answer.dart';
 
 class QuizScreen extends StatefulWidget {
-  final PublicTest test;
+  final Test test;
 
   const QuizScreen({super.key, required this.test});
 

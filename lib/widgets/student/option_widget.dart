@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import '../../constants/app_theme.dart';
 
 class OptionWidget extends StatelessWidget {
   final String optionText;

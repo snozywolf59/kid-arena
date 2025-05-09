@@ -1,37 +1,32 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:kid_arena/models/question.dart';
+import 'package:kid_arena/models/test/abstract_test.dart';
 
-class Test {
-  final String id;
-  final String title;
-  final String description;
-  final int duration;
+class PrivateTest extends Test {
   final DateTime startTime;
   final DateTime endTime;
   final String classId;
-  final List<Question> questions;
-  final DateTime createdAt;
+
   final String teacherId;
   final String subject;
-
-  const Test({
-    required this.id,
-    required this.title,
-    required this.description,
-    required this.duration,
+  const PrivateTest({
+    required super.id,
+    required super.title,
+    required super.description,
+    required super.duration,
+    required super.questions,
     required this.startTime,
     required this.endTime,
     required this.classId,
-    required this.questions,
-    required this.createdAt,
     required this.teacherId,
-    required this.subject
+    required this.subject,
+    required super.createdAt,
   });
 
-  factory Test.fromFirestore(DocumentSnapshot doc) {
+  factory PrivateTest.fromFirestore(DocumentSnapshot doc) {
     Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
 
-    return Test(
+    return PrivateTest(
       id: doc.id,
       title: data['title'] ?? '',
       description: data['description'] ?? '',
@@ -43,7 +38,7 @@ class Test {
           (data['questions'] as List).map((q) => Question.fromMap(q)).toList(),
       createdAt: (data['createdAt'] as Timestamp).toDate(),
       teacherId: data['teacherId'] ?? '',
-      subject: data['subject']
+      subject: data['subject'],
     );
   }
 
@@ -58,7 +53,7 @@ class Test {
       'questions': questions.map((q) => q.toMap()).toList(),
       'createdAt': Timestamp.fromDate(createdAt),
       'teacherId': teacherId,
-      'subject': subject
+      'subject': subject,
     };
   }
 }

@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:kid_arena/screens/student/assigned_tests_screen.dart';
+import 'package:kid_arena/screens/student/class/assigned_tests_screen.dart';
 import 'package:kid_arena/screens/student/leaderboard_screen.dart';
-import 'package:kid_arena/screens/student/my_classes_screen.dart';
-import 'package:kid_arena/screens/student/public_tests_screen.dart';
-import 'package:kid_arena/screens/student/student_profile_screen.dart';
+import 'package:kid_arena/screens/student/class/my_classes_screen.dart';
+import 'package:kid_arena/screens/student/practice/public_tests_screen.dart';
+import 'package:kid_arena/screens/student/personal/student_profile_screen.dart';
 
 class StudentDashboard extends StatefulWidget {
   final int index;

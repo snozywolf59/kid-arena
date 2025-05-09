@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:kid_arena/screens/student/progress_screen.dart';
+import 'package:kid_arena/screens/student/personal/progress_screen.dart';
 
 class StudentProfileScreen extends StatefulWidget {
   const StudentProfileScreen({super.key});

@@ -3,25 +3,21 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:kid_arena/constants/subject.dart';
 import 'package:kid_arena/firebase_options.dart';
 import 'package:kid_arena/models/question.dart';
+import 'package:kid_arena/models/test/abstract_test.dart';
 
-class PublicTest {
-  final String id;
-  final String title;
-  final String description;
-  final int duration;
+class PublicTest extends Test {
   final String subject;
-  final List<Question> questions;
-  final DateTime createdAt;
+
   final int grade;
 
   PublicTest({
-    required this.id,
-    required this.title,
-    required this.description,
-    required this.duration,
+    required super.id,
+    required super.title,
+    required super.description,
+    required super.duration,
     required this.subject,
-    required this.questions,
-    required this.createdAt,
+    required super.questions,
+    required super.createdAt,
     required this.grade,
   });
   Map<String, dynamic> toMap() {

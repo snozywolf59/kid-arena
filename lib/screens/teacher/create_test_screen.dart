@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:kid_arena/constants/subject.dart';
 import 'package:kid_arena/models/question.dart';
-import 'package:kid_arena/models/test.dart';
+import 'package:kid_arena/models/test/index.dart';
 import 'package:kid_arena/models/class.dart';
 import 'package:kid_arena/services/test_service.dart';
 import 'package:kid_arena/services/class_service.dart';
@@ -286,7 +286,7 @@ class _CreateTestScreenState extends State<CreateTestScreen> {
     setState(() => _isLoading = true);
 
     try {
-      final test = Test(
+      final test = PrivateTest(
         id: '',
         title: _testTitle,
         subject: _subject,
@@ -389,15 +389,20 @@ class _CreateTestScreenState extends State<CreateTestScreen> {
         border: OutlineInputBorder(),
       ),
       value: _subject,
-      items: Subject.values.map((subject) => DropdownMenuItem<String>(
-            value: subject.name,
-            child: Row(
-              children: [
-                Icon(subject.icon, color: subject.color),
-                Text(subject.name),
-              ],
-            ),
-          )).toList(),
+      items:
+          Subject.values
+              .map(
+                (subject) => DropdownMenuItem<String>(
+                  value: subject.name,
+                  child: Row(
+                    children: [
+                      Icon(subject.icon, color: subject.color),
+                      Text(subject.name),
+                    ],
+                  ),
+                ),
+              )
+              .toList(),
       onChanged: (value) => _subject = value ?? 'Mixed',
     );
   }

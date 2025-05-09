@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:kid_arena/models/student_answer.dart';
-import 'package:kid_arena/models/public_test.dart';
+import 'package:kid_arena/models/test/index.dart';
 import 'package:percent_indicator/circular_percent_indicator.dart';
-import 'package:kid_arena/screens/student/public_tests_screen.dart';
+import 'package:kid_arena/screens/student/practice/public_tests_screen.dart';
 // import 'quiz_screen.dart'; // Để làm lại quiz (cần truyền lại test)
 
 class ResultsScreen extends StatelessWidget {
   final StudentAnswer studentAnswer;
-  final PublicTest test;
+  final Test test;
 
   const ResultsScreen({
     super.key,

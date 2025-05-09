@@ -1,9 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:kid_arena/constants/subject.dart';
-import 'package:kid_arena/models/public_test.dart';
+import 'package:kid_arena/models/test/index.dart';
 import 'package:kid_arena/models/student_answer.dart';
-import 'package:kid_arena/models/test.dart';
 
 class TestService {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
@@ -14,7 +13,7 @@ class TestService {
   ///////////////////////
 
   // Create a new test
-  Future<String> createTest(Test test) async {
+  Future<String> createTest(PrivateTest test) async {
     try {
       final docRef = await _firestore.collection(_collection).add(test.toMap());
       return docRef.id;
@@ -24,7 +23,7 @@ class TestService {
   }
 
   // Get all tests for a teacher
-  Stream<List<Test>> getTestsForTeacher() {
+  Stream<List<PrivateTest>> getTestsForTeacher() {
     final currentUser = FirebaseAuth.instance.currentUser;
     return _firestore
         .collection(_collection)
@@ -32,22 +31,26 @@ class TestService {
         .orderBy('createdAt', descending: true)
         .snapshots()
         .map((snapshot) {
-          return snapshot.docs.map((doc) => Test.fromFirestore(doc)).toList();
+          return snapshot.docs
+              .map((doc) => PrivateTest.fromFirestore(doc))
+              .toList();
         });
   }
 
-  Stream<List<Test>> getTestsForClass(String classId) {
+  Stream<List<PrivateTest>> getTestsForClass(String classId) {
     return _firestore
         .collection(_collection)
         .where('classId', isEqualTo: classId)
         .snapshots()
         .map((snapshot) {
-          return snapshot.docs.map((doc) => Test.fromFirestore(doc)).toList();
+          return snapshot.docs
+              .map((doc) => PrivateTest.fromFirestore(doc))
+              .toList();
         });
   }
 
   // Update a test
-  Future<void> updateTest(Test test) async {
+  Future<void> updateTest(PrivateTest test) async {
     try {
       await _firestore
           .collection(_collection)
@@ -68,11 +71,11 @@ class TestService {
   }
 
   // Get a single test by ID
-  Future<Test?> getTestById(String testId) async {
+  Future<PrivateTest?> getTestById(String testId) async {
     try {
       final doc = await _firestore.collection(_collection).doc(testId).get();
       if (doc.exists) {
-        return Test.fromFirestore(doc);
+        return PrivateTest.fromFirestore(doc);
       }
       return null;
     } catch (e) {
