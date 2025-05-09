@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:kid_arena/models/user.dart';
 import 'package:kid_arena/services/auth_service.dart';
 import 'package:kid_arena/services/get_it.dart';
+import 'package:kid_arena/screens/auth/login_screen.dart';
 
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({super.key});
@@ -86,10 +87,16 @@ class ProfileScreen extends StatelessWidget {
                   SizedBox(
                     width: double.infinity,
                     child: ElevatedButton(
-                      onPressed: () {
-                        // TODO: Handle logout
-                        getIt<AuthService>().logout();
-                        //Navigator.pushAndRemoveUntil(context, , predicate)
+                      onPressed: () async {
+                        await getIt<AuthService>().logout();
+                        if (!context.mounted) return;
+                        Navigator.pushAndRemoveUntil(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const LoginScreen(),
+                          ),
+                          (route) => false,
+                        );
                       },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.red,

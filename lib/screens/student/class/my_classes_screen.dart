@@ -12,7 +12,11 @@ class MyClassesScreen extends StatelessWidget {
     final colorScheme = Theme.of(context).colorScheme;
 
     return Scaffold(
-      appBar: AppBar(title: const Text('My Classes'), centerTitle: true),
+      appBar: AppBar(
+        title: const Text('My Classes'),
+        centerTitle: true,
+        automaticallyImplyLeading: false,
+      ),
       body: StreamBuilder<List<Class>>(
         stream: getIt<ClassService>().getClassesForStudentUser(),
         builder: (context, snapshot) {

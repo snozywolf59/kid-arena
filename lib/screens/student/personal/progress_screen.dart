@@ -5,30 +5,22 @@ class ProgressScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: CustomScrollView(
-        slivers: [
-          SliverAppBar.large(
-            title: const Text(
-              'My Progress',
-              style: TextStyle(fontWeight: FontWeight.bold),
-            ),
-            floating: true,
+    return CustomScrollView(
+      slivers: [
+        SliverPadding(
+          padding: const EdgeInsets.all(16),
+          sliver: SliverList(
+            delegate: SliverChildListDelegate([
+              _buildOverallProgress(),
+              const SizedBox(height: 24),
+              _buildSubjectProgress(),
+              const SizedBox(height: 24),
+              _buildRecentActivity(),
+            ]),
           ),
-          SliverPadding(
-            padding: const EdgeInsets.all(16),
-            sliver: SliverList(
-              delegate: SliverChildListDelegate([
-                _buildOverallProgress(),
-                const SizedBox(height: 24),
-                _buildSubjectProgress(),
-                const SizedBox(height: 24),
-                _buildRecentActivity(),
-              ]),
-            ),
-          ),
-        ],
-      ),
+        ),
+        SliverFillRemaining(),
+      ],
     );
   }
 

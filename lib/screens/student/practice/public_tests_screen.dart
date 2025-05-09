@@ -1,6 +1,10 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:kid_arena/blocs/theme/theme_bloc.dart';
+import 'package:kid_arena/blocs/theme/theme_event.dart';
+import 'package:kid_arena/blocs/theme/theme_state.dart';
 import 'package:kid_arena/constants/subject.dart';
 import 'package:kid_arena/models/test/index.dart';
 import 'package:kid_arena/models/question.dart';
@@ -192,6 +196,22 @@ class PublicTestsScreen extends StatelessWidget {
                       ),
                     ],
                   ),
+                  IconButton(
+                    onPressed: () {},
+                    icon: const Icon(Icons.notifications),
+                  ),
+                  BlocBuilder<ThemeBloc, ThemeState>(
+                    builder: (context, state) {
+                      return IconButton(
+                        icon: Icon(
+                          state.isDarkMode ? Icons.light_mode : Icons.dark_mode,
+                        ),
+                        onPressed: () {
+                          context.read<ThemeBloc>().add(ThemeToggled());
+                        },
+                      );
+                    },
+                  ),
                   CircleAvatar(
                     radius: 24,
                     backgroundColor: Colors.blue[100],
@@ -210,7 +230,14 @@ class PublicTestsScreen extends StatelessWidget {
               child: Container(
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
-                  color: const Color(0xFF6A5AE0),
+                  gradient: LinearGradient(
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                    colors: [
+                      Theme.of(context).colorScheme.primary,
+                      Theme.of(context).colorScheme.primaryContainer,
+                    ],
+                  ),
                   borderRadius: BorderRadius.circular(20),
                 ),
                 child: Row(
@@ -267,10 +294,10 @@ class PublicTestsScreen extends StatelessWidget {
                 child: GridView.builder(
                   physics: const BouncingScrollPhysics(),
                   gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 2,
+                    crossAxisCount: 3,
                     childAspectRatio: 1.1,
-                    crossAxisSpacing: 12,
-                    mainAxisSpacing: 12,
+                    crossAxisSpacing: 20,
+                    mainAxisSpacing: 20,
                   ),
                   itemCount: Subject.values.length,
                   itemBuilder: (context, index) {

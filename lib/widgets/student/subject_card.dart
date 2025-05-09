@@ -21,11 +21,15 @@ class _SubjectCardState extends State<SubjectCard> {
       onTap: widget.onTap,
       child: Container(
         decoration: BoxDecoration(
-          color: Colors.white,
+          gradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [widget.subject.color, widget.subject.color],
+          ),
           borderRadius: BorderRadius.circular(20),
           boxShadow: [
             BoxShadow(
-              color: Colors.grey.withAlpha(26),
+              color: widget.subject.color,
               spreadRadius: 1,
               blurRadius: 5,
               offset: const Offset(0, 3),
@@ -41,21 +45,24 @@ class _SubjectCardState extends State<SubjectCard> {
                 color: widget.subject.color.withAlpha(26),
                 shape: BoxShape.circle,
               ),
-              child: Icon(
-                widget.subject.icon,
-                color: widget.subject.color,
-                size: 32,
-              ),
+              child: Icon(widget.subject.icon, color: Colors.white, size: 32),
             ),
             const SizedBox(height: 12),
             Text(
               widget.subject.name,
-              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+              style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+                color: Theme.of(context).colorScheme.onSurface,
+              ),
             ),
             const SizedBox(height: 4),
             Text(
               '${tests.length} bài thi',
-              style: TextStyle(fontSize: 14, color: Colors.grey[600]),
+              style: TextStyle(
+                fontSize: 14,
+                color: Theme.of(context).colorScheme.onSurface.withOpacity(0.7),
+              ),
             ),
           ],
         ),

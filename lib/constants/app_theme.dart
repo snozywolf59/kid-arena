@@ -43,12 +43,20 @@ class AppTheme {
   ); // Text/icon trên primary container sáng
 
   // --- Màu cho Dark Theme ---
-  static const _darkBackground = Color(0xFF121212); // Nền tối chuẩn Material
+  static const _darkBackground = Color.fromARGB(
+    255,
+    35,
+    34,
+    34,
+  ); // Nền tối chuẩn Material
   static const _darkSurface = Color(
     0xFF1E1E1E,
   ); // Surface tối (hơi sáng hơn background)
-  static const _darkOnSurface = Color(
-    0xFFE0E0E0,
+  static const _darkOnSurface = Color.fromARGB(
+    255,
+    226,
+    248,
+    220,
   ); // Gần trắng cho text trên surface tối
   static const _darkPrimaryContainer = Color(
     0xFF005325,

@@ -8,12 +8,13 @@ class AssignedTestsScreen extends StatelessWidget {
     return Scaffold(
       body: CustomScrollView(
         slivers: [
-          SliverAppBar.large(
+          SliverAppBar.medium(
             title: const Text(
               'Assigned Tests',
               style: TextStyle(fontWeight: FontWeight.bold),
             ),
             floating: true,
+            automaticallyImplyLeading: false,
             actions: [
               IconButton(
                 icon: const Icon(Icons.calendar_today),

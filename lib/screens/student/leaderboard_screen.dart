@@ -8,7 +8,7 @@ class LeaderboardScreen extends StatelessWidget {
     return Scaffold(
       body: CustomScrollView(
         slivers: [
-          SliverAppBar.large(
+          SliverAppBar.medium(
             title: const Text(
               'Leaderboard',
               style: TextStyle(fontWeight: FontWeight.bold),
@@ -23,6 +23,7 @@ class LeaderboardScreen extends StatelessWidget {
               ),
               const SizedBox(width: 8),
             ],
+            automaticallyImplyLeading: false,
           ),
           SliverToBoxAdapter(
             child: Padding(
