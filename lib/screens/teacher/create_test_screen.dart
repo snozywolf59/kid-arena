@@ -26,7 +26,7 @@ class _CreateTestScreenState extends State<CreateTestScreen> {
 
   // Test information
   String _testTitle = '';
-  String _subject = 'Mixed';
+  String _subject = 'Toán học';
   String _testDescription = '';
   int _duration = 60;
   DateTime _startTime = DateTime.now();
@@ -397,13 +397,14 @@ class _CreateTestScreenState extends State<CreateTestScreen> {
                   child: Row(
                     children: [
                       Icon(subject.icon, color: subject.color),
+                      const SizedBox(width: 8),
                       Text(subject.name),
                     ],
                   ),
                 ),
               )
               .toList(),
-      onChanged: (value) => _subject = value ?? 'Mixed',
+      onChanged: (value) => _subject = value ?? 'Hỗn hợp',
     );
   }
 

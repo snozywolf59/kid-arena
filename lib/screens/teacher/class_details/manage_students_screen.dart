@@ -81,7 +81,7 @@ class _ManageStudentsScreenState extends State<ManageStudentsScreen> {
       }
     } catch (e) {
       if (mounted) {
-        _showErrorMessage(e.toString());
+        _showErrorMessage('Lỗi khi thêm học sinh: ${e.toString()}');
       }
     } finally {
       setState(() {
@@ -106,7 +106,7 @@ class _ManageStudentsScreenState extends State<ManageStudentsScreen> {
       }
     } catch (e) {
       if (mounted) {
-        _showErrorMessage(e.toString());
+        _showErrorMessage('Lỗi khi xóa học sinh: ${e.toString()}');
       }
     } finally {
       setState(() {

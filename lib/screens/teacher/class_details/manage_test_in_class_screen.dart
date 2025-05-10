@@ -1,71 +1,44 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:kid_arena/models/class.dart';
-import 'package:kid_arena/models/student.dart';
 import 'package:kid_arena/models/test/index.dart';
-import 'package:kid_arena/services/class_service.dart';
-import 'package:kid_arena/services/test_service.dart';
 import 'package:kid_arena/services/get_it.dart';
-import 'package:kid_arena/screens/teacher/manage_students_screen.dart';
-import 'package:kid_arena/screens/teacher/create_test_screen.dart';
-import 'package:kid_arena/utils/page_transitions.dart';
+import 'package:kid_arena/services/test_service.dart';
 
-class ClassDetailScreen extends StatefulWidget {
+class ManageTestInClassScreen extends StatefulWidget {
   final Class classroom;
 
-  const ClassDetailScreen({super.key, required this.classroom});
+  const ManageTestInClassScreen({super.key, required this.classroom});
 
   @override
-  State<ClassDetailScreen> createState() => _ClassDetailScreenState();
+  State<ManageTestInClassScreen> createState() =>
+      _ManageTestInClassScreenState();
 }
 
-class _ClassDetailScreenState extends State<ClassDetailScreen>
-    with SingleTickerProviderStateMixin {
-  late TabController _tabController;
+class _ManageTestInClassScreenState extends State<ManageTestInClassScreen> {
   bool _isLoading = false;
-  List<Student> _students = [];
   List<PrivateTest> _tests = [];
 
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 2, vsync: this);
     _loadData();
-  }
-
-  @override
-  void dispose() {
-    _tabController.dispose();
-    super.dispose();
   }
 
   Future<void> _loadData() async {
     setState(() {
       _isLoading = true;
     });
-
     try {
-      // Load students
-      final students = await getIt<ClassService>().getStudentsInClass(
+      final tests = await getIt<TestService>().getTestsForClass(
         widget.classroom.id,
       );
-      setState(() {
-        _students = students;
-      });
-
-      // Load tests
-      final tests =
-          await getIt<TestService>()
-              .getTestsForClass(widget.classroom.id)
-              .first;
       setState(() {
         _tests = tests;
       });
     } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text('Lỗi: $e')));
-      }
+      log('Lỗi khi tải dữ liệu bài thi: $e');
     } finally {
       setState(() {
         _isLoading = false;
@@ -73,29 +46,8 @@ class _ClassDetailScreenState extends State<ClassDetailScreen>
     }
   }
 
-  Widget _buildStudentList() {
-    if (_isLoading) {
-      return const Center(child: CircularProgressIndicator());
-    }
-
-    if (_students.isEmpty) {
-      return const Center(child: Text('Chưa có học sinh nào trong lớp'));
-    }
-
-    return ListView.builder(
-      itemCount: _students.length,
-      itemBuilder: (context, index) {
-        final student = _students[index];
-        return ListTile(
-          leading: const CircleAvatar(child: Icon(Icons.person)),
-          title: Text(student.fullName),
-          subtitle: Text('Username: ${student.username}'),
-        );
-      },
-    );
-  }
-
-  Widget _buildTestList() {
+  @override
+  Widget build(BuildContext context) {
     if (_isLoading) {
       return const Center(child: CircularProgressIndicator());
     }
@@ -164,47 +116,6 @@ class _ClassDetailScreenState extends State<ClassDetailScreen>
           ),
         );
       },
-    );
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(widget.classroom.name),
-        bottom: TabBar(
-          controller: _tabController,
-          tabs: const [Tab(text: 'Học sinh'), Tab(text: 'Bài thi')],
-        ),
-      ),
-      body: TabBarView(
-        controller: _tabController,
-        children: [_buildStudentList(), _buildTestList()],
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () async {
-          if (_tabController.index == 0) {
-            // Navigate to manage students screen
-            await Navigator.push(
-              context,
-              PageTransitions.slideTransition(
-                ManageStudentsScreen(classroom: widget.classroom),
-              ),
-            );
-            await _loadData();
-          } else {
-            // Navigate to create test screen
-            await Navigator.push(
-              context,
-              PageTransitions.slideTransition(
-                CreateTestScreen(classId: widget.classroom.id),
-              ),
-            );
-            await _loadData();
-          }
-        },
-        child: Icon(Icons.add),
-      ),
     );
   }
 }

@@ -37,17 +37,14 @@ class TestService {
         });
   }
 
-  Stream<List<PrivateTest>> getTestsForClass(String classId) {
-    return _firestore
+  Future<List<PrivateTest>> getTestsForClass(String classId) async {
+    final snapshot = await _firestore
         .collection(_collection)
         .where('classId', isEqualTo: classId)
-        .snapshots()
-        .map((snapshot) {
-          return snapshot.docs
-              .map((doc) => PrivateTest.fromFirestore(doc))
-              .toList();
-        });
+        .get();
+    return snapshot.docs.map((doc) => PrivateTest.fromFirestore(doc)).toList();
   }
+
 
   // Update a test
   Future<void> updateTest(PrivateTest test) async {
