@@ -4,6 +4,7 @@ import 'package:kid_arena/screens/teacher/create_test_screen.dart';
 import 'package:kid_arena/services/get_it.dart';
 import 'package:kid_arena/services/test_service.dart';
 import 'package:kid_arena/utils/page_transitions.dart';
+import 'package:kid_arena/widgets/confirmation_dialog.dart';
 
 class TestListScreen extends StatefulWidget {
   const TestListScreen({super.key});
@@ -87,32 +88,32 @@ class _TestListScreenState extends State<TestListScreen> {
                         ],
                     onSelected: (value) async {
                       if (value == 'edit') {
-                        // TODO: Implement edit functionality
-                      } else if (value == 'delete') {
-                        final shouldDelete = await showDialog<bool>(
+                        final shouldEdit = await ConfirmationDialog.show(
                           context: context,
-                          builder:
-                              (context) => AlertDialog(
-                                title: const Text('Xác nhận xóa'),
-                                content: const Text(
-                                  'Bạn có chắc chắn muốn xóa bài thi này?',
-                                ),
-                                actions: [
-                                  TextButton(
-                                    onPressed:
-                                        () => Navigator.pop(context, false),
-                                    child: const Text('Hủy'),
-                                  ),
-                                  TextButton(
-                                    onPressed:
-                                        () => Navigator.pop(context, true),
-                                    child: const Text(
-                                      'Xóa',
-                                      style: TextStyle(color: Colors.red),
-                                    ),
-                                  ),
-                                ],
+                          title: 'Xác nhận chỉnh sửa',
+                          message:
+                              'Bạn có chắc chắn muốn chỉnh sửa bài thi ${test.title}?',
+                          confirmText: 'Chỉnh sửa',
+                          isDestructive: false,
+                        );
+
+                        if (shouldEdit == true) {
+                          // TODO: Implement edit functionality
+                          if (context.mounted) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text('Tính năng đang được phát triển'),
                               ),
+                            );
+                          }
+                        }
+                      } else if (value == 'delete') {
+                        final shouldDelete = await ConfirmationDialog.show(
+                          context: context,
+                          title: 'Xác nhận xóa',
+                          message: 'Bạn có chắc chắn muốn xóa bài thi này?',
+                          confirmText: 'Xóa',
+                          isDestructive: true,
                         );
 
                         if (shouldDelete == true) {

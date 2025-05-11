@@ -8,6 +8,7 @@ import 'package:kid_arena/screens/teacher/add_class_screen.dart';
 import 'package:kid_arena/screens/teacher/class_details/manage_students_screen.dart';
 import 'package:kid_arena/screens/teacher/class_details/class_detail_screen.dart';
 import 'package:kid_arena/utils/page_transitions.dart';
+import 'package:kid_arena/widgets/confirmation_dialog.dart';
 
 class ClassListScreen extends StatefulWidget {
   const ClassListScreen({super.key});
@@ -53,27 +54,17 @@ class _ClassListScreenState extends State<ClassListScreen> {
   }
 
   void _showDeleteConfirmationDialog(Class classroom) {
-    showDialog(
+    ConfirmationDialog.show(
       context: context,
-      builder:
-          (context) => AlertDialog(
-            title: const Text('Xác nhận xóa'),
-            content: Text('Bạn có chắc chắn muốn xóa lớp ${classroom.name}?'),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.pop(context),
-                child: const Text('Hủy'),
-              ),
-              TextButton(
-                onPressed: () {
-                  Navigator.pop(context);
-                  _deleteClass(classroom.id);
-                },
-                child: const Text('Xóa', style: TextStyle(color: Colors.red)),
-              ),
-            ],
-          ),
-    );
+      title: 'Xác nhận xóa',
+      message: 'Bạn có chắc chắn muốn xóa lớp ${classroom.name}?',
+      confirmText: 'Xóa',
+      isDestructive: true,
+    ).then((shouldDelete) {
+      if (shouldDelete == true) {
+        _deleteClass(classroom.id);
+      }
+    });
   }
 
   void _navigateToManageStudents(Class classroom) {

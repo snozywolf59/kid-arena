@@ -5,6 +5,7 @@ import 'package:kid_arena/models/class.dart';
 import 'package:kid_arena/models/test/index.dart';
 import 'package:kid_arena/services/get_it.dart';
 import 'package:kid_arena/services/test_service.dart';
+import 'package:kid_arena/widgets/confirmation_dialog.dart';
 
 class ManageTestInClassScreen extends StatefulWidget {
   final Class classroom;
@@ -68,28 +69,12 @@ class _ManageTestInClassScreenState extends State<ManageTestInClassScreen> {
             trailing: IconButton(
               icon: const Icon(Icons.delete),
               onPressed: () async {
-                final shouldDelete = await showDialog<bool>(
+                final shouldDelete = await ConfirmationDialog.show(
                   context: context,
-                  builder:
-                      (context) => AlertDialog(
-                        title: const Text('Xác nhận xóa'),
-                        content: Text(
-                          'Bạn có chắc chắn muốn xóa bài thi ${test.title}?',
-                        ),
-                        actions: [
-                          TextButton(
-                            onPressed: () => Navigator.pop(context, false),
-                            child: const Text('Hủy'),
-                          ),
-                          TextButton(
-                            onPressed: () => Navigator.pop(context, true),
-                            child: const Text(
-                              'Xóa',
-                              style: TextStyle(color: Colors.red),
-                            ),
-                          ),
-                        ],
-                      ),
+                  title: 'Xác nhận xóa',
+                  message: 'Bạn có chắc chắn muốn xóa bài thi ${test.title}?',
+                  confirmText: 'Xóa',
+                  isDestructive: true,
                 );
 
                 if (shouldDelete == true) {

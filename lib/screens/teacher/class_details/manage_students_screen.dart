@@ -3,6 +3,7 @@ import 'package:kid_arena/models/class.dart';
 import 'package:kid_arena/models/student.dart';
 import 'package:kid_arena/services/class_service.dart';
 import 'package:kid_arena/services/get_it.dart';
+import 'package:kid_arena/widgets/confirmation_dialog.dart';
 
 class ManageStudentsScreen extends StatefulWidget {
   final Class classroom;
@@ -62,6 +63,19 @@ class _ManageStudentsScreenState extends State<ManageStudentsScreen> {
     final studentId = _studentIdController.text.trim();
     if (studentId.isEmpty) {
       _showErrorMessage('Vui lòng nhập ID học sinh');
+      return;
+    }
+
+    final shouldAdd = await ConfirmationDialog.show(
+      context: context,
+      title: 'Xác nhận thêm học sinh',
+      message:
+          'Bạn có chắc chắn muốn thêm học sinh có username $studentId vào lớp?',
+      confirmText: 'Thêm',
+      isDestructive: false,
+    );
+
+    if (shouldAdd != true) {
       return;
     }
 
@@ -165,7 +179,20 @@ class _ManageStudentsScreenState extends State<ManageStudentsScreen> {
       subtitle: Text(student.username),
       trailing: IconButton(
         icon: const Icon(Icons.delete),
-        onPressed: () => _removeStudent(student.id),
+        onPressed: () async {
+          final shouldRemove = await ConfirmationDialog.show(
+            context: context,
+            title: 'Xác nhận xóa',
+            message:
+                'Bạn có chắc chắn muốn xóa học sinh ${student.fullName} khỏi lớp?',
+            confirmText: 'Xóa',
+            isDestructive: true,
+          );
+
+          if (shouldRemove == true) {
+            _removeStudent(student.id);
+          }
+        },
       ),
     );
   }
