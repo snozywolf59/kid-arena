@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:kid_arena/screens/auth/profile_screen.dart';
+import 'package:kid_arena/screens/teacher/profile_screen.dart';
 import 'package:kid_arena/screens/teacher/class_list_screen.dart';
 import 'package:kid_arena/screens/teacher/test_list_screen.dart';
 

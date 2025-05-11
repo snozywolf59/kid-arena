@@ -15,6 +15,8 @@ import 'package:kid_arena/widgets/student/test_card.dart';
 import 'package:kid_arena/services/test_service.dart';
 import 'package:kid_arena/services/get_it.dart';
 import 'package:kid_arena/utils/page_transitions.dart';
+import 'package:kid_arena/services/auth_service.dart';
+import 'package:kid_arena/models/user.dart';
 
 List<PublicTest> getExamsBySubject(Subject subject) {
   if (subject == Subject.mathematics) {
@@ -179,22 +181,53 @@ class PublicTestsScreen extends StatelessWidget {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'Xin chào, Học sinh!',
-                        style: TextStyle(fontSize: 16, color: Colors.grey[600]),
-                      ),
-                      const SizedBox(height: 4),
-                      const Text(
-                        'Hãy cùng học nào! 🚀',
-                        style: TextStyle(
-                          fontSize: 24,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ],
+                  FutureBuilder<AppUser>(
+                    future: getIt<AuthService>().getCurrentUserData(),
+                    builder: (context, snapshot) {
+                      if (snapshot.hasData) {
+                        final user = snapshot.data!;
+                        return Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'Xin chào, ${user.fullName}!',
+                              style: TextStyle(
+                                fontSize: 16,
+                                color: Colors.grey[600],
+                              ),
+                            ),
+                            const SizedBox(height: 4),
+                            const Text(
+                              'Hãy cùng học nào! 🚀',
+                              style: TextStyle(
+                                fontSize: 24,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ],
+                        );
+                      }
+                      return Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Xin chào, Học sinh!',
+                            style: TextStyle(
+                              fontSize: 16,
+                              color: Colors.grey[600],
+                            ),
+                          ),
+                          const SizedBox(height: 4),
+                          const Text(
+                            'Hãy cùng học nào! 🚀',
+                            style: TextStyle(
+                              fontSize: 24,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ],
+                      );
+                    },
                   ),
                   IconButton(
                     onPressed: () {},
@@ -234,7 +267,7 @@ class PublicTestsScreen extends StatelessWidget {
                     begin: Alignment.topLeft,
                     end: Alignment.bottomRight,
                     colors: [
-                      Theme.of(context).colorScheme.primary,
+                      Colors.lightGreen,
                       Theme.of(context).colorScheme.primaryContainer,
                     ],
                   ),

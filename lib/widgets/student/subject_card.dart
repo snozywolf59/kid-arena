@@ -31,7 +31,7 @@ class _SubjectCardState extends State<SubjectCard> {
             BoxShadow(
               color: widget.subject.color,
               spreadRadius: 1,
-              blurRadius: 5,
+
               offset: const Offset(0, 3),
             ),
           ],

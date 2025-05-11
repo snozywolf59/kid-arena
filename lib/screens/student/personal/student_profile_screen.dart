@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:kid_arena/models/user.dart';
 import 'package:kid_arena/screens/student/personal/progress_screen.dart';
+import 'package:kid_arena/services/auth_service.dart';
+import 'package:kid_arena/services/get_it.dart';
+import 'package:intl/intl.dart';
 
 class StudentProfileScreen extends StatefulWidget {
   const StudentProfileScreen({super.key});
@@ -12,10 +16,25 @@ class _StudentProfileScreenState extends State<StudentProfileScreen>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
 
+  late StudentUser user;
+  bool isLoading = false;
+
   @override
   void initState() {
     super.initState();
     _tabController = TabController(length: 3, vsync: this);
+    _loadUserData();
+  }
+
+  Future<void> _loadUserData() async {
+    setState(() {
+      isLoading = true;
+    });
+    final user = await getIt<AuthService>().getCurrentUserData();
+    setState(() {
+      this.user = user;
+      isLoading = false;
+    });
   }
 
   @override
@@ -26,11 +45,15 @@ class _StudentProfileScreenState extends State<StudentProfileScreen>
 
   @override
   Widget build(BuildContext context) {
+    if (isLoading) {
+      return const Center(child: CircularProgressIndicator());
+    }
     return Scaffold(
       body: NestedScrollView(
         headerSliverBuilder: (context, innerBoxIsScrolled) {
           return [
-            SliverAppBar.large(
+            SliverAppBar.medium(
+              automaticallyImplyLeading: false,
               expandedHeight: 200,
               pinned: true,
               flexibleSpace: FlexibleSpaceBar(
@@ -40,8 +63,8 @@ class _StudentProfileScreenState extends State<StudentProfileScreen>
                       begin: Alignment.topCenter,
                       end: Alignment.bottomCenter,
                       colors: [
-                        Theme.of(context).colorScheme.primary,
-                        Theme.of(context).colorScheme.primary.withAlpha(200),
+                        Theme.of(context).colorScheme.surfaceContainer,
+                        Colors.green,
                       ],
                     ),
                   ),
@@ -50,24 +73,19 @@ class _StudentProfileScreenState extends State<StudentProfileScreen>
                     children: [
                       const CircleAvatar(
                         radius: 50,
-                        backgroundImage: NetworkImage(
-                          'https://i.pravatar.cc/300',
-                        ),
+                        backgroundImage: AssetImage('images/avatar.png'),
                       ),
                       const SizedBox(height: 16),
-                      const Text(
-                        'John Doe',
-                        style: TextStyle(
+                      Text(
+                        user.fullName,
+                        style: const TextStyle(
                           color: Colors.white,
                           fontSize: 24,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
-                      const Text(
-                        'Class 8A',
-                        style: TextStyle(color: Colors.white70, fontSize: 16),
-                      ),
-                      const SizedBox(height: 16),
+
+                      const SizedBox(height: 36),
                     ],
                   ),
                 ),
@@ -76,9 +94,9 @@ class _StudentProfileScreenState extends State<StudentProfileScreen>
                 controller: _tabController,
                 indicatorColor: Colors.white,
                 tabs: const [
-                  Tab(text: 'Profile'),
-                  Tab(text: 'Progress'),
-                  Tab(text: 'Achievements'),
+                  Tab(text: 'Hồ sơ'),
+                  Tab(text: 'Tiến độ'),
+                  Tab(text: 'Thành tích'),
                 ],
               ),
             ),
@@ -102,26 +120,24 @@ class _StudentProfileScreenState extends State<StudentProfileScreen>
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _buildInfoCard('Personal Information', [
-            _buildInfoRow(Icons.person, 'Full Name', 'John Doe'),
-            _buildInfoRow(Icons.email, 'Email', 'john.doe@example.com'),
-            _buildInfoRow(Icons.phone, 'Phone', '+84 123 456 789'),
-            _buildInfoRow(Icons.cake, 'Date of Birth', '01/01/2008'),
+          _buildInfoCard('Thông tin cá nhân', [
+            _buildInfoRow(Icons.person, 'Họ và tên', user.fullName),
+            _buildInfoRow(Icons.email, 'Email', user.email),
+            _buildInfoRow(Icons.phone, 'Số điện thoại', '+84 123 456 789'),
+            _buildInfoRow(Icons.cake, 'Ngày sinh', user.dateOfBirth),
           ]),
           const SizedBox(height: 16),
-          _buildInfoCard('Academic Information', [
-            _buildInfoRow(Icons.school, 'Class', '8A'),
-            _buildInfoRow(Icons.grade, 'Grade', '8'),
-            _buildInfoRow(Icons.calendar_today, 'Join Date', '01/09/2023'),
-            _buildInfoRow(Icons.assignment, 'Student ID', 'STU2023001'),
+          _buildInfoCard('Thông tin học tập', [
+            _buildInfoRow(Icons.school, 'Lớp', user.className),
+            _buildInfoRow(Icons.grade, 'Khối', user.grade.toString()),
+            _buildInfoRow(
+              Icons.calendar_today,
+              'Ngày tham gia',
+              DateFormat('dd/MM/yyyy').format(user.createdAt),
+            ),
+            _buildInfoRow(Icons.assignment, 'Mã ID', user.id),
           ]),
           const SizedBox(height: 16),
-          _buildInfoCard('Parent Information', [
-            _buildInfoRow(Icons.person, 'Father\'s Name', 'Michael Doe'),
-            _buildInfoRow(Icons.phone, 'Father\'s Phone', '+84 123 456 788'),
-            _buildInfoRow(Icons.person, 'Mother\'s Name', 'Sarah Doe'),
-            _buildInfoRow(Icons.phone, 'Mother\'s Phone', '+84 123 456 787'),
-          ]),
         ],
       ),
     );

@@ -27,8 +27,8 @@ class MyApp extends StatelessWidget {
         builder: (context, state) {
           return MaterialApp(
             title: 'Kid Arena',
-            theme: AppTheme.lightTheme,
-            darkTheme: AppTheme.darkTheme,
+            theme: appTheme.light(),
+            darkTheme: appTheme.dark(),
             themeMode: state.isDarkMode ? ThemeMode.dark : ThemeMode.light,
             home: const SplashScreen(),
           );

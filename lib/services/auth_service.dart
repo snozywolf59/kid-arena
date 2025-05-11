@@ -89,7 +89,6 @@ class AuthServiceImpl implements AuthService {
       return null;
     }
   }
-  
 
   @override
   void logout() {
@@ -99,6 +98,10 @@ class AuthServiceImpl implements AuthService {
   @override
   Future<AppUser> getUserData(String uid) async {
     DocumentSnapshot user = await _firestore.collection('users').doc(uid).get();
+    Map<String, dynamic> data = user.data() as Map<String, dynamic>;
+    if (data['role'] == 'student') {
+      return StudentUser.fromFirebase(user);
+    }
     return AppUser.fromFirebase(user);
   }
 

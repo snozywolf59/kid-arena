@@ -8,6 +8,7 @@ class AppUser {
   String username;
   String email;
   DateTime createdAt;
+  String dateOfBirth;
 
   AppUser({
     required this.id,
@@ -17,6 +18,7 @@ class AppUser {
     required this.username,
     required this.email,
     required this.createdAt,
+    required this.dateOfBirth,
   });
 
   factory AppUser.fromFirebase(DocumentSnapshot doc) {
@@ -29,6 +31,7 @@ class AppUser {
       username: data['username']?.toString().trim() ?? '',
       email: data['email']?.toString().trim() ?? '',
       createdAt: (data['createdAt'] as Timestamp).toDate(),
+      dateOfBirth: data['dateOfBirth']?.toString().trim() ?? '',
     );
   }
 
@@ -44,12 +47,12 @@ class AppUser {
   }
 }
 
-class Student extends AppUser {
+class StudentUser extends AppUser {
   int grade;
   String className;
   String schoolName;
 
-  Student({
+  StudentUser({
     required this.grade,
     required this.className,
     required this.schoolName,
@@ -60,5 +63,33 @@ class Student extends AppUser {
     required super.username,
     required super.email,
     required super.createdAt,
+    required super.dateOfBirth,
   });
+
+  factory StudentUser.fromFirebase(DocumentSnapshot doc) {
+    Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
+    return StudentUser(
+      grade: data['grade'] ?? 0,
+      className: data['className'] ?? '',
+      schoolName: data['schoolName'] ?? '',
+      id: doc.id,
+      fullName: data['fullName']?.toString().trim() ?? '',
+      gender: data['gender']?.toString().trim() ?? '',
+      role: data['role']?.toString().trim() ?? '',
+      username: data['username']?.toString().trim() ?? '',
+      email: data['email']?.toString().trim() ?? '',
+      createdAt: (data['createdAt'] as Timestamp).toDate(),
+      dateOfBirth: data['dateOfBirth']?.toString().trim() ?? '',
+    );
+  }
+
+  @override
+  Map<String, dynamic> toMap() {
+    return {
+      ...super.toMap(),
+      'grade': grade,
+      'className': className,
+      'schoolName': schoolName,
+    };
+  }
 }
