@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/services.dart';
 
 import 'package:kid_arena/services/auth_service.dart';
 import 'package:kid_arena/services/get_it.dart';
@@ -14,7 +15,7 @@ class RegisterScreen extends StatefulWidget {
 class _RegisterScreenState extends State<RegisterScreen> {
   String? selectedGender;
   String? selectedRole;
-  DateTime? selectedDate;
+  final _dateOfBirthController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
   final _nameController = TextEditingController();
   final _usernameController = TextEditingController();
@@ -25,26 +26,13 @@ class _RegisterScreenState extends State<RegisterScreen> {
   final _schoolNameController = TextEditingController();
   bool _isLoading = false;
 
-  Future<void> _selectDate(BuildContext context) async {
-    final DateTime? picked = await showDatePicker(
-      context: context,
-      initialDate: DateTime.now(),
-      firstDate: DateTime(1900),
-      lastDate: DateTime.now(),
-    );
-    if (picked != null && picked != selectedDate) {
-      setState(() {
-        selectedDate = picked;
-      });
-    }
-  }
-
   @override
   void dispose() {
     _nameController.dispose();
     _usernameController.dispose();
     _passwordController.dispose();
     _confirmPasswordController.dispose();
+    _dateOfBirthController.dispose();
     super.dispose();
   }
 
@@ -55,6 +43,12 @@ class _RegisterScreenState extends State<RegisterScreen> {
       });
 
       try {
+        // Parse date from dd/mm/yyyy format
+        final dateParts = _dateOfBirthController.text.split('/');
+        final day = int.parse(dateParts[0]);
+        final month = int.parse(dateParts[1]);
+        final year = int.parse(dateParts[2]);
+
         if (selectedRole == 'teacher') {
           await getIt<AuthService>().registerTeacher(
             _nameController.text.toString().trim(),
@@ -62,7 +56,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
             _passwordController.text.toString(),
             selectedGender.toString(),
             selectedRole.toString(),
-            selectedDate?.toIso8601String(),
+            DateTime(year, month, day).toIso8601String(),
           );
         } else if (selectedRole == 'student') {
           await getIt<AuthService>().registerStudent(
@@ -71,7 +65,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
             _passwordController.text.toString(),
             selectedGender.toString(),
             selectedRole.toString(),
-            selectedDate?.toIso8601String(),
+            DateTime(year, month, day).toIso8601String(),
             int.parse(_gradeController.text.toString()),
             _classNameController.text.toString(),
             _schoolNameController.text.toString(),
@@ -189,29 +183,44 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   },
                 ),
                 const SizedBox(height: 20),
-                InkWell(
-                  onTap: () => _selectDate(context),
-                  child: InputDecorator(
-                    decoration: const InputDecoration(
-                      labelText: 'Ngày sinh',
-                      prefixIcon: Icon(Icons.calendar_today),
-                      border: OutlineInputBorder(),
-                    ),
-                    child: Text(
-                      selectedDate == null
-                          ? 'Chọn ngày sinh'
-                          : '${selectedDate!.day}/${selectedDate!.month}/${selectedDate!.year}',
-                    ),
+                TextFormField(
+                  controller: _dateOfBirthController,
+                  decoration: const InputDecoration(
+                    labelText: 'Ngày sinh',
+                    prefixIcon: Icon(Icons.calendar_today),
+                    hintText: 'dd/mm/yyyy',
                   ),
+                  keyboardType: TextInputType.number,
+                  inputFormatters: [
+                    FilteringTextInputFormatter.digitsOnly,
+                    _DateInputFormatter(),
+                  ],
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Vui lòng nhập ngày sinh';
+                    }
+                    // Validate date format
+                    final dateRegex = RegExp(r'^\d{2}/\d{2}/\d{4}$');
+                    if (!dateRegex.hasMatch(value)) {
+                      return 'Định dạng ngày không hợp lệ (dd/mm/yyyy)';
+                    }
+                    // Validate date values
+                    final parts = value.split('/');
+                    final day = int.parse(parts[0]);
+                    final month = int.parse(parts[1]);
+                    final year = int.parse(parts[2]);
+
+                    if (day < 1 ||
+                        day > 31 ||
+                        month < 1 ||
+                        month > 12 ||
+                        year < 1900 ||
+                        year > DateTime.now().year) {
+                      return 'Ngày sinh không hợp lệ';
+                    }
+                    return null;
+                  },
                 ),
-                if (selectedDate == null)
-                  const Padding(
-                    padding: EdgeInsets.only(left: 12.0, top: 4.0),
-                    child: Text(
-                      'Vui lòng chọn ngày sinh',
-                      style: TextStyle(color: Colors.red, fontSize: 12),
-                    ),
-                  ),
                 const SizedBox(height: 20),
                 DropdownButtonFormField<String>(
                   decoration: const InputDecoration(
@@ -311,6 +320,33 @@ class _RegisterScreenState extends State<RegisterScreen> {
           decoration: const InputDecoration(labelText: 'Tên trường'),
         ),
       ],
+    );
+  }
+}
+
+class _DateInputFormatter extends TextInputFormatter {
+  @override
+  TextEditingValue formatEditUpdate(
+    TextEditingValue oldValue,
+    TextEditingValue newValue,
+  ) {
+    if (newValue.text.isEmpty) {
+      return newValue;
+    }
+
+    final text = newValue.text.replaceAll('/', '');
+    final buffer = StringBuffer();
+
+    for (int i = 0; i < text.length; i++) {
+      if (i == 2 || i == 4) {
+        buffer.write('/');
+      }
+      buffer.write(text[i]);
+    }
+
+    return TextEditingValue(
+      text: buffer.toString(),
+      selection: TextSelection.collapsed(offset: buffer.length),
     );
   }
 }

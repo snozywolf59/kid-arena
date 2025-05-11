@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:kid_arena/utils/page_transitions.dart';
+import 'package:kid_arena/screens/auth/login_screen.dart';
+import 'package:kid_arena/screens/auth/register_screen.dart';
 
 class AuthSelectionScreen extends StatelessWidget {
   const AuthSelectionScreen({super.key});
@@ -77,7 +79,10 @@ class AuthSelectionScreen extends StatelessWidget {
                 // Enhanced Login Button
                 FilledButton(
                   onPressed: () {
-                    // TODO: Navigate to login screen
+                    Navigator.push(
+                      context,
+                      PageTransitions.fadeTransition(const LoginScreen()),
+                    );
                   },
                   style: FilledButton.styleFrom(
                     padding: const EdgeInsets.symmetric(vertical: 20),
@@ -95,7 +100,10 @@ class AuthSelectionScreen extends StatelessWidget {
                 // Enhanced Register Button
                 OutlinedButton(
                   onPressed: () {
-                    // TODO: Navigate to register screen
+                    Navigator.push(
+                      context,
+                      PageTransitions.fadeTransition(const RegisterScreen()),
+                    );
                   },
                   style: OutlinedButton.styleFrom(
                     padding: const EdgeInsets.symmetric(vertical: 20),
