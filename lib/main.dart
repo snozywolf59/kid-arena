@@ -7,6 +7,7 @@ import 'package:kid_arena/blocs/theme/theme_state.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:kid_arena/firebase_options.dart';
 import 'package:kid_arena/screens/splash_screen.dart';
+import 'package:kid_arena/screens/welcome.dart';
 import 'package:kid_arena/services/get_it.dart';
 
 void main() async {

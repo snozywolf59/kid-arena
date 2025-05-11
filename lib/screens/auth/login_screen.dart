@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:kid_arena/constants/image.dart';
 import 'package:kid_arena/screens/auth/register_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:kid_arena/screens/student/welcome.dart';
+import 'package:kid_arena/screens/welcome.dart';
 import 'package:kid_arena/screens/teacher/home_teacher.dart';
 import 'package:kid_arena/services/auth_service.dart';
 import 'package:kid_arena/services/get_it.dart';
@@ -58,9 +58,7 @@ class _LoginScreenState extends State<LoginScreen> {
             if (role == 'student') {
               Navigator.pushAndRemoveUntil(
                 context,
-                MaterialPageRoute(
-                  builder: (context) => const StudentWelcomeScreen(),
-                ),
+                MaterialPageRoute(builder: (context) => const WelcomeScreen()),
                 (_) => false,
               );
             } else if (role == 'teacher') {

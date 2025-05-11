@@ -1,13 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:kid_arena/constants/image.dart';
-import 'package:kid_arena/screens/auth/login_screen.dart';
-import 'package:kid_arena/screens/auth/register_screen.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:kid_arena/screens/student/welcome.dart';
-import 'package:kid_arena/screens/teacher/home_teacher.dart';
-import 'package:kid_arena/services/auth_service.dart';
-import 'package:kid_arena/services/get_it.dart';
-import 'package:kid_arena/utils/page_transitions.dart';
+import 'package:kid_arena/widgets/common/loading_indicator.dart';
+import 'package:kid_arena/screens/welcome.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -16,118 +9,78 @@ class SplashScreen extends StatefulWidget {
   State<SplashScreen> createState() => _SplashScreenState();
 }
 
-class _SplashScreenState extends State<SplashScreen> {
+class _SplashScreenState extends State<SplashScreen>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+  late Animation<double> _scaleAnimation;
+  late Animation<double> _fadeAnimation;
+
   @override
   void initState() {
     super.initState();
-    _setupAuthListener();
-  }
-
-  void _setupAuthListener() {
-    FirebaseAuth.instance.authStateChanges().listen((User? user) async {
-      if (user != null) {
-        // User is signed in
-        String userRole = await getIt<AuthService>().getCurrentUserRole();
-        if (mounted) {
-          _navigateToHomeScreen(userRole);
-        }
-      } else {
-        // User is signed out
-        if (mounted) {
-          // Stay on splash screen, showing login/register buttons
-          setState(() {});
-        }
-      }
-    });
-  }
-
-  void _navigateToHomeScreen(String role) {
-    Navigator.pushAndRemoveUntil(
-      context,
-      MaterialPageRoute(
-        builder:
-            (context) =>
-                role == 'student'
-                    ? const StudentWelcomeScreen()
-                    : const TeacherHomePage(),
-      ),
-      (route) => false,
+    _controller = AnimationController(
+      duration: const Duration(milliseconds: 1500),
+      vsync: this,
     );
+
+    _scaleAnimation = Tween<double>(
+      begin: 0.5,
+      end: 1.0,
+    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeOutBack));
+
+    _fadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(
+        parent: _controller,
+        curve: const Interval(0.0, 0.5, curve: Curves.easeIn),
+      ),
+    );
+
+    _controller.forward();
+    _initializeApp();
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  Future<void> _initializeApp() async {
+    await Future.delayed(const Duration(seconds: 2));
+    if (mounted) {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => const WelcomeScreen()),
+      );
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFFF5722), // Deep Orange
+      backgroundColor: Theme.of(context).colorScheme.background,
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Image.asset(ImageLink.logoImage, width: 150, height: 150),
-            const SizedBox(height: 20),
-            const Text(
-              'KID ARENA',
-              style: TextStyle(
-                fontSize: 32,
-                fontWeight: FontWeight.bold,
-                color: Colors.white,
-              ),
-            ),
-            const SizedBox(height: 10),
-            const Text(
-              'Học tập - Thi đua - Vui vẻ',
-              style: TextStyle(fontSize: 16, color: Colors.white70),
-            ),
-            const SizedBox(height: 30),
-            ElevatedButton(
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  PageTransitions.slideTransition(const LoginScreen()),
-                );
-              },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.white,
-                foregroundColor: const Color(0xFFFF5722),
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 50,
-                  vertical: 12,
-                ),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(25),
-                ),
-              ),
-              child: const Text(
-                "Đăng nhập",
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-              ),
-            ),
-            const SizedBox(height: 15),
-            ElevatedButton(
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => const RegisterScreen(),
+            AnimatedBuilder(
+              animation: _controller,
+              builder: (context, child) {
+                return Transform.scale(
+                  scale: _scaleAnimation.value,
+                  child: Opacity(
+                    opacity: _fadeAnimation.value,
+                    child: Image.asset(
+                      'images/logo.png',
+                      width: 150,
+                      height: 150,
+                    ),
                   ),
                 );
               },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.white,
-                foregroundColor: const Color(0xFFFF5722),
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 50,
-                  vertical: 12,
-                ),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(25),
-                ),
-              ),
-              child: const Text(
-                "Đăng ký",
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-              ),
             ),
+            const SizedBox(height: 24),
+            const LoadingIndicator(),
           ],
         ),
       ),
