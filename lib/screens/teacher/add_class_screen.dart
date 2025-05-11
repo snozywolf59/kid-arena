@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:kid_arena/services/class_service.dart';
-import 'package:kid_arena/services/get_it.dart';
+import 'package:kid_arena/get_it.dart';
 
 class AddClassScreen extends StatefulWidget {
   const AddClassScreen({super.key});

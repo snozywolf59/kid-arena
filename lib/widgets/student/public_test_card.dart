@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-class TestCard extends StatelessWidget {
+class PublicTestCard extends StatelessWidget {
   final String title;
   final String description;
   final String subject;
@@ -10,7 +10,7 @@ class TestCard extends StatelessWidget {
   final double? score;
   final int? timeTaken;
 
-  const TestCard({
+  const PublicTestCard({
     super.key,
     required this.title,
     required this.description,

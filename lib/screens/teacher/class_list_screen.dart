@@ -3,7 +3,7 @@ import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:kid_arena/models/class.dart';
 import 'package:kid_arena/services/class_service.dart';
-import 'package:kid_arena/services/get_it.dart';
+import 'package:kid_arena/get_it.dart';
 import 'package:kid_arena/screens/teacher/add_class_screen.dart';
 import 'package:kid_arena/screens/teacher/class_details/manage_students_screen.dart';
 import 'package:kid_arena/screens/teacher/class_details/class_detail_screen.dart';

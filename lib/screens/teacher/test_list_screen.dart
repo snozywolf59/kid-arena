@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:kid_arena/models/test/private_test.dart';
 import 'package:kid_arena/screens/teacher/create_test_screen.dart';
-import 'package:kid_arena/services/get_it.dart';
+import 'package:kid_arena/get_it.dart';
 import 'package:kid_arena/services/test_service.dart';
 import 'package:kid_arena/utils/page_transitions.dart';
 import 'package:kid_arena/widgets/confirmation_dialog.dart';

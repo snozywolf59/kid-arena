@@ -3,7 +3,7 @@ import 'dart:developer';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:kid_arena/models/test/index.dart';
-import 'package:kid_arena/services/get_it.dart';
+import 'package:kid_arena/get_it.dart';
 import 'package:kid_arena/services/test_service.dart';
 import 'dart:async';
 import 'package:percent_indicator/percent_indicator.dart';

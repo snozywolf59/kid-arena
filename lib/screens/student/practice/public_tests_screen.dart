@@ -10,12 +10,12 @@ import 'package:kid_arena/models/question.dart';
 import 'package:kid_arena/models/student_answer.dart';
 import 'package:kid_arena/screens/student/quiz/quiz_screen.dart';
 import 'package:kid_arena/widgets/student/subject_card.dart';
-import 'package:kid_arena/widgets/student/test_card.dart';
+import 'package:kid_arena/widgets/student/public_test_card.dart';
 import 'package:kid_arena/services/test_service.dart';
-import 'package:kid_arena/services/get_it.dart';
+import 'package:kid_arena/get_it.dart';
 import 'package:kid_arena/utils/page_transitions.dart';
 import 'package:kid_arena/services/auth_service.dart';
-import 'package:kid_arena/models/user.dart';
+import 'package:kid_arena/models/user/index.dart';
 
 List<PublicTest> getExamsBySubject(Subject subject) {
   if (subject == Subject.mathematics) {
@@ -547,7 +547,6 @@ class _ExamsScreenState extends State<ExamsScreen>
   }
 
   Widget _completedTests() {
-    
     return ListView.builder(
       physics: const BouncingScrollPhysics(),
       padding: const EdgeInsets.symmetric(horizontal: 24),
@@ -566,7 +565,7 @@ class _ExamsScreenState extends State<ExamsScreen>
                 timeTaken: 0,
               ),
         );
-        return TestCard(
+        return PublicTestCard(
           title: exam.title,
           description: exam.description,
           subject: widget.subject.name,
@@ -657,7 +656,7 @@ class _ExamsScreenState extends State<ExamsScreen>
       itemCount: _getUncompletedTests().length,
       itemBuilder: (context, index) {
         final exam = _getUncompletedTests()[index];
-        return TestCard(
+        return PublicTestCard(
           title: exam.title,
           description: exam.description,
           subject: widget.subject.name,

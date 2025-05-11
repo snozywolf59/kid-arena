@@ -2,7 +2,7 @@ import 'dart:developer';
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:kid_arena/models/user.dart';
+import 'package:kid_arena/models/user/index.dart';
 
 abstract class AuthService {
   login(String username, String password);
@@ -102,7 +102,7 @@ class AuthServiceImpl implements AuthService {
     if (data['role'] == 'student') {
       return StudentUser.fromFirebase(user);
     }
-    return AppUser.fromFirebase(user);
+    return TeacherUser.fromFirebase(user);
   }
 
   @override

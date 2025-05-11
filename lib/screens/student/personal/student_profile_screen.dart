@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:kid_arena/models/user.dart';
+import 'package:kid_arena/models/user/index.dart';
 import 'package:kid_arena/screens/student/personal/progress_screen.dart';
 import 'package:kid_arena/services/auth_service.dart';
-import 'package:kid_arena/services/get_it.dart';
+import 'package:kid_arena/get_it.dart';
 import 'package:intl/intl.dart';
+import 'package:kid_arena/screens/welcome.dart';
 
 class StudentProfileScreen extends StatefulWidget {
   const StudentProfileScreen({super.key});
@@ -164,6 +165,29 @@ class _StudentProfileScreenState extends State<StudentProfileScreen>
             _buildInfoRow(Icons.assignment, 'Mã ID', user.id),
           ]),
           const SizedBox(height: 16),
+          SizedBox(
+            width: double.infinity,
+            child: ElevatedButton.icon(
+              onPressed: () {
+                getIt<AuthService>().logout();
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (context) => const WelcomeScreen(),
+                  ),
+                );
+              },
+              icon: const Icon(Icons.logout),
+              label: const Text('Đăng xuất'),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.red,
+                foregroundColor: Colors.white,
+                padding: const EdgeInsets.symmetric(vertical: 16),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+              ),
+            ),
+          ),
         ],
       ),
     );

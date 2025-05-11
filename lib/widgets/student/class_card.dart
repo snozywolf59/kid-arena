@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:kid_arena/models/class.dart';
-import 'package:kid_arena/models/user.dart';
+import 'package:kid_arena/models/user/index.dart';
 import 'package:kid_arena/services/auth_service.dart';
-import 'package:kid_arena/services/get_it.dart';
+import 'package:kid_arena/get_it.dart';
 
 class ClassCard extends StatelessWidget {
   final Class classData;
@@ -66,7 +66,7 @@ class ClassCard extends StatelessWidget {
                               final teacherName =
                                   teacherSnapshot.data!.fullName;
                               return Text(
-                                'Teacher: $teacherName',
+                                'Giáo viên: $teacherName',
                                 style: Theme.of(
                                   context,
                                 ).textTheme.bodyMedium?.copyWith(
@@ -75,7 +75,7 @@ class ClassCard extends StatelessWidget {
                               );
                             }
                             return Text(
-                              'Loading teacher info...',
+                              'Đang tải...',
                               style: Theme.of(
                                 context,
                               ).textTheme.bodyMedium?.copyWith(
@@ -93,13 +93,6 @@ class ClassCard extends StatelessWidget {
                     color: colorScheme.onSurfaceVariant,
                   ),
                 ],
-              ),
-              const SizedBox(height: 16),
-              Text(
-                classData.description,
-                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  color: colorScheme.onSurfaceVariant,
-                ),
               ),
             ],
           ),

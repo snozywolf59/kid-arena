@@ -2,13 +2,16 @@ import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:kid_arena/constants/image.dart';
+import 'package:kid_arena/models/user/index.dart';
 import 'package:kid_arena/screens/auth/register_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:kid_arena/screens/welcome.dart';
+import 'package:kid_arena/screens/student/student_dashboard.dart';
+
 import 'package:kid_arena/screens/teacher/home_teacher.dart';
 import 'package:kid_arena/services/auth_service.dart';
-import 'package:kid_arena/services/get_it.dart';
+import 'package:kid_arena/get_it.dart';
 import 'package:kid_arena/utils/page_transitions.dart';
+import 'package:kid_arena/widgets/common/loading_indicator.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -43,7 +46,9 @@ class _LoginScreenState extends State<LoginScreen> {
         );
 
         // Lấy thông tin role của user từ Firestore
-        final userDoc = await getIt<AuthService>().getUserData(user.uid);
+        final AppUser appUser = await getIt<AuthService>().getUserData(
+          user.uid,
+        );
         log('${user.uid} logged in');
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
@@ -51,25 +56,18 @@ class _LoginScreenState extends State<LoginScreen> {
           );
 
           // Chuyển hướng dựa trên role
-          if (userDoc.exists) {
-            final userData = userDoc.data() as Map<String, dynamic>;
-            final role = userData['role'] as String;
-
-            if (role == 'student') {
-              Navigator.pushAndRemoveUntil(
-                context,
-                MaterialPageRoute(builder: (context) => const WelcomeScreen()),
-                (_) => false,
-              );
-            } else if (role == 'teacher') {
-              Navigator.pushAndRemoveUntil(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => const TeacherHomePage(),
-                ),
-                (_) => false,
-              );
-            }
+          if (appUser is StudentUser) {
+            Navigator.pushAndRemoveUntil(
+              context,
+              PageTransitions.slideTransition(const StudentDashboard(index: 0)),
+              (_) => false,
+            );
+          } else if (appUser is TeacherUser) {
+            Navigator.pushAndRemoveUntil(
+              context,
+              PageTransitions.slideTransition(const TeacherHomePage()),
+              (_) => false,
+            );
           }
         }
       } on FirebaseAuthException catch (e) {
@@ -104,6 +102,9 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
+    if (_isLoading) {
+      return const LoadingIndicator();
+    }
     return Scaffold(
       appBar: AppBar(title: const Text('Đăng nhập')),
       body: Padding(
@@ -114,7 +115,7 @@ class _LoginScreenState extends State<LoginScreen> {
             child: Column(
               children: [
                 const SizedBox(height: 50),
-                Image.asset(ImageLink.logoImage, width: 100, height: 100),
+                Image.asset(ImageLink.logoImage, width: 200, height: 200),
                 const SizedBox(height: 30),
                 TextFormField(
                   controller: _usernameController,
@@ -162,10 +163,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   height: 50,
                   child: ElevatedButton(
                     onPressed: _isLoading ? null : _login,
-                    child:
-                        _isLoading
-                            ? const CircularProgressIndicator()
-                            : const Text('ĐĂNG NHẬP'),
+                    child: const Text('ĐĂNG NHẬP'),
                   ),
                 ),
                 const SizedBox(height: 20),

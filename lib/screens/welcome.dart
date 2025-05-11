@@ -1,7 +1,11 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:kid_arena/constants/app_theme.dart';
+import 'package:kid_arena/models/user/index.dart';
 import 'package:kid_arena/screens/auth/auth_selection_screen.dart';
 import 'package:kid_arena/screens/student/student_dashboard.dart';
+import 'package:kid_arena/screens/teacher/home_teacher.dart';
+import 'package:kid_arena/services/auth_service.dart';
+import 'package:kid_arena/get_it.dart';
 import 'package:kid_arena/utils/page_transitions.dart';
 
 class WelcomeScreen extends StatelessWidget {
@@ -107,13 +111,7 @@ class WelcomeScreen extends StatelessWidget {
                       width: double.infinity,
                       child: FilledButton(
                         onPressed: () {
-                          Navigator.pushAndRemoveUntil(
-                            context,
-                            PageTransitions.slideTransition(
-                              const AuthSelectionScreen(),
-                            ),
-                            (route) => false,
-                          );
+                          _toNextScreen(context);
                         },
                         style: FilledButton.styleFrom(
                           padding: const EdgeInsets.symmetric(vertical: 16),
@@ -182,5 +180,35 @@ class WelcomeScreen extends StatelessWidget {
         ],
       ),
     );
+  }
+
+  Future<void> _toNextScreen(BuildContext context) async {
+    if (FirebaseAuth.instance.currentUser != null) {
+      AppUser user = await getIt<AuthService>().getUserData(
+        FirebaseAuth.instance.currentUser!.uid,
+      );
+
+      if (!context.mounted) return;
+
+      if (user is StudentUser) {
+        Navigator.pushAndRemoveUntil(
+          context,
+          PageTransitions.slideTransition(const StudentDashboard(index: 0)),
+          (route) => false,
+        );
+      } else if (user is TeacherUser) {
+        Navigator.pushAndRemoveUntil(
+          context,
+          PageTransitions.slideTransition(const TeacherHomePage()),
+          (route) => false,
+        );
+      }
+    } else {
+      Navigator.pushAndRemoveUntil(
+        context,
+        PageTransitions.slideTransition(const AuthSelectionScreen()),
+        (route) => false,
+      );
+    }
   }
 }
