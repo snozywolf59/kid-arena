@@ -48,22 +48,21 @@ class _SubjectCardState extends State<SubjectCard> {
               child: Icon(widget.subject.icon, color: Colors.white, size: 32),
             ),
             const SizedBox(height: 12),
-            Text(
-              widget.subject.name,
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-                color: Theme.of(context).colorScheme.onSurface,
+            SizedBox(
+              width: 100,
+              child: Text(
+                widget.subject.name,
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
+                ),
+                textAlign: TextAlign.center,
+                overflow: TextOverflow.visible,
+                softWrap: true,
               ),
             ),
             const SizedBox(height: 4),
-            Text(
-              '${tests.length} bài thi',
-              style: TextStyle(
-                fontSize: 14,
-                color: Theme.of(context).colorScheme.onSurface.withOpacity(0.7),
-              ),
-            ),
           ],
         ),
       ),

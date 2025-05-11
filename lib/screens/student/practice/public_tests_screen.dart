@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -392,7 +391,9 @@ class _ExamsScreenState extends State<ExamsScreen>
       final studentId = FirebaseAuth.instance.currentUser?.uid;
       if (studentId == null) return;
 
-      final tests = getExamsBySubject(widget.subject);
+      final tests = await getIt<TestService>().getPublicTestsBySubject(
+        widget.subject,
+      );
       final answers = await _testService.getStudentAnswersForPublicTests(
         studentId,
       );
@@ -545,7 +546,8 @@ class _ExamsScreenState extends State<ExamsScreen>
     );
   }
 
-  ListView _completedTests() {
+  Widget _completedTests() {
+    
     return ListView.builder(
       physics: const BouncingScrollPhysics(),
       padding: const EdgeInsets.symmetric(horizontal: 24),
@@ -585,7 +587,70 @@ class _ExamsScreenState extends State<ExamsScreen>
     );
   }
 
-  ListView _uncompletedTests() {
+  Widget _uncompletedTests() {
+    if (_getUncompletedTests().isEmpty) {
+      return Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Container(
+              padding: const EdgeInsets.all(20),
+              decoration: BoxDecoration(
+                color: Colors.amber[50],
+                shape: BoxShape.circle,
+              ),
+              child: Icon(
+                Icons.emoji_events_rounded,
+                size: 80,
+                color: Colors.amber[700],
+              ),
+            ),
+            const SizedBox(height: 24),
+            Text(
+              'Chúc mừng bạn! 🎉',
+              style: TextStyle(
+                fontSize: 24,
+                fontWeight: FontWeight.bold,
+                color: Colors.amber[700],
+              ),
+            ),
+            const SizedBox(height: 12),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 32),
+              child: Text(
+                'Bạn đã hoàn thành tất cả các bài thi của môn ${widget.subject.name}! Hãy tiếp tục phát huy nhé!',
+                textAlign: TextAlign.center,
+                style: TextStyle(fontSize: 16, color: Colors.grey[600]),
+              ),
+            ),
+            const SizedBox(height: 32),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [Colors.amber[400]!, Colors.amber[600]!],
+                ),
+                borderRadius: BorderRadius.circular(30),
+              ),
+              child: const Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(Icons.star_rounded, color: Colors.white),
+                  SizedBox(width: 8),
+                  Text(
+                    'Tiếp tục học tập',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      );
+    }
     return ListView.builder(
       physics: const BouncingScrollPhysics(),
       padding: const EdgeInsets.symmetric(horizontal: 24),

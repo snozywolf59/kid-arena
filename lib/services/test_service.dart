@@ -83,7 +83,7 @@ class TestService {
   Future<void> submitTest(
     Test test,
     List<int> answers,
-    double timeTaken,
+    int timeTaken,
   ) async {
     try {
       double score = 0;
@@ -137,6 +137,8 @@ class TestService {
     return snapshot.docs.map((doc) => PublicTest.fromFirestore(doc)).toList();
   }
 
+
+
   // Get student answers for public tests
   Future<List<StudentAnswer>> getStudentAnswersForPublicTests(
     String studentId,
@@ -153,7 +155,7 @@ class TestService {
   }
 
   // Get student answer for a specific public test
-  Future<StudentAnswer?> getStudentAnswerForPublicTest(
+  Future<StudentAnswer?> getStudentAnswerForAPublicTest(
     String studentId,
     String testId,
   ) async {
@@ -166,5 +168,42 @@ class TestService {
 
     if (snapshot.docs.isEmpty) return null;
     return StudentAnswer.fromFirestore(snapshot.docs.first);
+  }
+
+  //submit student answer for a public test
+  Future<void> submitStudentAnswerForAPublicTest(
+    String testId,
+    int timeTaken,
+    List<int> answers,
+    double score,
+  ) async {
+    try {
+
+
+
+      final studentId = FirebaseAuth.instance.currentUser?.uid ?? '';
+      final studentAnswer = StudentAnswer(
+        id: testId,
+        studentId: studentId,
+        answers: answers,
+        testId: testId,
+        submittedAt: DateTime.now(),
+        timeTaken: timeTaken,
+      );
+
+      
+
+      final result = await _firestore.collection('student_answers').add({
+        ...studentAnswer.toMap(),
+        'score': score,
+      });
+      if (result.id.isNotEmpty) {
+        return;
+      } else {
+        throw Exception('Failed to submit student answer for a public test');
+      }
+    } catch (e) {
+      throw Exception('Failed to submit student answer for a public test: $e');
+    }
   }
 }

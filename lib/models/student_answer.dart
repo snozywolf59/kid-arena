@@ -6,7 +6,7 @@ class StudentAnswer {
   final List<int> answers;
   final String testId;
   final DateTime submittedAt;
-  final double timeTaken;
+  final int timeTaken;
   final double score;
 
   StudentAnswer({
@@ -49,7 +49,7 @@ class StudentAnswer {
     List<int>? answers,
     String? testId,
     DateTime? submittedAt,
-    double? timeTaken,
+    int? timeTaken,
     double? score,
   }) {
     return StudentAnswer(

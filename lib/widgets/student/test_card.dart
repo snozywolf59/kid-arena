@@ -8,7 +8,7 @@ class TestCard extends StatelessWidget {
   final VoidCallback onTap;
   final bool isCompleted;
   final double? score;
-  final double? timeTaken;
+  final int? timeTaken;
 
   const TestCard({
     super.key,
@@ -102,7 +102,9 @@ class TestCard extends StatelessWidget {
           Icon(Icons.timer_outlined, size: 16, color: Colors.green[700]),
           const SizedBox(width: 4),
           Text(
-            '$duration min',
+            duration % 60 == 0
+                ? '${(duration / 60).toInt()} phút'
+                : '${(duration / 60).toInt()} phút ${duration % 60} giây',
             style: TextStyle(
               color: Colors.green[700],
               fontWeight: FontWeight.bold,
@@ -134,7 +136,7 @@ class TestCard extends StatelessWidget {
           Icon(Icons.emoji_events_outlined, color: scoreColor, size: 20),
           const SizedBox(width: 8),
           Text(
-            'Điểm số: ${(score! * 100).toStringAsFixed(1)}%',
+            'Điểm số: ${(score!).toStringAsFixed(0)}%',
             style: TextStyle(
               color: scoreColor,
               fontWeight: FontWeight.bold,

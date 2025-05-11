@@ -44,29 +44,31 @@ class _StudentDashboardState extends State<StudentDashboard> {
         },
         items: const <BottomNavigationBarItem>[
           BottomNavigationBarItem(
-            icon: Icon(Icons.quiz_outlined),
+            icon: Icon(Icons.quiz_rounded),
             label: 'Tự luyện',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.assignment_outlined),
+            icon: Icon(Icons.assignment_rounded),
             label: 'Bài kiểm tra',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.school_outlined),
+            icon: Icon(Icons.school_rounded),
             label: 'Lớp học',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.leaderboard_outlined),
+            icon: Icon(Icons.leaderboard_rounded),
             label: 'Bảng xếp hạng',
           ),
 
           BottomNavigationBarItem(
-            icon: Icon(Icons.person_outline),
+            icon: Icon(Icons.person_rounded),
             label: 'Hồ sơ',
           ),
         ],
         selectedItemColor: Theme.of(context).colorScheme.primary,
-        unselectedItemColor: Theme.of(context).colorScheme.onSurface.withAlpha(160),
+        unselectedItemColor: Theme.of(
+          context,
+        ).colorScheme.onSurface.withAlpha(160),
         backgroundColor: Theme.of(context).colorScheme.surface,
         type: BottomNavigationBarType.fixed,
         selectedFontSize: 12,

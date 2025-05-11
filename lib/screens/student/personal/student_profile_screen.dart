@@ -52,10 +52,40 @@ class _StudentProfileScreenState extends State<StudentProfileScreen>
       body: NestedScrollView(
         headerSliverBuilder: (context, innerBoxIsScrolled) {
           return [
-            SliverAppBar.medium(
+            SliverAppBar(
               automaticallyImplyLeading: false,
-              expandedHeight: 200,
+              expandedHeight: 240,
               pinned: true,
+              bottom: PreferredSize(
+                preferredSize: const Size.fromHeight(48),
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: Theme.of(context).colorScheme.primary,
+                    borderRadius: const BorderRadius.only(
+                      topLeft: Radius.circular(8.0),
+                      topRight: Radius.circular(8.0),
+                    ),
+                  ),
+                  child: TabBar(
+                    controller: _tabController,
+                    indicatorSize: TabBarIndicatorSize.tab,
+                    indicator: const BoxDecoration(
+                      borderRadius: BorderRadius.only(
+                        topLeft: Radius.circular(8.0),
+                        topRight: Radius.circular(8.0),
+                      ),
+                      color: Colors.white,
+                    ),
+                    labelColor: Colors.black,
+                    unselectedLabelColor: Colors.white,
+                    tabs: const [
+                      Tab(text: 'Hồ sơ'),
+                      Tab(text: 'Tiến độ'),
+                      Tab(text: 'Thành tích'),
+                    ],
+                  ),
+                ),
+              ),
               flexibleSpace: FlexibleSpaceBar(
                 background: Container(
                   decoration: BoxDecoration(
@@ -84,30 +114,26 @@ class _StudentProfileScreenState extends State<StudentProfileScreen>
                           fontWeight: FontWeight.bold,
                         ),
                       ),
-
-                      const SizedBox(height: 36),
+                      const SizedBox(height: 80),
                     ],
                   ),
                 ),
               ),
-              bottom: TabBar(
-                controller: _tabController,
-                indicatorColor: Colors.white,
-                tabs: const [
-                  Tab(text: 'Hồ sơ'),
-                  Tab(text: 'Tiến độ'),
-                  Tab(text: 'Thành tích'),
-                ],
-              ),
             ),
           ];
         },
-        body: TabBarView(
-          controller: _tabController,
+        body: Column(
           children: [
-            _buildProfileTab(),
-            const ProgressScreen(),
-            _buildAchievementsTab(),
+            Expanded(
+              child: TabBarView(
+                controller: _tabController,
+                children: [
+                  _buildProfileTab(),
+                  const ProgressScreen(),
+                  _buildAchievementsTab(),
+                ],
+              ),
+            ),
           ],
         ),
       ),

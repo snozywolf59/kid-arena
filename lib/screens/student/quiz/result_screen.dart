@@ -16,8 +16,8 @@ class ResultsScreen extends StatelessWidget {
     required this.test,
   });
 
-  String _formatTimeTaken(double totalSeconds) {
-    final duration = Duration(seconds: totalSeconds.toInt());
+  String _formatTimeTaken(int totalSeconds) {
+    final duration = Duration(seconds: totalSeconds);
     final minutes = duration.inMinutes.remainder(60);
     final seconds = duration.inSeconds.remainder(60);
     String result = "";
