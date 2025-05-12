@@ -85,18 +85,46 @@ class _ExamsScreenState extends State<ExamsScreen>
   List<StudentAnswer> _studentAnswers = [];
   bool _isLoading = true;
   late TabController _tabController;
+  final TextEditingController _searchController = TextEditingController();
+  List<PublicTest> _filteredUncompletedTests = [];
+  List<PublicTest> _filteredCompletedTests = [];
 
   @override
   void initState() {
     super.initState();
     _tabController = TabController(length: 2, vsync: this);
     _loadData();
+    _searchController.addListener(_filterTests);
   }
 
   @override
   void dispose() {
     _tabController.dispose();
+    _searchController.dispose();
     super.dispose();
+  }
+
+  void _filterTests() {
+    final searchQuery = _searchController.text.toLowerCase();
+    setState(() {
+      _filteredUncompletedTests =
+          _getUncompletedTests()
+              .where(
+                (test) =>
+                    test.title.toLowerCase().contains(searchQuery) ||
+                    test.description.toLowerCase().contains(searchQuery),
+              )
+              .toList();
+
+      _filteredCompletedTests =
+          _getCompletedTests()
+              .where(
+                (test) =>
+                    test.title.toLowerCase().contains(searchQuery) ||
+                    test.description.toLowerCase().contains(searchQuery),
+              )
+              .toList();
+    });
   }
 
   Future<void> _loadData() async {
@@ -115,6 +143,8 @@ class _ExamsScreenState extends State<ExamsScreen>
       setState(() {
         _tests = tests;
         _studentAnswers = answers;
+        _filteredUncompletedTests = _getUncompletedTests();
+        _filteredCompletedTests = _getCompletedTests();
         _isLoading = false;
       });
     } catch (e) {
@@ -145,22 +175,48 @@ class _ExamsScreenState extends State<ExamsScreen>
 
     return Scaffold(
       body: SafeArea(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
+        child: CustomScrollView(
+          physics: const BouncingScrollPhysics(),
+          slivers: [
             _header(context),
-            const SizedBox(height: 16),
+            const SliverToBoxAdapter(child: SizedBox(height: 16)),
             _startlearning(),
-            const SizedBox(height: 24),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 24),
-              child: TabBar(
-                controller: _tabController,
-                tabs: const [Tab(text: 'Chưa làm'), Tab(text: 'Đã hoàn thành')],
+            const SliverToBoxAdapter(child: SizedBox(height: 24)),
+            SliverAppBar(
+              shadowColor: Theme.of(context).colorScheme.primary,
+              elevation: 0,
+
+              automaticallyImplyLeading: false,
+              pinned: true,
+              title: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 24),
+                child: TextField(
+                  controller: _searchController,
+                  decoration: InputDecoration(
+                    hintText: 'Tìm kiếm bài thi...',
+                    prefixIcon: const Icon(Icons.search),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    contentPadding: const EdgeInsets.symmetric(vertical: 12),
+                  ),
+                ),
               ),
             ),
-            const SizedBox(height: 16),
-            Expanded(
+            const SliverToBoxAdapter(child: SizedBox(height: 16)),
+            SliverPersistentHeader(
+              pinned: true,
+              delegate: _SliverAppBarDelegate(
+                TabBar(
+                  controller: _tabController,
+                  tabs: const [
+                    Tab(text: 'Chưa làm'),
+                    Tab(text: 'Đã hoàn thành'),
+                  ],
+                ),
+              ),
+            ),
+            SliverFillRemaining(
               child: TabBarView(
                 controller: _tabController,
                 children: [
@@ -177,48 +233,66 @@ class _ExamsScreenState extends State<ExamsScreen>
     );
   }
 
-  Padding _startlearning() {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 24),
-      child: Container(
-        padding: const EdgeInsets.all(20),
-        decoration: BoxDecoration(
-          color: widget.subject.color,
-          borderRadius: BorderRadius.circular(20),
+  SliverToBoxAdapter _startlearning() {
+    return SliverToBoxAdapter(
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 24),
+        child: Container(
+          padding: const EdgeInsets.all(20),
+          decoration: BoxDecoration(
+            color: widget.subject.color,
+            borderRadius: BorderRadius.circular(20),
+          ),
+          child: Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: Colors.white.withAlpha(51),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Icon(widget.subject.icon, color: Colors.white, size: 32),
+              ),
+              const SizedBox(width: 16),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text(
+                      'Bắt đầu học',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 20,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      'Hãy chọn một bài thi để bắt đầu ôn tập',
+                      style: TextStyle(
+                        color: Colors.white.withAlpha(230),
+                        fontSize: 14,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
         ),
+      ),
+    );
+  }
+
+  SliverAppBar _header(BuildContext context) {
+    return SliverAppBar(
+      title: Padding(
+        padding: const EdgeInsets.all(16),
         child: Row(
           children: [
-            Container(
-              padding: const EdgeInsets.all(12),
-              decoration: BoxDecoration(
-                color: Colors.white.withAlpha(51),
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: Icon(widget.subject.icon, color: Colors.white, size: 32),
-            ),
-            const SizedBox(width: 16),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Text(
-                    'Bắt đầu học',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 20,
-                    ),
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    'Hãy chọn một bài thi để bắt đầu ôn tập',
-                    style: TextStyle(
-                      color: Colors.white.withAlpha(230),
-                      fontSize: 14,
-                    ),
-                  ),
-                ],
-              ),
+            Text(
+              widget.subject.name,
+              style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
             ),
           ],
         ),
@@ -226,49 +300,17 @@ class _ExamsScreenState extends State<ExamsScreen>
     );
   }
 
-  Padding _header(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(16),
-      child: Row(
-        children: [
-          GestureDetector(
-            onTap: () => Navigator.pop(context),
-            child: Container(
-              padding: const EdgeInsets.all(8),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(12),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.grey.withAlpha(26),
-                    spreadRadius: 1,
-                    blurRadius: 5,
-                    offset: const Offset(0, 3),
-                  ),
-                ],
-              ),
-              child: const Icon(Icons.arrow_back, color: Colors.black),
-            ),
-          ),
-          const SizedBox(width: 16),
-          Text(
-            widget.subject.name,
-            style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-          ),
-        ],
-      ),
-    );
-  }
-
   Widget _completedTests() {
-    if (_getCompletedTests().isEmpty) {
+    if (_filteredCompletedTests.isEmpty) {
       return Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Center(
               child: Text(
-                'Bạn chưa hoàn thành\nbài thi nào!',
+                _searchController.text.isEmpty
+                    ? 'Bạn chưa hoàn thành\nbài thi nào!'
+                    : 'Không tìm thấy bài thi\nphù hợp với từ khóa!',
                 style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
                 textAlign: TextAlign.center,
               ),
@@ -287,16 +329,16 @@ class _ExamsScreenState extends State<ExamsScreen>
               ),
             ),
             const SizedBox(height: 24),
-
-            FilledButton(
-              onPressed: () {
-                _tabController.animateTo(0);
-              },
-              child: const Text(
-                "Làm ngay nào!",
-                style: TextStyle(fontSize: 16),
+            if (_searchController.text.isEmpty)
+              FilledButton(
+                onPressed: () {
+                  _tabController.animateTo(0);
+                },
+                child: const Text(
+                  "Làm ngay nào!",
+                  style: TextStyle(fontSize: 16),
+                ),
               ),
-            ),
           ],
         ),
       );
@@ -304,9 +346,9 @@ class _ExamsScreenState extends State<ExamsScreen>
     return ListView.builder(
       physics: const BouncingScrollPhysics(),
       padding: const EdgeInsets.symmetric(horizontal: 24),
-      itemCount: _getCompletedTests().length,
+      itemCount: _filteredCompletedTests.length,
       itemBuilder: (context, index) {
-        final exam = _getCompletedTests()[index];
+        final exam = _filteredCompletedTests[index];
         final studentAnswer = _studentAnswers.firstWhere(
           (answer) => answer.testId == exam.id,
           orElse:
@@ -341,7 +383,7 @@ class _ExamsScreenState extends State<ExamsScreen>
   }
 
   Widget _uncompletedTests() {
-    if (_getUncompletedTests().isEmpty) {
+    if (_filteredUncompletedTests.isEmpty) {
       return Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -353,53 +395,69 @@ class _ExamsScreenState extends State<ExamsScreen>
                 shape: BoxShape.circle,
               ),
               child: Icon(
-                Icons.emoji_events_rounded,
+                _searchController.text.isEmpty
+                    ? Icons.emoji_events_rounded
+                    : Icons.search_off_rounded,
                 size: 80,
-                color: Colors.amber[700],
+                color:
+                    _searchController.text.isEmpty
+                        ? Colors.amber[700]
+                        : Colors.grey[400],
               ),
             ),
             const SizedBox(height: 24),
             Text(
-              'Chúc mừng bạn! 🎉',
+              _searchController.text.isEmpty
+                  ? 'Chúc mừng bạn! 🎉'
+                  : 'Không tìm thấy bài thi',
               style: TextStyle(
                 fontSize: 24,
                 fontWeight: FontWeight.bold,
-                color: Colors.amber[700],
+                color:
+                    _searchController.text.isEmpty
+                        ? Colors.amber[700]
+                        : Colors.grey[600],
               ),
             ),
             const SizedBox(height: 12),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 32),
               child: Text(
-                'Bạn đã hoàn thành tất cả các bài thi của môn ${widget.subject.name}! Hãy tiếp tục phát huy nhé!',
+                _searchController.text.isEmpty
+                    ? 'Bạn đã hoàn thành tất cả các bài thi của môn ${widget.subject.name}! Hãy tiếp tục phát huy nhé!'
+                    : 'Không có bài thi nào phù hợp với từ khóa "${_searchController.text}"',
                 textAlign: TextAlign.center,
                 style: TextStyle(fontSize: 16, color: Colors.grey[600]),
               ),
             ),
             const SizedBox(height: 32),
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  colors: [Colors.amber[400]!, Colors.amber[600]!],
+            if (_searchController.text.isEmpty)
+              Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 24,
+                  vertical: 12,
                 ),
-                borderRadius: BorderRadius.circular(30),
-              ),
-              child: const Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Icon(Icons.star_rounded, color: Colors.white),
-                  SizedBox(width: 8),
-                  Text(
-                    'Tiếp tục học tập',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.bold,
-                    ),
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    colors: [Colors.amber[400]!, Colors.amber[600]!],
                   ),
-                ],
+                  borderRadius: BorderRadius.circular(30),
+                ),
+                child: const Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(Icons.star_rounded, color: Colors.white),
+                    SizedBox(width: 8),
+                    Text(
+                      'Tiếp tục học tập',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ],
+                ),
               ),
-            ),
           ],
         ),
       );
@@ -407,9 +465,9 @@ class _ExamsScreenState extends State<ExamsScreen>
     return ListView.builder(
       physics: const BouncingScrollPhysics(),
       padding: const EdgeInsets.symmetric(horizontal: 24),
-      itemCount: _getUncompletedTests().length,
+      itemCount: _filteredUncompletedTests.length,
       itemBuilder: (context, index) {
-        final exam = _getUncompletedTests()[index];
+        final exam = _filteredUncompletedTests[index];
         return PublicTestCard(
           title: exam.title,
           description: exam.description,
@@ -424,5 +482,36 @@ class _ExamsScreenState extends State<ExamsScreen>
         );
       },
     );
+  }
+}
+
+class _SliverAppBarDelegate extends SliverPersistentHeaderDelegate {
+  final TabBar _tabBar;
+
+  _SliverAppBarDelegate(this._tabBar);
+
+  @override
+  double get minExtent => _tabBar.preferredSize.height;
+  @override
+  double get maxExtent => _tabBar.preferredSize.height;
+
+  @override
+  Widget build(
+    BuildContext context,
+    double shrinkOffset,
+    bool overlapsContent,
+  ) {
+    return Container(
+      color: Theme.of(context).scaffoldBackgroundColor,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 24),
+        child: _tabBar,
+      ),
+    );
+  }
+
+  @override
+  bool shouldRebuild(_SliverAppBarDelegate oldDelegate) {
+    return false;
   }
 }
