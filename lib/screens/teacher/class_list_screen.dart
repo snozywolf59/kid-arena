@@ -1,6 +1,12 @@
+// Dart packages
 import 'dart:developer';
 
+// Flutter packages
 import 'package:flutter/material.dart';
+
+// Pub packages
+
+// Project packages
 import 'package:kid_arena/models/class.dart';
 import 'package:kid_arena/services/class_service.dart';
 import 'package:kid_arena/get_it.dart';

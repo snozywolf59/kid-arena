@@ -1,5 +1,12 @@
-import 'package:firebase_auth/firebase_auth.dart';
+// Dart packages
+
+// Flutter packages
 import 'package:flutter/material.dart';
+
+// Pub packages
+import 'package:firebase_auth/firebase_auth.dart';
+
+// Project packages
 import 'package:kid_arena/models/user/index.dart';
 import 'package:kid_arena/screens/auth/auth_selection_screen.dart';
 import 'package:kid_arena/screens/student/student_dashboard.dart';

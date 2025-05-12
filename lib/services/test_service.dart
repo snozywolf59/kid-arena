@@ -1,5 +1,14 @@
+// Dart packages
+
+// Flutter packages
+
+// Pub packages
+import 'dart:async';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+
+// Project packages
 import 'package:kid_arena/constants/subject.dart';
 import 'package:kid_arena/models/test/index.dart';
 import 'package:kid_arena/models/student_answer.dart';
@@ -115,12 +124,30 @@ class TestService {
 
   Future<List<PrivateTest>> getTestsForStudent() async {
     final currentUser = _auth.currentUser;
-    final snapshot =
+    if (currentUser == null) return [];
+
+    // First get all classes where the student is enrolled
+    final classesSnapshot =
+        await _firestore
+            .collection('classes')
+            .where('students', arrayContains: currentUser.uid)
+            .get();
+
+    if (classesSnapshot.docs.isEmpty) return [];
+
+    // Get all class IDs
+    final classIds = classesSnapshot.docs.map((doc) => doc.id).toList();
+
+    // Get all tests for these classes
+    final testsSnapshot =
         await _firestore
             .collection(_privateCollection)
-            .where('studentId', isEqualTo: currentUser?.uid)
+            .where('classId', whereIn: classIds)
             .get();
-    return snapshot.docs.map((doc) => PrivateTest.fromFirestore(doc)).toList();
+
+    return testsSnapshot.docs
+        .map((doc) => PrivateTest.fromFirestore(doc))
+        .toList();
   }
 
   //////////////////////////////

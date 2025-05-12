@@ -26,7 +26,9 @@ const flutterBestPractices = [
 const projectStructure = `
 lib/
   constants/
+    index.dart
   models/
+    index.dart
   screens/
     auth/
     teacher/
@@ -36,12 +38,31 @@ lib/
   widgets/
     teacher/
     student/
+    index.dart
   firebase_options.dart
   main.dart
 test/
   unit/
   widget/
   integration/
+`;
+
+// Import Organization
+
+const importOrganization = `
+1. Dart packages (dart:*)
+2. Flutter packages (package:flutter/*)
+3. Pub packages (third-party packages)
+4. Project packages (package:kid_arena/*)
+
+Each section should be separated by a blank line and marked with comments:
+// Dart packages
+
+// Flutter packages
+
+// Pub packages
+
+// Project packages
 `;
 
 // Coding Guidelines

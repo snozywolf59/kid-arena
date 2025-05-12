@@ -37,9 +37,9 @@ class PublicTestCard extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  _buildSubjectChip(),
-                  const Spacer(),
+                  Flexible(child: _buildSubjectChip()),
                   _buildDurationChip(),
                 ],
               ),
@@ -50,11 +50,18 @@ class PublicTestCard extends StatelessWidget {
                   fontSize: 20,
                   fontWeight: FontWeight.bold,
                 ),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
               ),
               const SizedBox(height: 8),
               Text(
                 description,
-                style: TextStyle(fontSize: 16, color: Colors.grey[600]),
+                style: TextStyle(
+                  fontSize: 16,
+                  color: Theme.of(context).colorScheme.onSurface,
+                ),
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
               ),
               if (isCompleted && score != null) ...[
                 const SizedBox(height: 16),
@@ -62,10 +69,11 @@ class PublicTestCard extends StatelessWidget {
               ],
               const SizedBox(height: 16),
               Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   if (isCompleted && timeTaken != null)
                     Expanded(child: _buildTimeTakenChip()),
-                  const Spacer(),
+                  const SizedBox(width: 16),
                   _buildStartButton(),
                 ],
               ),
@@ -78,6 +86,7 @@ class PublicTestCard extends StatelessWidget {
 
   Widget _buildSubjectChip() {
     return Container(
+      constraints: const BoxConstraints(maxWidth: 120),
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
       decoration: BoxDecoration(
         color: Colors.blue.withAlpha(25),
@@ -86,6 +95,8 @@ class PublicTestCard extends StatelessWidget {
       child: Text(
         subject,
         style: TextStyle(color: Colors.blue[700], fontWeight: FontWeight.bold),
+        maxLines: 1,
+        overflow: TextOverflow.ellipsis,
       ),
     );
   }
@@ -135,12 +146,16 @@ class PublicTestCard extends StatelessWidget {
         children: [
           Icon(Icons.emoji_events_outlined, color: scoreColor, size: 20),
           const SizedBox(width: 8),
-          Text(
-            'Điểm số: ${(score!).toStringAsFixed(0)}%',
-            style: TextStyle(
-              color: scoreColor,
-              fontWeight: FontWeight.bold,
-              fontSize: 16,
+          Flexible(
+            child: Text(
+              'Điểm số: ${(score!).toStringAsFixed(0)}%',
+              style: TextStyle(
+                color: scoreColor,
+                fontWeight: FontWeight.bold,
+                fontSize: 16,
+              ),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
             ),
           ),
         ],
@@ -152,6 +167,7 @@ class PublicTestCard extends StatelessWidget {
     final minutes = (timeTaken! / 60).floor();
     final seconds = (timeTaken! % 60).floor();
     return Container(
+      constraints: const BoxConstraints(maxWidth: 140),
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
       decoration: BoxDecoration(
         color: Colors.purple.withAlpha(26),
@@ -162,11 +178,15 @@ class PublicTestCard extends StatelessWidget {
         children: [
           Icon(Icons.timer_outlined, size: 16, color: Colors.purple[700]),
           const SizedBox(width: 4),
-          Text(
-            'Thời gian: ${minutes}m ${seconds}s',
-            style: TextStyle(
-              color: Colors.purple[700],
-              fontWeight: FontWeight.bold,
+          Flexible(
+            child: Text(
+              'Thời gian: ${minutes}m ${seconds}s',
+              style: TextStyle(
+                color: Colors.purple[700],
+                fontWeight: FontWeight.bold,
+              ),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
             ),
           ),
         ],

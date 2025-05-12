@@ -1,4 +1,9 @@
+// Dart packages
+// Flutter packages
 import 'package:flutter/material.dart';
+
+// Pub packages
+// Project packages
 
 class PrivateTestCard extends StatelessWidget {
   final String title;
@@ -8,7 +13,15 @@ class PrivateTestCard extends StatelessWidget {
   final Color color;
   final VoidCallback onTap;
 
-  const PrivateTestCard({super.key, required this.title, required this.subject, required this.teacherId, required this.dueDate, required this.color, required this.onTap});
+  const PrivateTestCard({
+    super.key,
+    required this.title,
+    required this.subject,
+    required this.teacherId,
+    required this.dueDate,
+    required this.color,
+    required this.onTap,
+  });
 
   @override
   Widget build(BuildContext context) {

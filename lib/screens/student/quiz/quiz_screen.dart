@@ -4,10 +4,11 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:kid_arena/models/test/index.dart';
 import 'package:kid_arena/get_it.dart';
+import 'package:kid_arena/services/study_streak_service.dart';
 import 'package:kid_arena/services/test_service.dart';
 import 'dart:async';
 import 'package:percent_indicator/percent_indicator.dart';
-import '../../../widgets/student/option_widget.dart';
+import '../../../widgets/student/test/option_widget.dart';
 import '../../../widgets/confirmation_dialog.dart';
 import 'result_screen.dart';
 import '../../../models/student_answer.dart';
@@ -49,12 +50,18 @@ class _QuizScreenState extends State<QuizScreen> with TickerProviderStateMixin {
   void _startTimer() {
     _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
       if (_timeRemainingInSeconds > 0) {
-        setState(() {
-          _timeRemainingInSeconds--;
-        });
+        if (mounted) {
+          setState(() {
+            _timeRemainingInSeconds--;
+          });
+        } else {
+          timer.cancel();
+        }
       } else {
         _timer?.cancel();
-        _submitQuiz();
+        if (mounted) {
+          _submitQuiz();
+        }
       }
     });
   }
@@ -151,7 +158,7 @@ class _QuizScreenState extends State<QuizScreen> with TickerProviderStateMixin {
         _selectedAnswers,
         score,
       );
-
+      await getIt<StudyStreakService>().addStudyDay();
       final studentAnswer = StudentAnswer(
         id: 'ans_${DateTime.now().millisecondsSinceEpoch}',
         studentId: FirebaseAuth.instance.currentUser?.uid ?? '',
@@ -184,9 +191,11 @@ class _QuizScreenState extends State<QuizScreen> with TickerProviderStateMixin {
         );
       }
     } finally {
-      setState(() {
-        isSubmitting = false;
-      });
+      if (mounted) {
+        setState(() {
+          isSubmitting = false;
+        });
+      }
     }
   }
 

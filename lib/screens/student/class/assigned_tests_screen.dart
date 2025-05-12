@@ -1,4 +1,11 @@
+// Dart packages
+
+// Flutter packages
 import 'package:flutter/material.dart';
+
+// Pub packages
+
+// Project packages
 import 'package:kid_arena/get_it.dart';
 import 'package:kid_arena/models/test/private_test.dart';
 import 'package:kid_arena/screens/student/quiz/quiz_screen.dart';
@@ -8,8 +15,6 @@ import 'package:kid_arena/widgets/common/loading_indicator.dart';
 import 'package:kid_arena/widgets/index.dart';
 
 class AssignedTestsScreen extends StatefulWidget {
-  
-
   const AssignedTestsScreen({super.key});
 
   @override
@@ -17,7 +22,6 @@ class AssignedTestsScreen extends StatefulWidget {
 }
 
 class _AssignedTestsScreenState extends State<AssignedTestsScreen> {
-
   List<PrivateTest> tests = [];
   bool isLoading = false;
 
@@ -37,6 +41,7 @@ class _AssignedTestsScreenState extends State<AssignedTestsScreen> {
       isLoading = false;
     });
   }
+
   @override
   Widget build(BuildContext context) {
     if (isLoading) {
@@ -45,14 +50,13 @@ class _AssignedTestsScreenState extends State<AssignedTestsScreen> {
     return Scaffold(
       body: CustomScrollView(
         slivers: [
-          SliverAppBar.medium(
+          SliverAppBar(
             title: const Text(
               'Bài kiểm tra',
               style: TextStyle(fontWeight: FontWeight.bold),
             ),
             floating: true,
             automaticallyImplyLeading: false,
-            
           ),
           SliverPadding(
             padding: const EdgeInsets.all(16),

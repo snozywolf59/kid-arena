@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:kid_arena/models/class.dart';
 import 'package:kid_arena/services/class_service.dart';
 import 'package:kid_arena/get_it.dart';
-import 'package:kid_arena/widgets/student/class_card.dart';
+import 'package:kid_arena/widgets/student/class/class_card.dart';
 
 class MyClassesScreen extends StatelessWidget {
   const MyClassesScreen({super.key});
@@ -13,7 +13,7 @@ class MyClassesScreen extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('My Classes'),
+        title: const Text('Lớp học của tôi'),
         centerTitle: true,
         automaticallyImplyLeading: false,
       ),
@@ -51,7 +51,7 @@ class MyClassesScreen extends StatelessWidget {
                   CircularProgressIndicator(color: colorScheme.primary),
                   const SizedBox(height: 16),
                   Text(
-                    'Loading your classes...',
+                    'Đang tải...',
                     style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                       color: colorScheme.onSurfaceVariant,
                     ),

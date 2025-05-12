@@ -58,7 +58,7 @@ class _StudentProfileScreenState extends State<StudentProfileScreen>
               expandedHeight: 240,
               pinned: true,
               bottom: PreferredSize(
-                preferredSize: const Size.fromHeight(48),
+                preferredSize: const Size.fromHeight(0),
                 child: Container(
                   decoration: BoxDecoration(
                     color: Theme.of(context).colorScheme.primary,
