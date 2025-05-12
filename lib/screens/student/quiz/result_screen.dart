@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:kid_arena/models/student_answer.dart';
 import 'package:kid_arena/models/test/index.dart';
+import 'package:kid_arena/utils/page_transitions.dart';
 import 'package:percent_indicator/circular_percent_indicator.dart';
 import 'package:kid_arena/screens/student/practice/public_tests_screen.dart';
 import 'package:kid_arena/screens/student/student_dashboard.dart';
@@ -163,9 +164,8 @@ class ResultsScreen extends StatelessWidget {
                     label: const Text('Về Trang Chủ'),
                     onPressed: () {
                       Navigator.of(context).pushAndRemoveUntil(
-                        MaterialPageRoute(
-                          builder:
-                              (context) => const StudentDashboard(index: 0),
+                        PageTransitions.slideTransition(
+                          const StudentDashboard(index: 0),
                         ), // Truyền lại data
                         (Route<dynamic> route) => false,
                       );
@@ -177,9 +177,9 @@ class ResultsScreen extends StatelessWidget {
                     label: const Text('Thử Quiz Khác'),
                     onPressed: () {
                       Navigator.of(context).pushAndRemoveUntil(
-                        MaterialPageRoute(
-                          builder: (context) => const PublicTestsScreen(),
-                        ), 
+                        PageTransitions.slideTransition(
+                          const StudentDashboard(index: 0),
+                        ),
                         (route) => false,
                       );
                     },

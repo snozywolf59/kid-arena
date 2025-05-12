@@ -24,4 +24,21 @@ enum Subject {
   final Color color;
 
   const Subject({required this.name, required this.icon, required this.color});
+
+  static IconData getIcon(String subjectName) {
+    switch (subjectName) {
+      case 'Toán học':
+        return Icons.calculate;
+      case 'Ngữ văn':
+        return Icons.menu_book;
+      case 'Tiếng Anh':
+        return Icons.translate;
+      case 'Khoa học tự nhiên':
+        return Icons.eco;
+      case 'Khoa học xã hội':
+        return Icons.people;
+      default:
+        return Icons.subject;
+    }
+  }
 }

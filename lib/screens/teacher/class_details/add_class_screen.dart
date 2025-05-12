@@ -127,7 +127,8 @@ class _AddClassScreenState extends State<AddClassScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Thêm lớp học mới')),
+      appBar: AppBar(title: const Text('Thêm lớp học mới')
+      ),
       body: Padding(padding: const EdgeInsets.all(16.0), child: _buildForm()),
     );
   }

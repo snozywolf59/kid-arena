@@ -3,6 +3,7 @@ import 'package:kid_arena/models/class.dart';
 import 'package:kid_arena/models/student.dart';
 import 'package:kid_arena/services/class_service.dart';
 import 'package:kid_arena/get_it.dart';
+import 'package:kid_arena/widgets/common/search_bar_widget.dart';
 import 'package:kid_arena/widgets/confirmation_dialog.dart';
 
 class ManageStudentsScreen extends StatefulWidget {
@@ -15,7 +16,7 @@ class ManageStudentsScreen extends StatefulWidget {
 }
 
 class _ManageStudentsScreenState extends State<ManageStudentsScreen> {
-  final _studentIdController = TextEditingController();
+  final _studentUsernameQueryController = TextEditingController();
   List<Student> _students = [];
   bool _isLoading = false;
 
@@ -27,7 +28,7 @@ class _ManageStudentsScreenState extends State<ManageStudentsScreen> {
 
   @override
   void dispose() {
-    _studentIdController.dispose();
+    _studentUsernameQueryController.dispose();
     super.dispose();
   }
 
@@ -60,7 +61,7 @@ class _ManageStudentsScreenState extends State<ManageStudentsScreen> {
   }
 
   Future<void> _addStudent() async {
-    final studentId = _studentIdController.text.trim();
+    final studentId = _studentUsernameQueryController.text.trim();
     if (studentId.isEmpty) {
       _showErrorMessage('Vui lòng nhập ID học sinh');
       return;
@@ -88,7 +89,7 @@ class _ManageStudentsScreenState extends State<ManageStudentsScreen> {
         widget.classroom.id,
         studentId,
       );
-      _studentIdController.clear();
+      _studentUsernameQueryController.clear();
       await _loadStudents();
       if (mounted) {
         _showSuccessMessage('Thêm học sinh thành công');
@@ -147,16 +148,19 @@ class _ManageStudentsScreenState extends State<ManageStudentsScreen> {
       child: Row(
         children: [
           Expanded(
-            child: TextField(
-              controller: _studentIdController,
-              decoration: const InputDecoration(
-                labelText: 'Nhập username học sinh',
-                border: OutlineInputBorder(),
-              ),
+            child: SearchBarWidget(
+              controller: _studentUsernameQueryController,
+              hintText: 'Tìm kiếm học sinh...',
+              onSearch: (value) {
+                _studentUsernameQueryController.text = value;
+              },
             ),
           ),
-          const SizedBox(width: 16),
-          ElevatedButton(onPressed: _addStudent, child: const Text('Thêm')),
+          TextButton.icon(
+            icon: const Icon(Icons.add_box_rounded),
+            label: const Text('Thêm học sinh'),
+            onPressed: _addStudent,
+          ),
         ],
       ),
     );
@@ -178,7 +182,7 @@ class _ManageStudentsScreenState extends State<ManageStudentsScreen> {
       title: Text(student.fullName),
       subtitle: Text(student.username),
       trailing: IconButton(
-        icon: const Icon(Icons.delete),
+        icon: const Icon(Icons.close),
         onPressed: () async {
           final shouldRemove = await ConfirmationDialog.show(
             context: context,

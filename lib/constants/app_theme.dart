@@ -25,7 +25,7 @@ class MaterialTheme {
       onError: Color(0xffffffff),
       errorContainer: Color(0xffffdad6),
       onErrorContainer: Color(0xff93000a),
-      surface: Color(0xfff9faef),
+      surface: Color(0xfffefef5), // Đã làm sáng hơn (từ f9faef → fefef5)
       onSurface: Color(0xff1a1c16),
       onSurfaceVariant: Color(0xff44483d),
       outline: Color(0xff75796c),
@@ -46,13 +46,13 @@ class MaterialTheme {
       onTertiaryFixed: Color(0xff00201e),
       tertiaryFixedDim: Color(0xffa0d0cb),
       onTertiaryFixedVariant: Color(0xff1f4e4b),
-      surfaceDim: Color(0xffdadbd0),
-      surfaceBright: Color(0xfff9faef),
+      surfaceDim: Color(0xffe0e1d6), // Điều chỉnh để phù hợp với surface mới
+      surfaceBright: Color(0xfffefef5), // Cập nhật để phù hợp
       surfaceContainerLowest: Color(0xffffffff),
-      surfaceContainerLow: Color(0xfff3f4e9),
-      surfaceContainer: Color(0xffeeefe3),
-      surfaceContainerHigh: Color(0xffe8e9de),
-      surfaceContainerHighest: Color(0xffe2e3d8),
+      surfaceContainerLow: Color(0xfff8f9ee), // Làm sáng hơn
+      surfaceContainer: Color(0xfff3f4e9), // Làm sáng hơn
+      surfaceContainerHigh: Color(0xffedeee3), // Làm sáng hơn
+      surfaceContainerHighest: Color(0xffe7e8dd), // Làm sáng hơn
     );
   }
 

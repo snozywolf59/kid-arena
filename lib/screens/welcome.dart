@@ -10,7 +10,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:kid_arena/models/user/index.dart';
 import 'package:kid_arena/screens/auth/auth_selection_screen.dart';
 import 'package:kid_arena/screens/student/student_dashboard.dart';
-import 'package:kid_arena/screens/teacher/home_teacher.dart';
+import 'package:kid_arena/screens/teacher/teacher_dashboard.dart';
 import 'package:kid_arena/services/auth_service.dart';
 import 'package:kid_arena/get_it.dart';
 import 'package:kid_arena/utils/page_transitions.dart';

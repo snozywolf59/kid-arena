@@ -2,7 +2,9 @@ import 'dart:developer';
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:kid_arena/get_it.dart';
 import 'package:kid_arena/models/user/index.dart';
+import 'package:kid_arena/services/user_service.dart';
 
 abstract class AuthService {
   login(String username, String password);
@@ -38,6 +40,7 @@ abstract class AuthService {
 class AuthServiceImpl implements AuthService {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  final UserService _userService = getIt<UserService>();
 
   // Đăng nhập
   @override
@@ -48,6 +51,13 @@ class AuthServiceImpl implements AuthService {
         email: "$username@kidarena.com", // hoặc lưu email trong Firestore
         password: password,
       );
+
+      if (credential.user != null) {
+        // Lấy thông tin người dùng từ Firestore và lưu vào UserService
+        final userData = await getUserData(credential.user!.uid);
+        _userService.setCurrentUser(userData);
+      }
+
       return credential.user;
     } catch (e) {
       log("Login error: $e");
@@ -93,6 +103,7 @@ class AuthServiceImpl implements AuthService {
   @override
   void logout() {
     _auth.signOut();
+    _userService.clearCurrentUser();
   }
 
   @override

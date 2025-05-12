@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:kid_arena/screens/teacher/home/home_teacher.dart';
 import 'package:kid_arena/screens/teacher/profile_screen.dart';
-import 'package:kid_arena/screens/teacher/class_list_screen.dart';
-import 'package:kid_arena/screens/teacher/test_list_screen.dart';
+import 'package:kid_arena/screens/teacher/class/class_list_screen.dart';
+import 'package:kid_arena/screens/teacher/test/test_list_screen.dart';
 
 class TeacherHomePage extends StatefulWidget {
   const TeacherHomePage({super.key});
@@ -39,7 +40,7 @@ class _TeacherHomePageState extends State<TeacherHomePage> {
         ],
         currentIndex: _selectedIndex,
         onTap: _onItemTapped,
-        selectedItemColor: const Color(0xFFFF5722), // Deep Orange
+
         unselectedItemColor: Colors.grey,
         backgroundColor: Colors.white,
         type: BottomNavigationBarType.fixed,
@@ -49,14 +50,5 @@ class _TeacherHomePageState extends State<TeacherHomePage> {
         selectedLabelStyle: const TextStyle(fontWeight: FontWeight.bold),
       ),
     );
-  }
-}
-
-class HomeTeacher extends StatelessWidget {
-  const HomeTeacher({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Center(child: const Text('home'));
   }
 }

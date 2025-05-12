@@ -5,7 +5,7 @@ import 'package:kid_arena/models/test/index.dart';
 import 'package:kid_arena/models/student_answer.dart';
 import 'package:kid_arena/screens/student/quiz/quiz_screen.dart';
 import 'package:kid_arena/widgets/student/home/leaderboard_widget.dart';
-import 'package:kid_arena/widgets/student/home/search_bar_widget.dart';
+import 'package:kid_arena/widgets/common/search_bar_widget.dart';
 import 'package:kid_arena/widgets/student/home/study_streak_widget.dart';
 import 'package:kid_arena/widgets/student/test/subject_card.dart';
 import 'package:kid_arena/widgets/student/test/public_test_card.dart';
@@ -14,8 +14,18 @@ import 'package:kid_arena/get_it.dart';
 import 'package:kid_arena/utils/page_transitions.dart';
 import 'package:kid_arena/widgets/student/header_widget.dart';
 
-class PublicTestsScreen extends StatelessWidget {
+class PublicTestsScreen extends StatefulWidget {
   const PublicTestsScreen({super.key});
+
+  @override
+  State<PublicTestsScreen> createState() => _PublicTestsScreenState();
+}
+
+class _PublicTestsScreenState extends State<PublicTestsScreen> {
+  @override
+  void dispose() {
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -26,7 +36,6 @@ class PublicTestsScreen extends StatelessWidget {
           slivers: [
             const SliverAppBar(floating: true, title: HeaderWidget()),
             const SliverToBoxAdapter(child: SizedBox(height: 16)),
-            const SliverToBoxAdapter(child: SearchBarWidget()),
             const SliverToBoxAdapter(child: StudyStreakWidget()),
             const SliverToBoxAdapter(child: LeaderboardWidget()),
             SliverPadding(
@@ -190,16 +199,12 @@ class _ExamsScreenState extends State<ExamsScreen>
               pinned: true,
               title: Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 24),
-                child: TextField(
+                child: SearchBarWidget(
                   controller: _searchController,
-                  decoration: InputDecoration(
-                    hintText: 'Tìm kiếm bài thi...',
-                    prefixIcon: const Icon(Icons.search),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    contentPadding: const EdgeInsets.symmetric(vertical: 12),
-                  ),
+                  hintText: 'Tìm kiếm bài thi...',
+                  onSearch: (query) {
+                    setState(() {});
+                  },
                 ),
               ),
             ),

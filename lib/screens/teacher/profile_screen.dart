@@ -107,7 +107,7 @@ class ProfileScreen extends StatelessWidget {
                       ),
                       child: const Text(
                         'Đăng xuất',
-                        style: TextStyle(fontSize: 16),
+                        style: TextStyle(fontSize: 16, color: Colors.white),
                       ),
                     ),
                   ),
