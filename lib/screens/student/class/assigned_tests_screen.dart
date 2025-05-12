@@ -13,6 +13,8 @@ import 'package:kid_arena/services/index.dart';
 import 'package:kid_arena/utils/page_transitions.dart';
 import 'package:kid_arena/widgets/common/loading_indicator.dart';
 import 'package:kid_arena/widgets/index.dart';
+import 'package:kid_arena/models/student_answer.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class AssignedTestsScreen extends StatefulWidget {
   const AssignedTestsScreen({super.key});
@@ -21,25 +23,128 @@ class AssignedTestsScreen extends StatefulWidget {
   State<AssignedTestsScreen> createState() => _AssignedTestsScreenState();
 }
 
-class _AssignedTestsScreenState extends State<AssignedTestsScreen> {
-  List<PrivateTest> tests = [];
+class _AssignedTestsScreenState extends State<AssignedTestsScreen>
+    with SingleTickerProviderStateMixin {
+  List<PrivateTest> _tests = [];
+  List<StudentAnswer> _studentAnswers = [];
   bool isLoading = false;
+  late TabController _tabController;
 
   @override
   void initState() {
     super.initState();
+    _tabController = TabController(length: 3, vsync: this);
     _loadTests();
+  }
+
+  @override
+  void dispose() {
+    _tabController.dispose();
+    super.dispose();
   }
 
   Future<void> _loadTests() async {
     setState(() {
       isLoading = true;
     });
-    final tests = await getIt<TestService>().getTestsForStudent();
-    setState(() {
-      this.tests = tests;
-      isLoading = false;
-    });
+    try {
+      final currentUser = FirebaseAuth.instance.currentUser;
+      if (currentUser == null) return;
+
+      final tests = await getIt<TestService>().getTestsForStudent();
+      final answers = await getIt<TestService>()
+          .getStudentAnswersForPublicTests(currentUser.uid);
+
+      setState(() {
+        _tests = tests;
+        _studentAnswers = answers;
+        isLoading = false;
+      });
+    } catch (e) {
+      setState(() {
+        isLoading = false;
+      });
+      if (mounted) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Lỗi khi tải dữ liệu: $e')));
+      }
+    }
+  }
+
+  bool _isTestCompleted(String testId) {
+    return _studentAnswers.any((answer) => answer.testId == testId);
+  }
+
+  StudentAnswer? _getTestAnswer(String testId) {
+    return _studentAnswers.firstWhere(
+      (answer) => answer.testId == testId,
+      orElse:
+          () => StudentAnswer(
+            id: '',
+            studentId: '',
+            answers: [],
+            testId: testId,
+            submittedAt: DateTime.now(),
+            timeTaken: 0,
+          ),
+    );
+  }
+
+  List<PrivateTest> _getFilteredTests(int tabIndex) {
+    final now = DateTime.now();
+    switch (tabIndex) {
+      case 0: // Scheduled tests
+        return _tests.where((test) {
+          final timeRemaining = test.endTime.difference(now);
+          return !timeRemaining.isNegative && timeRemaining.inDays <= 0;
+        }).toList();
+      case 1: // Ongoing tests
+        return _tests.where((test) {
+          final timeRemaining = test.endTime.difference(now);
+          return !timeRemaining.isNegative && timeRemaining.inDays > 0;
+        }).toList();
+
+      case 2: // Overdue tests
+        return _tests.where((test) {
+          final timeRemaining = test.endTime.difference(now);
+          return timeRemaining.isNegative;
+        }).toList();
+      default:
+        return [];
+    }
+  }
+
+  String _getTimeText(PrivateTest test) {
+    final now = DateTime.now();
+    final timeRemaining = test.endTime.difference(now);
+
+    if (timeRemaining.isNegative) {
+      return 'Đã quá hạn';
+    } else if (timeRemaining.inDays > 0) {
+      return 'Còn ${timeRemaining.inDays} ngày';
+    } else if (timeRemaining.inHours > 0) {
+      return 'Còn ${timeRemaining.inHours} giờ';
+    } else {
+      return 'Còn ${timeRemaining.inMinutes} phút';
+    }
+  }
+
+  Color _getStatusColor(PrivateTest test) {
+    if (_isTestCompleted(test.id)) {
+      return Colors.green;
+    }
+
+    final now = DateTime.now();
+    final timeRemaining = test.endTime.difference(now);
+
+    if (timeRemaining.isNegative) {
+      return Colors.red;
+    } else if (timeRemaining.inDays > 0) {
+      return Colors.orange;
+    } else {
+      return Colors.red;
+    }
   }
 
   @override
@@ -48,59 +153,78 @@ class _AssignedTestsScreenState extends State<AssignedTestsScreen> {
       return const LoadingIndicator();
     }
     return Scaffold(
-      body: CustomScrollView(
-        slivers: [
-          SliverAppBar(
-            title: const Text(
-              'Bài kiểm tra',
-              style: TextStyle(fontWeight: FontWeight.bold),
+      body: NestedScrollView(
+        headerSliverBuilder: (context, innerBoxIsScrolled) {
+          return [
+            SliverAppBar(
+              title: const Text(
+                'Bài kiểm tra',
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
+              floating: true,
+              pinned: true,
+              automaticallyImplyLeading: false,
+              bottom: TabBar(
+                controller: _tabController,
+                tabs: const [
+                  Tab(text: 'Đang diễn ra'),
+                  Tab(text: 'Sắp tới'),
+
+                  Tab(text: 'Quá hạn'),
+                ],
+              ),
             ),
-            floating: true,
-            automaticallyImplyLeading: false,
-          ),
-          SliverPadding(
-            padding: const EdgeInsets.all(16),
-            sliver: SliverList(
-              delegate: SliverChildBuilderDelegate((context, index) {
-                final test = tests[index];
-                final now = DateTime.now();
-                final timeRemaining = test.endTime.difference(now);
-                final isOverdue = timeRemaining.isNegative;
+          ];
+        },
+        body: TabBarView(
+          controller: _tabController,
+          children: List.generate(3, (index) {
+            final filteredTests = _getFilteredTests(index);
+            return CustomScrollView(
+              slivers: [
+                SliverPadding(
+                  padding: const EdgeInsets.all(16),
+                  sliver: SliverList(
+                    delegate: SliverChildBuilderDelegate((context, index) {
+                      final test = filteredTests[index];
+                      final isCompleted = _isTestCompleted(test.id);
+                      final studentAnswer =
+                          isCompleted ? _getTestAnswer(test.id) : null;
 
-                String timeText;
-                Color statusColor;
-
-                if (isOverdue) {
-                  timeText = 'Overdue';
-                  statusColor = Colors.red;
-                } else if (timeRemaining.inDays > 0) {
-                  timeText = 'Due in ${timeRemaining.inDays} days';
-                  statusColor = Colors.orange;
-                } else if (timeRemaining.inHours > 0) {
-                  timeText = 'Due in ${timeRemaining.inHours} hours';
-                  statusColor = Colors.orange;
-                } else {
-                  timeText = 'Due in ${timeRemaining.inMinutes} minutes';
-                  statusColor = Colors.red;
-                }
-
-                return PrivateTestCard(
-                  title: test.title,
-                  subject: test.subject,
-                  teacherId: test.teacherId,
-                  dueDate: timeText,
-                  color: statusColor,
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      PageTransitions.slideTransition(QuizScreen(test: test)),
-                    );
-                  },
-                );
-              }, childCount: tests.length),
-            ),
-          ),
-        ],
+                      return PrivateTestCard(
+                        title: test.title,
+                        subject: test.subject,
+                        teacherId: test.teacherId,
+                        dueDate: _getTimeText(test),
+                        color: _getStatusColor(test),
+                        isCompleted: isCompleted,
+                        score: studentAnswer?.score,
+                        timeTaken: studentAnswer?.timeTaken,
+                        onTap: () {
+                          if (isCompleted) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text('Xem lại bài thi: ${test.title}'),
+                                behavior: SnackBarBehavior.floating,
+                              ),
+                            );
+                          } else {
+                            Navigator.push(
+                              context,
+                              PageTransitions.slideTransition(
+                                QuizScreen(test: test),
+                              ),
+                            );
+                          }
+                        },
+                      );
+                    }, childCount: filteredTests.length),
+                  ),
+                ),
+              ],
+            );
+          }),
+        ),
       ),
     );
   }

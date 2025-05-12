@@ -7,7 +7,7 @@ import 'package:kid_arena/services/study_streak_service.dart';
 final getIt = GetIt.instance;
 
 Future<void> getItInit() async {
-  getIt.registerLazySingleton<AuthService>(() => AuthServiceImpl());
+  getIt.registerSingleton<AuthService>(AuthServiceImpl());
   getIt.registerLazySingleton<ClassService>(() => ClassService());
   getIt.registerLazySingleton<TestService>(() => TestService());
   getIt.registerLazySingleton<StudyStreakService>(() => StudyStreakService());

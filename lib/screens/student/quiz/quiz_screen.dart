@@ -6,6 +6,7 @@ import 'package:kid_arena/models/test/index.dart';
 import 'package:kid_arena/get_it.dart';
 import 'package:kid_arena/services/study_streak_service.dart';
 import 'package:kid_arena/services/test_service.dart';
+import 'package:kid_arena/utils/index.dart';
 import 'dart:async';
 import 'package:percent_indicator/percent_indicator.dart';
 import '../../../widgets/student/test/option_widget.dart';
@@ -50,18 +51,12 @@ class _QuizScreenState extends State<QuizScreen> with TickerProviderStateMixin {
   void _startTimer() {
     _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
       if (_timeRemainingInSeconds > 0) {
-        if (mounted) {
-          setState(() {
-            _timeRemainingInSeconds--;
-          });
-        } else {
-          timer.cancel();
-        }
+        setState(() {
+          _timeRemainingInSeconds--;
+        });
       } else {
         _timer?.cancel();
-        if (mounted) {
-          _submitQuiz();
-        }
+        _submitQuiz();
       }
     });
   }
@@ -130,14 +125,16 @@ class _QuizScreenState extends State<QuizScreen> with TickerProviderStateMixin {
     );
 
     if (shouldExit == true) {
+      if (!context.mounted) return;
       Navigator.of(context).pop();
     }
   }
 
-  Future<void> _submitQuiz() async {
+  void _submitQuiz() async {
     setState(() {
       isSubmitting = true;
     });
+
     _timer?.cancel();
     int correctAnswers = 0;
     for (int i = 0; i < widget.test.questions.length; i++) {
@@ -146,11 +143,27 @@ class _QuizScreenState extends State<QuizScreen> with TickerProviderStateMixin {
         correctAnswers++;
       }
     }
-    log('correctAnswers: $correctAnswers');
+
     double score =
         (correctAnswers.toDouble() / widget.test.questions.length) * 100;
     int timeTaken = widget.test.duration - _timeRemainingInSeconds;
-    log('duration: ${widget.test.duration}');
+
+    final studentAnswer = StudentAnswer(
+      id: 'ans_${DateTime.now().millisecondsSinceEpoch}',
+      studentId: FirebaseAuth.instance.currentUser?.uid ?? '',
+      answers: _selectedAnswers,
+      testId: widget.test.id,
+      submittedAt: DateTime.now(),
+      timeTaken: timeTaken,
+      score: score,
+    );
+
+    Navigator.pushReplacement(
+      context,
+      PageTransitions.slideTransition(
+        ResultsScreen(studentAnswer: studentAnswer, test: widget.test),
+      ),
+    );
     try {
       await getIt<TestService>().submitStudentAnswerForAPublicTest(
         widget.test.id,
@@ -159,28 +172,6 @@ class _QuizScreenState extends State<QuizScreen> with TickerProviderStateMixin {
         score,
       );
       await getIt<StudyStreakService>().addStudyDay();
-      final studentAnswer = StudentAnswer(
-        id: 'ans_${DateTime.now().millisecondsSinceEpoch}',
-        studentId: FirebaseAuth.instance.currentUser?.uid ?? '',
-        answers: _selectedAnswers,
-        testId: widget.test.id,
-        submittedAt: DateTime.now(),
-        timeTaken: timeTaken,
-        score: score,
-      );
-
-      if (mounted) {
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(
-            builder:
-                (context) => ResultsScreen(
-                  studentAnswer: studentAnswer,
-                  test: widget.test,
-                ),
-          ),
-        );
-      }
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(

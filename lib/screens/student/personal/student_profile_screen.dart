@@ -149,9 +149,13 @@ class _StudentProfileScreenState extends State<StudentProfileScreen>
         children: [
           _buildInfoCard('Thông tin cá nhân', [
             _buildInfoRow(Icons.person, 'Họ và tên', user.fullName),
-            _buildInfoRow(Icons.email, 'Email', user.email),
+            _buildInfoRow(Icons.email, 'Tên đăng nhập', user.username),
             _buildInfoRow(Icons.phone, 'Số điện thoại', '+84 123 456 789'),
-            _buildInfoRow(Icons.cake, 'Ngày sinh', user.dateOfBirth),
+            _buildInfoRow(
+              Icons.cake,
+              'Ngày sinh',
+              DateFormat('dd/MM/yyyy').format(DateTime.parse(user.dateOfBirth)),
+            ),
           ]),
           const SizedBox(height: 16),
           _buildInfoCard('Thông tin học tập', [

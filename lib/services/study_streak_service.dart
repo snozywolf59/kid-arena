@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
@@ -22,14 +24,31 @@ class StudyStreakService {
 
   // Add a study day to the streak
   Future<void> addStudyDay() async {
-    final userId = _auth.currentUser?.uid;
-    if (userId == null) return;
+    try {
+      final userId = _auth.currentUser?.uid;
+      if (userId == null) return;
 
-    final dayIndex = DateTime.now().weekday % 7;
+      final dayIndex = DateTime.now().weekday % 7;
+      final userDoc = _firestore.collection('study_streaks').doc(userId);
 
-    await _firestore.collection('study_streaks').doc(userId).set({
-      'studiedDays': FieldValue.arrayUnion([dayIndex]),
-      'lastUpdated': FieldValue.serverTimestamp(),
-    }, SetOptions(merge: true));
+      // Check if document exists
+      final docSnapshot = await userDoc.get();
+      if (!docSnapshot.exists) {
+        log('người dùng chưa có dữ liệu');
+        // Create new document if it doesn't exist
+        await userDoc.set({
+          'studiedDays': [dayIndex],
+          'lastUpdated': FieldValue.serverTimestamp(),
+        });
+      } else {
+        // Update existing document
+        await userDoc.update({
+          'studiedDays': FieldValue.arrayUnion([dayIndex]),
+          'lastUpdated': FieldValue.serverTimestamp(),
+        });
+      }
+    } catch (e) {
+      log('lỗi khi thêm ngày học: $e');
+    }
   }
 }

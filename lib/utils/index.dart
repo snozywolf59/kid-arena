@@ -1,0 +1,1 @@
+export 'package:kid_arena/utils/page_transitions.dart';
