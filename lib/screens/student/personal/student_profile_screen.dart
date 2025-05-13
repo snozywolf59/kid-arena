@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:kid_arena/constants/image.dart';
 import 'package:kid_arena/models/user/index.dart';
 import 'package:kid_arena/screens/student/personal/progress_screen.dart';
 import 'package:kid_arena/services/auth_service.dart';
@@ -102,9 +103,10 @@ class _StudentProfileScreenState extends State<StudentProfileScreen>
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.end,
                     children: [
-                      const CircleAvatar(
+                      CircleAvatar(
                         radius: 50,
-                        backgroundImage: AssetImage('images/avatar.png'),
+                        backgroundImage: AssetImage(ImageLink.avatarImage),
+                        backgroundColor: Colors.white,
                       ),
                       const SizedBox(height: 16),
                       Text(

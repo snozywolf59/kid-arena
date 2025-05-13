@@ -22,39 +22,31 @@ class StudyStreakWidget extends StatelessWidget {
           ),
           borderRadius: BorderRadius.circular(20),
         ),
-        child: Row(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Container(
-              padding: const EdgeInsets.all(12),
-              decoration: BoxDecoration(
-                color: Colors.white.withAlpha(50),
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: const Icon(
-                Icons.local_fire_department,
-                color: Colors.white,
-                size: 32,
-              ),
+            Row(
+              children: [
+                const Icon(
+                  Icons.local_fire_department,
+                  color: Colors.white,
+                  size: 32,
+                ),
+                const SizedBox(width: 8),
+                const Text(
+                  'Chuỗi ngày học tập tuần này',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 18,
+                  ),
+                ),
+              ],
             ),
-            const SizedBox(width: 16),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Text(
-                    'Chuỗi ngày học tập',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 18,
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  _DaysOfWeek(
-                    streakStream: getIt<StudyStreakService>().getStudyStreak(),
-                  ),
-                ],
-              ),
+
+            const SizedBox(height: 8),
+            _DaysOfWeek(
+              streakStream: getIt<StudyStreakService>().getStudyStreak(),
             ),
           ],
         ),
@@ -92,42 +84,45 @@ class _DaysOfWeekState extends State<_DaysOfWeek> {
             final isToday = index == DateTime.now().weekday % 7;
             final isStudied = studiedDays.contains(index);
 
-            return Container(
-              margin: const EdgeInsets.only(right: 8),
-              padding: const EdgeInsets.all(8),
-              decoration: BoxDecoration(
-                color:
-                    isToday
-                        ? Colors.white
-                        : isStudied
-                        ? Colors.white.withAlpha(80)
-                        : Colors.white.withAlpha(50),
-                borderRadius: BorderRadius.circular(8),
-                boxShadow:
+            return Expanded(
+              child: Container(
+                margin: const EdgeInsets.all(4),
+                padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 4),
+                decoration: BoxDecoration(
+                  color:
+                      isToday
+                          ? Colors.white
+                          : isStudied
+                          ? Colors.white.withAlpha(80)
+                          : Colors.white.withAlpha(50),
+                  borderRadius: BorderRadius.circular(8),
+                  boxShadow:
+                      isStudied
+                          ? [
+                            BoxShadow(
+                              color: Colors.white.withOpacity(0.3),
+                              blurRadius: 4,
+                              spreadRadius: 1,
+                            ),
+                          ]
+                          : null,
+                ),
+                child:
                     isStudied
-                        ? [
-                          BoxShadow(
-                            color: Colors.white.withOpacity(0.3),
-                            blurRadius: 4,
-                            spreadRadius: 1,
+                        ? Icon(Icons.check, color: Colors.red)
+                        : Text(
+                          textAlign: TextAlign.center,
+                          daysInWeek[index],
+                          style: TextStyle(
+                            color:
+                                isToday
+                                    ? Colors.deepOrange[600]
+                                    : isStudied
+                                    ? Colors.white
+                                    : Colors.white.withOpacity(0.7),
                           ),
-                        ]
-                        : null,
-              ),
-              child:
-                  isStudied
-                      ? Icon(Icons.check, color: Colors.red)
-                      : Text(
-                        daysInWeek[index],
-                        style: TextStyle(
-                          color:
-                              isToday
-                                  ? Colors.deepOrange[600]
-                                  : isStudied
-                                  ? Colors.white
-                                  : Colors.white.withOpacity(0.7),
                         ),
-                      ),
+              ),
             );
           }),
         );

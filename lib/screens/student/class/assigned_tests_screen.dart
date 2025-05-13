@@ -58,7 +58,7 @@ class _AssignedTestsScreenState extends State<AssignedTestsScreen>
 
       final tests = await getIt<TestService>().getTestsForStudent();
       final answers = await getIt<TestService>()
-          .getStudentAnswersForPublicTests(currentUser.uid);
+          .getStudentAnswersForAssignedTest(currentUser.uid);
 
       // Load class names for all tests
       for (final test in tests) {
@@ -78,9 +78,9 @@ class _AssignedTestsScreenState extends State<AssignedTestsScreen>
         isLoading = false;
       });
       if (mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text('Lỗi khi tải dữ liệu: $e')));
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Lỗi khi tải dữ liệu: ${e.toString()}')),
+        );
       }
     }
   }

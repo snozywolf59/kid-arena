@@ -1,5 +1,11 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:kid_arena/blocs/theme/theme_bloc.dart';
+import 'package:kid_arena/blocs/theme/theme_event.dart';
+import 'package:kid_arena/blocs/theme/theme_state.dart';
 import 'package:kid_arena/constants/subject.dart';
 import 'package:kid_arena/models/test/index.dart';
 import 'package:kid_arena/models/student_answer.dart';
@@ -34,8 +40,31 @@ class _PublicTestsScreenState extends State<PublicTestsScreen> {
         child: CustomScrollView(
           physics: const BouncingScrollPhysics(),
           slivers: [
-            const SliverAppBar(floating: true, title: HeaderWidget()),
-            const SliverToBoxAdapter(child: SizedBox(height: 16)),
+            SliverAppBar(
+              floating: true,
+              title: HeaderWidget(),
+              actions: [
+                IconButton(onPressed: () {}, icon: Icon(Icons.notifications)),
+                BlocBuilder<ThemeBloc, ThemeState>(
+                  builder: (context, state) {
+                    return IconButton(
+                      icon: Icon(
+                        state.isDarkMode ? Icons.light_mode : Icons.dark_mode,
+                      ),
+                      onPressed: () {
+                        context.read<ThemeBloc>().add(ThemeToggled());
+                      },
+                    );
+                  },
+                ),
+                CircleAvatar(
+                  radius: 24,
+                  backgroundColor: Colors.blue[100],
+                  child: const Icon(Icons.person, color: Colors.blue, size: 30),
+                ),
+              ],
+            ),
+            const SliverToBoxAdapter(child: SizedBox(height: 8)),
             const SliverToBoxAdapter(child: StudyStreakWidget()),
             const SliverToBoxAdapter(child: LeaderboardWidget()),
             SliverPadding(
@@ -51,7 +80,7 @@ class _PublicTestsScreenState extends State<PublicTestsScreen> {
               padding: const EdgeInsets.all(20),
               sliver: SliverGrid(
                 gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 3,
+                  crossAxisCount: 2,
                   childAspectRatio: 1.1,
                   crossAxisSpacing: 20,
                   mainAxisSpacing: 20,

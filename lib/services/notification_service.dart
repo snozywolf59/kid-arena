@@ -46,6 +46,7 @@ class NotificationService {
         snapshot.docs.map((doc) => ClassNotification.fromFirestore(doc)),
       );
     }
+    notifications.sort((a, b) => b.createdAt.compareTo(a.createdAt));
     return notifications;
   }
 }

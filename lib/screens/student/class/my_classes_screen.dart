@@ -1,7 +1,11 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:kid_arena/models/class.dart';
+import 'package:kid_arena/screens/student/class/my_notification.dart';
 import 'package:kid_arena/services/class_service.dart';
 import 'package:kid_arena/get_it.dart';
+import 'package:kid_arena/utils/page_transitions.dart';
 import 'package:kid_arena/widgets/student/class/class_card.dart';
 import 'package:kid_arena/widgets/common/search_bar_widget.dart';
 
@@ -170,7 +174,11 @@ class _MyClassesScreenState extends State<MyClassesScreen> {
                 return ClassCard(
                   classData: classData,
                   onTap: () {
-                    // TODO: Navigate to class details screen
+                    log('to class notification ${classData.id}');
+                    Navigator.push(
+                      context,
+                      PageTransitions.slideTransition(MyNotification()),
+                    );
                   },
                 );
               },

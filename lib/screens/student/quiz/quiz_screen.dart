@@ -126,7 +126,7 @@ class _QuizScreenState extends State<QuizScreen> with TickerProviderStateMixin {
 
     if (shouldExit == true) {
       if (!context.mounted) return;
-      Navigator.of(context).pop();
+      Navigator.pop(context);
     }
   }
 
@@ -200,26 +200,32 @@ class _QuizScreenState extends State<QuizScreen> with TickerProviderStateMixin {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
     final currentQuestion = widget.test.questions[_currentQuestionIndex];
     final double progress =
         (_currentQuestionIndex + 1) / widget.test.questions.length;
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.test.title, style: const TextStyle(fontSize: 18)),
-        backgroundColor: theme.scaffoldBackgroundColor,
+        title: Text(
+          widget.test.title,
+          style: theme.textTheme.titleLarge?.copyWith(
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+        backgroundColor: colorScheme.surface,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.close_rounded),
+          icon: Icon(Icons.close_rounded, color: colorScheme.onSurface),
           onPressed: () => _showExitConfirmationDialog(context),
         ),
         bottom: PreferredSize(
-          preferredSize: const Size.fromHeight(8.0), // Mỏng hơn
+          preferredSize: const Size.fromHeight(8.0),
           child: LinearPercentIndicator(
             lineHeight: 8.0,
             percent: progress,
-            backgroundColor: Colors.grey.shade300,
-            progressColor: theme.primaryColor,
+            backgroundColor: colorScheme.surfaceVariant,
+            progressColor: colorScheme.primary,
             barRadius: const Radius.circular(5),
             padding: EdgeInsets.zero,
             animation: true,
@@ -239,7 +245,7 @@ class _QuizScreenState extends State<QuizScreen> with TickerProviderStateMixin {
                   'Câu ${_currentQuestionIndex + 1}/${widget.test.questions.length}',
                   style: theme.textTheme.titleMedium?.copyWith(
                     fontWeight: FontWeight.w600,
-                    color: theme.primaryColor,
+                    color: colorScheme.primary,
                   ),
                 ),
                 Container(
@@ -250,30 +256,29 @@ class _QuizScreenState extends State<QuizScreen> with TickerProviderStateMixin {
                   decoration: BoxDecoration(
                     color:
                         _timeRemainingInSeconds < 30
-                            ? Colors.red.withOpacity(0.1)
-                            : theme.hintColor.withOpacity(0.15),
+                            ? colorScheme.errorContainer
+                            : colorScheme.surfaceVariant,
                     borderRadius: BorderRadius.circular(20),
                   ),
                   child: Row(
                     children: [
                       Icon(
-                        Icons.timer_sharp, // Icon khác biệt
+                        Icons.timer_sharp,
                         size: 18,
                         color:
                             _timeRemainingInSeconds < 30
-                                ? Colors.red.shade700
-                                : theme.hintColor,
+                                ? colorScheme.error
+                                : colorScheme.onSurfaceVariant,
                       ),
                       const SizedBox(width: 5),
                       Text(
                         _formatDuration(_timeRemainingInSeconds),
-                        style: TextStyle(
-                          fontSize: 16,
+                        style: theme.textTheme.bodyLarge?.copyWith(
                           fontWeight: FontWeight.bold,
                           color:
                               _timeRemainingInSeconds < 30
-                                  ? Colors.red.shade700
-                                  : theme.hintColor,
+                                  ? colorScheme.error
+                                  : colorScheme.onSurfaceVariant,
                         ),
                       ),
                     ],
@@ -282,10 +287,9 @@ class _QuizScreenState extends State<QuizScreen> with TickerProviderStateMixin {
               ],
             ),
             const SizedBox(height: 24),
-            // --- Question Text with Animation ---
             SlideTransition(
               position: Tween<Offset>(
-                begin: const Offset(0.3, 0), // Slide từ phải qua nhẹ
+                begin: const Offset(0.3, 0),
                 end: Offset.zero,
               ).animate(
                 CurvedAnimation(
@@ -296,16 +300,16 @@ class _QuizScreenState extends State<QuizScreen> with TickerProviderStateMixin {
               child: FadeTransition(
                 opacity: _progressController,
                 child: Container(
-                  padding: const EdgeInsets.all(20.0), // Tăng padding
+                  padding: const EdgeInsets.all(20.0),
                   decoration: BoxDecoration(
-                    color: theme.colorScheme.surface,
-                    borderRadius: BorderRadius.circular(16.0), // Bo tròn hơn
+                    color: colorScheme.surface,
+                    borderRadius: BorderRadius.circular(16.0),
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.grey.withOpacity(0.1),
+                        color: colorScheme.shadow.withOpacity(0.1),
                         spreadRadius: 1,
-                        blurRadius: 8, // Tăng blur
-                        offset: const Offset(0, 3), // Tăng offset
+                        blurRadius: 8,
+                        offset: const Offset(0, 3),
                       ),
                     ],
                   ),
@@ -313,7 +317,8 @@ class _QuizScreenState extends State<QuizScreen> with TickerProviderStateMixin {
                     currentQuestion.questionText,
                     style: theme.textTheme.headlineSmall?.copyWith(
                       fontWeight: FontWeight.w500,
-                      height: 1.4, // Tăng line height
+                      height: 1.4,
+                      color: colorScheme.onSurface,
                     ),
                     textAlign: TextAlign.center,
                   ),
@@ -329,7 +334,7 @@ class _QuizScreenState extends State<QuizScreen> with TickerProviderStateMixin {
                     optionText: currentQuestion.options[index],
                     isSelected: _currentlySelectedOption == index,
                     onTap: () => _selectOption(index),
-                    optionChar: String.fromCharCode(65 + index), // A, B, C...
+                    optionChar: String.fromCharCode(65 + index),
                   );
                 },
               ),
@@ -345,30 +350,42 @@ class _QuizScreenState extends State<QuizScreen> with TickerProviderStateMixin {
                 children: [
                   if (_currentQuestionIndex > 0)
                     OutlinedButton.icon(
-                      icon: const Icon(
+                      icon: Icon(
                         Icons.arrow_back_ios_new_rounded,
                         size: 16,
+                        color: colorScheme.primary,
                       ),
-                      label: const Text('Trước'),
+                      label: Text(
+                        'Trước',
+                        style: TextStyle(color: colorScheme.primary),
+                      ),
                       onPressed: _previousQuestion,
+                      style: OutlinedButton.styleFrom(
+                        foregroundColor: colorScheme.primary,
+                        side: BorderSide(color: colorScheme.primary),
+                      ),
                     ),
                   ElevatedButton.icon(
                     icon:
                         _currentQuestionIndex ==
                                 widget.test.questions.length - 1
-                            ? const SizedBox.shrink() // Không icon khi là submit
-                            : const Icon(
+                            ? const SizedBox.shrink()
+                            : Icon(
                               Icons.arrow_forward_ios_rounded,
                               size: 16,
+                              color: colorScheme.onPrimary,
                             ),
                     label: Text(
                       _currentQuestionIndex == widget.test.questions.length - 1
                           ? 'Nộp bài'
                           : 'Tiếp theo',
+                      style: TextStyle(color: colorScheme.onPrimary),
                     ),
                     onPressed:
                         _currentlySelectedOption != null ? _nextQuestion : null,
                     style: ElevatedButton.styleFrom(
+                      backgroundColor: colorScheme.primary,
+                      foregroundColor: colorScheme.onPrimary,
                       padding: EdgeInsets.symmetric(
                         horizontal:
                             _currentQuestionIndex ==

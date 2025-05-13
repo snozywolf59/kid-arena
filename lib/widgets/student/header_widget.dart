@@ -20,66 +20,29 @@ class HeaderWidget extends StatelessWidget {
           FutureBuilder<AppUser>(
             future: getIt<AuthService>().getCurrentUserData(),
             builder: (context, snapshot) {
-              if (snapshot.hasData) {
-                final user = snapshot.data!;
-                return Column(
+              if (!snapshot.hasData) {
+                return const SizedBox.shrink();
+              }
+              return Expanded(
+                child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'Xin chào, ${user.fullName}!',
+                      'Xin chào, ${snapshot.data!.fullName}!',
                       style: TextStyle(fontSize: 16, color: Colors.grey[600]),
                     ),
                     const SizedBox(height: 4),
                     const Text(
                       'Hãy cùng học nào! 🚀',
                       style: TextStyle(
-                        fontSize: 24,
+                        fontSize: 16,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
                   ],
-                );
-              }
-              return Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Xin chào, Học sinh!',
-                    style: TextStyle(fontSize: 16, color: Colors.grey[600]),
-                  ),
-                  const SizedBox(height: 4),
-                  const Text(
-                    'Hãy cùng học nào! 🚀',
-                    style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-                  ),
-                ],
+                ),
               );
             },
-          ),
-          Row(
-            children: [
-              IconButton(
-                onPressed: () {},
-                icon: const Icon(Icons.notifications),
-              ),
-              BlocBuilder<ThemeBloc, ThemeState>(
-                builder: (context, state) {
-                  return IconButton(
-                    icon: Icon(
-                      state.isDarkMode ? Icons.light_mode : Icons.dark_mode,
-                    ),
-                    onPressed: () {
-                      context.read<ThemeBloc>().add(ThemeToggled());
-                    },
-                  );
-                },
-              ),
-              CircleAvatar(
-                radius: 24,
-                backgroundColor: Colors.blue[100],
-                child: const Icon(Icons.person, color: Colors.blue, size: 30),
-              ),
-            ],
           ),
         ],
       ),

@@ -28,7 +28,7 @@ class StudentAnswer {
       testId: data['testId'] ?? '',
       submittedAt: (data['submittedAt'] as Timestamp).toDate(),
       timeTaken: data['timeTaken'] ?? 0,
-      score: data['score'] ?? 0,
+      score: double.parse(data['score'].toString()),
     );
   }
 

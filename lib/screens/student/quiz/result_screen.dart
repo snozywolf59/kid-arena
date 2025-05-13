@@ -32,27 +32,29 @@ class ResultsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+
     int totalQuestions = test.questions.length;
     int correctAnswers = (studentAnswer.score / 100 * totalQuestions).round();
     String achievementMessage;
-    Color scoreColor = theme.primaryColor;
-    IconData achievementIcon = Icons.emoji_events_rounded;
+    Color scoreColor;
+    IconData achievementIcon;
 
     if (studentAnswer.score >= 85) {
       achievementMessage = "Xuất sắc! Bạn là một Bậc thầy Quiz!";
-      scoreColor = Colors.green.shade600;
+      scoreColor = colorScheme.primary;
       achievementIcon = Icons.military_tech_rounded;
     } else if (studentAnswer.score >= 70) {
       achievementMessage = "Tuyệt vời! Làm rất tốt!";
-      scoreColor = Colors.blue.shade600;
+      scoreColor = colorScheme.tertiary;
       achievementIcon = Icons.thumb_up_alt_rounded;
     } else if (studentAnswer.score >= 50) {
       achievementMessage = "Khá lắm! Tiếp tục cố gắng nhé!";
-      scoreColor = Colors.deepOrangeAccent;
+      scoreColor = colorScheme.secondary;
       achievementIcon = Icons.auto_awesome_rounded;
     } else {
       achievementMessage = "Cố gắng học thêm! Bạn sẽ làm được!";
-      scoreColor = Colors.orange.shade700;
+      scoreColor = colorScheme.error;
       achievementIcon = Icons.school_rounded;
     }
 
@@ -62,13 +64,13 @@ class ResultsScreen extends StatelessWidget {
         decoration: BoxDecoration(
           gradient: LinearGradient(
             colors: [
-              scoreColor.withAlpha(51), // Màu nhạt hơn ở trên
-              theme.scaffoldBackgroundColor,
-              theme.scaffoldBackgroundColor,
+              scoreColor.withOpacity(0.1),
+              colorScheme.surface,
+              colorScheme.surface,
             ],
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
-            stops: const [0.0, 0.35, 1.0], // Điều chỉnh điểm dừng gradient
+            stops: const [0.0, 0.35, 1.0],
           ),
         ),
         child: SafeArea(
@@ -86,33 +88,33 @@ class ResultsScreen extends StatelessWidget {
                     textAlign: TextAlign.center,
                     style: theme.textTheme.headlineMedium?.copyWith(
                       fontWeight: FontWeight.bold,
+                      color: colorScheme.onSurface,
                     ),
                   ),
                   Text(
                     test.title,
                     textAlign: TextAlign.center,
                     style: theme.textTheme.titleMedium?.copyWith(
-                      color: theme.primaryColor,
+                      color: colorScheme.primary,
                     ),
                   ),
                   const SizedBox(height: 30),
                   CircularPercentIndicator(
-                    radius: 90.0, // Tăng kích thước
-                    lineWidth: 15.0, // Tăng độ dày
+                    radius: 90.0,
+                    lineWidth: 15.0,
                     animation: true,
                     animationDuration: 1500,
                     percent: studentAnswer.score / 100,
                     center: Text(
                       "${studentAnswer.score.toStringAsFixed(0)}%",
-                      style: TextStyle(
+                      style: theme.textTheme.headlineLarge?.copyWith(
                         fontWeight: FontWeight.bold,
-                        fontSize: 40.0,
                         color: scoreColor,
                       ),
                     ),
                     circularStrokeCap: CircularStrokeCap.round,
                     progressColor: scoreColor,
-                    backgroundColor: scoreColor.withAlpha(65),
+                    backgroundColor: scoreColor.withOpacity(0.2),
                   ),
                   const SizedBox(height: 24),
                   Text(
@@ -120,7 +122,7 @@ class ResultsScreen extends StatelessWidget {
                     textAlign: TextAlign.center,
                     style: theme.textTheme.titleLarge?.copyWith(
                       fontWeight: FontWeight.w600,
-                      color: scoreColor, // Sử dụng scoreColor cho thông điệp
+                      color: scoreColor,
                       height: 1.3,
                     ),
                   ),
@@ -130,7 +132,7 @@ class ResultsScreen extends StatelessWidget {
                     icon: Icons.check_circle_outline_rounded,
                     label: 'Trả lời đúng',
                     value: '$correctAnswers / $totalQuestions câu',
-                    iconColor: Colors.green.shade600,
+                    iconColor: colorScheme.primary,
                   ),
                   const SizedBox(height: 12),
                   _buildResultStat(
@@ -138,7 +140,7 @@ class ResultsScreen extends StatelessWidget {
                     icon: Icons.access_time_filled_rounded,
                     label: 'Thời gian làm bài',
                     value: _formatTimeTaken(studentAnswer.timeTaken),
-                    iconColor: theme.primaryColor,
+                    iconColor: colorScheme.secondary,
                   ),
                   const SizedBox(height: 12),
                   _buildResultStat(
@@ -147,7 +149,7 @@ class ResultsScreen extends StatelessWidget {
                     label: 'Ngày nộp bài',
                     value:
                         "${studentAnswer.submittedAt.toLocal().day}/${studentAnswer.submittedAt.toLocal().month}/${studentAnswer.submittedAt.toLocal().year}",
-                    iconColor: Colors.blueGrey.shade600,
+                    iconColor: colorScheme.tertiary,
                   ),
 
                   // (Optional) Review Answers Button
@@ -159,22 +161,41 @@ class ResultsScreen extends StatelessWidget {
                   //   },
                   // ),
                   // const SizedBox(height: 10),
+                  const SizedBox(height: 24),
                   ElevatedButton.icon(
-                    icon: const Icon(Icons.home_filled),
-                    label: const Text('Về Trang Chủ'),
+                    icon: Icon(Icons.home_filled, color: colorScheme.onPrimary),
+                    label: Text(
+                      'Về Trang Chủ',
+                      style: theme.textTheme.labelLarge?.copyWith(
+                        color: colorScheme.onPrimary,
+                      ),
+                    ),
                     onPressed: () {
                       Navigator.of(context).pushAndRemoveUntil(
                         PageTransitions.slideTransition(
                           const StudentDashboard(index: 0),
-                        ), // Truyền lại data
+                        ),
                         (Route<dynamic> route) => false,
                       );
                     },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: colorScheme.primary,
+                      foregroundColor: colorScheme.onPrimary,
+                      padding: const EdgeInsets.symmetric(vertical: 16),
+                    ),
                   ),
                   const SizedBox(height: 12),
                   OutlinedButton.icon(
-                    icon: const Icon(Icons.refresh_rounded),
-                    label: const Text('Thử Quiz Khác'),
+                    icon: Icon(
+                      Icons.refresh_rounded,
+                      color: colorScheme.primary,
+                    ),
+                    label: Text(
+                      'Thử Quiz Khác',
+                      style: theme.textTheme.labelLarge?.copyWith(
+                        color: colorScheme.primary,
+                      ),
+                    ),
                     onPressed: () {
                       Navigator.of(context).pushAndRemoveUntil(
                         PageTransitions.slideTransition(
@@ -183,6 +204,11 @@ class ResultsScreen extends StatelessWidget {
                         (route) => false,
                       );
                     },
+                    style: OutlinedButton.styleFrom(
+                      foregroundColor: colorScheme.primary,
+                      side: BorderSide(color: colorScheme.primary),
+                      padding: const EdgeInsets.symmetric(vertical: 16),
+                    ),
                   ),
                 ],
               ),
@@ -200,16 +226,18 @@ class ResultsScreen extends StatelessWidget {
     required String value,
     required Color iconColor,
   }) {
+    final colorScheme = theme.colorScheme;
+
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 12.0, horizontal: 16.0),
       decoration: BoxDecoration(
-        color: theme.colorScheme.surface,
+        color: colorScheme.surface,
         borderRadius: BorderRadius.circular(12.0),
         boxShadow: [
           BoxShadow(
-            color: Colors.grey.withAlpha(25),
+            color: colorScheme.shadow.withOpacity(0.1),
             spreadRadius: 1,
-            blurRadius: 6, // Tăng blur
+            blurRadius: 6,
             offset: const Offset(0, 2),
           ),
         ],
@@ -217,24 +245,22 @@ class ResultsScreen extends StatelessWidget {
       child: Row(
         children: [
           Container(
-            // Bao Icon lại để có background
             padding: const EdgeInsets.all(8),
             decoration: BoxDecoration(
-              color: iconColor.withAlpha(25),
+              color: iconColor.withOpacity(0.1),
               shape: BoxShape.circle,
             ),
             child: Icon(icon, color: iconColor, size: 22),
           ),
           const SizedBox(width: 16),
           Expanded(
-            // Để text không bị overflow
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
                   label,
                   style: theme.textTheme.bodyMedium?.copyWith(
-                    color: theme.primaryColor,
+                    color: colorScheme.onSurfaceVariant,
                   ),
                 ),
                 const SizedBox(height: 2),
@@ -242,7 +268,7 @@ class ResultsScreen extends StatelessWidget {
                   value,
                   style: theme.textTheme.titleMedium?.copyWith(
                     fontWeight: FontWeight.w600,
-                    color: theme.primaryColor,
+                    color: colorScheme.onSurface,
                   ),
                 ),
               ],

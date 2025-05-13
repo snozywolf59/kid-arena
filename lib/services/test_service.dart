@@ -16,15 +16,17 @@ import 'package:kid_arena/models/student_answer.dart';
 class TestService {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final FirebaseAuth _auth = FirebaseAuth.instance;
-  final String _privateCollection = 'tests';
-  final String _publicCollection = 'public_tests';
-  final String _studentAnswersCollection = 'student_answers';
+  final String _assignedTestCollection = 'tests';
+  final String _publicTestCollection = 'public_tests';
+  final String _studentAnswersForPublicCollection = 'student_answers';
+  final String _studentAnswersForAssignedTestCollection =
+      'student_answers_for_assigned_test';
 
   // Create a new test
   Future<String> createTest(PrivateTest test) async {
     try {
       final docRef = await _firestore
-          .collection(_privateCollection)
+          .collection(_assignedTestCollection)
           .add(test.toMap());
       return docRef.id;
     } catch (e) {
@@ -36,7 +38,7 @@ class TestService {
   Stream<List<PrivateTest>> getTestsForTeacher() {
     final currentUser = _auth.currentUser;
     return _firestore
-        .collection(_privateCollection)
+        .collection(_assignedTestCollection)
         .where('teacherId', isEqualTo: currentUser?.uid)
         .orderBy('createdAt', descending: true)
         .snapshots()
@@ -50,7 +52,7 @@ class TestService {
   Future<List<PrivateTest>> getTestsForClass(String classId) async {
     final snapshot =
         await _firestore
-            .collection(_privateCollection)
+            .collection(_assignedTestCollection)
             .where('classId', isEqualTo: classId)
             .get();
     return snapshot.docs.map((doc) => PrivateTest.fromFirestore(doc)).toList();
@@ -60,7 +62,7 @@ class TestService {
   Future<void> updateTest(PrivateTest test) async {
     try {
       await _firestore
-          .collection(_privateCollection)
+          .collection(_assignedTestCollection)
           .doc(test.id)
           .update(test.toMap());
     } catch (e) {
@@ -71,7 +73,7 @@ class TestService {
   // Delete a test
   Future<void> deleteTest(String testId) async {
     try {
-      await _firestore.collection(_privateCollection).doc(testId).delete();
+      await _firestore.collection(_assignedTestCollection).doc(testId).delete();
     } catch (e) {
       throw Exception('Failed to delete test: $e');
     }
@@ -81,7 +83,10 @@ class TestService {
   Future<PrivateTest?> getTestById(String testId) async {
     try {
       final doc =
-          await _firestore.collection(_privateCollection).doc(testId).get();
+          await _firestore
+              .collection(_assignedTestCollection)
+              .doc(testId)
+              .get();
       if (doc.exists) {
         return PrivateTest.fromFirestore(doc);
       }
@@ -141,12 +146,25 @@ class TestService {
     // Get all tests for these classes
     final testsSnapshot =
         await _firestore
-            .collection(_privateCollection)
+            .collection(_assignedTestCollection)
             .where('classId', whereIn: classIds)
             .get();
 
     return testsSnapshot.docs
         .map((doc) => PrivateTest.fromFirestore(doc))
+        .toList();
+  }
+
+  Future<List<StudentAnswer>> getStudentAnswersForAssignedTest(
+    String studentId,
+  ) async {
+    final snapshot =
+        await _firestore
+            .collection(_studentAnswersForAssignedTestCollection)
+            .where('studentId', isEqualTo: studentId)
+            .get();
+    return snapshot.docs
+        .map((doc) => StudentAnswer.fromFirestore(doc))
         .toList();
   }
 
@@ -157,7 +175,7 @@ class TestService {
   Future<List<PublicTest>> getPublicTestsBySubject(Subject subject) async {
     final snapshot =
         await _firestore
-            .collection(_publicCollection)
+            .collection(_publicTestCollection)
             .where('subject', isEqualTo: subject.name)
             .get();
     return snapshot.docs.map((doc) => PublicTest.fromFirestore(doc)).toList();
@@ -166,7 +184,7 @@ class TestService {
   Future<List<PublicTest>> getPublicTestsByGrade(int grade) async {
     final snapshot =
         await _firestore
-            .collection(_publicCollection)
+            .collection(_publicTestCollection)
             .where('grade', isEqualTo: grade)
             .get();
     return snapshot.docs.map((doc) => PublicTest.fromFirestore(doc)).toList();
@@ -178,7 +196,7 @@ class TestService {
   ) async {
     final snapshot =
         await _firestore
-            .collection(_studentAnswersCollection)
+            .collection(_studentAnswersForPublicCollection)
             .where('studentId', isEqualTo: studentId)
             .orderBy('score', descending: true)
             .get();
@@ -194,7 +212,7 @@ class TestService {
   ) async {
     final snapshot =
         await _firestore
-            .collection(_studentAnswersCollection)
+            .collection(_studentAnswersForPublicCollection)
             .where('studentId', isEqualTo: studentId)
             .where('testId', isEqualTo: testId)
             .get();
@@ -221,9 +239,9 @@ class TestService {
         timeTaken: timeTaken,
       );
 
-      final result = await _firestore.collection(_studentAnswersCollection).add(
-        {...studentAnswer.toMap(), 'score': score},
-      );
+      final result = await _firestore
+          .collection(_studentAnswersForPublicCollection)
+          .add({...studentAnswer.toMap(), 'score': score});
       if (result.id.isNotEmpty) {
         return;
       } else {
