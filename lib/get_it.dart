@@ -1,9 +1,5 @@
 import 'package:get_it/get_it.dart';
-import 'package:kid_arena/services/class_service.dart';
-import 'package:kid_arena/services/auth_service.dart';
-import 'package:kid_arena/services/test_service.dart';
-import 'package:kid_arena/services/study_streak_service.dart';
-import 'package:kid_arena/services/user_service.dart';
+import 'package:kid_arena/services/index.dart';
 
 final getIt = GetIt.instance;
 
@@ -14,4 +10,5 @@ Future<void> getItInit() async {
   getIt.registerLazySingleton<ClassService>(() => ClassService());
   getIt.registerLazySingleton<TestService>(() => TestService());
   getIt.registerLazySingleton<StudyStreakService>(() => StudyStreakService());
+  getIt.registerLazySingleton<NotificationService>(() => NotificationService());
 }

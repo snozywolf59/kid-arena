@@ -17,7 +17,9 @@ class ManageStudentsScreen extends StatefulWidget {
 
 class _ManageStudentsScreenState extends State<ManageStudentsScreen> {
   final _studentUsernameQueryController = TextEditingController();
+  final _addStudentController = TextEditingController();
   List<Student> _students = [];
+  List<Student> _filteredStudents = [];
   bool _isLoading = false;
 
   @override
@@ -29,6 +31,7 @@ class _ManageStudentsScreenState extends State<ManageStudentsScreen> {
   @override
   void dispose() {
     _studentUsernameQueryController.dispose();
+    _addStudentController.dispose();
     super.dispose();
   }
 
@@ -48,6 +51,7 @@ class _ManageStudentsScreenState extends State<ManageStudentsScreen> {
       );
       setState(() {
         _students = students;
+        _filteredStudents = students;
       });
     } catch (e) {
       if (mounted) {
@@ -60,8 +64,51 @@ class _ManageStudentsScreenState extends State<ManageStudentsScreen> {
     }
   }
 
+  void _filterStudents(String query) {
+    setState(() {
+      _filteredStudents =
+          _students.where((student) {
+            return student.fullName.toLowerCase().contains(
+                  query.toLowerCase(),
+                ) ||
+                student.username.toLowerCase().contains(query.toLowerCase());
+          }).toList();
+    });
+  }
+
+  Future<void> _showAddStudentDialog() async {
+    _addStudentController.clear();
+    return showDialog(
+      context: context,
+      builder:
+          (context) => AlertDialog(
+            title: const Text('Thêm học sinh'),
+            content: TextField(
+              controller: _addStudentController,
+              decoration: const InputDecoration(
+                labelText: 'Username học sinh',
+                hintText: 'Nhập username của học sinh',
+              ),
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: const Text('Hủy'),
+              ),
+              TextButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                  _addStudent();
+                },
+                child: const Text('Thêm'),
+              ),
+            ],
+          ),
+    );
+  }
+
   Future<void> _addStudent() async {
-    final studentId = _studentUsernameQueryController.text.trim();
+    final studentId = _addStudentController.text.trim();
     if (studentId.isEmpty) {
       _showErrorMessage('Vui lòng nhập ID học sinh');
       return;
@@ -89,7 +136,6 @@ class _ManageStudentsScreenState extends State<ManageStudentsScreen> {
         widget.classroom.id,
         studentId,
       );
-      _studentUsernameQueryController.clear();
       await _loadStudents();
       if (mounted) {
         _showSuccessMessage('Thêm học sinh thành công');
@@ -142,35 +188,22 @@ class _ManageStudentsScreenState extends State<ManageStudentsScreen> {
     ).showSnackBar(SnackBar(content: Text('Lỗi: $error')));
   }
 
-  Widget _buildAddStudentForm() {
+  Widget _buildSearchBar() {
     return Padding(
       padding: const EdgeInsets.all(16.0),
-      child: Row(
-        children: [
-          Expanded(
-            child: SearchBarWidget(
-              controller: _studentUsernameQueryController,
-              hintText: 'Tìm kiếm học sinh...',
-              onSearch: (value) {
-                _studentUsernameQueryController.text = value;
-              },
-            ),
-          ),
-          TextButton.icon(
-            icon: const Icon(Icons.add_box_rounded),
-            label: const Text('Thêm học sinh'),
-            onPressed: _addStudent,
-          ),
-        ],
+      child: SearchBarWidget(
+        controller: _studentUsernameQueryController,
+        hintText: 'Tìm kiếm học sinh...',
+        onSearch: _filterStudents,
       ),
     );
   }
 
   Widget _buildStudentList() {
     return ListView.builder(
-      itemCount: _students.length,
+      itemCount: _filteredStudents.length,
       itemBuilder: (context, index) {
-        final student = _students[index];
+        final student = _filteredStudents[index];
         return _buildStudentListItem(student);
       },
     );
@@ -210,8 +243,15 @@ class _ManageStudentsScreenState extends State<ManageStudentsScreen> {
       return _buildLoadingIndicator();
     }
 
-    return Column(
-      children: [_buildAddStudentForm(), Expanded(child: _buildStudentList())],
+    return Scaffold(
+      body: Column(
+        children: [_buildSearchBar(), Expanded(child: _buildStudentList())],
+      ),
+      floatingActionButton: FloatingActionButton.extended(
+        onPressed: _showAddStudentDialog,
+        label: const Text('Thêm học sinh'),
+        icon: const Icon(Icons.add_box_rounded),
+      ),
     );
   }
 }

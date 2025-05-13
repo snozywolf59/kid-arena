@@ -26,33 +26,26 @@ class TestDetailScreen extends StatelessWidget {
           children: [
             // Header with test info
             _TestHeader(test: test),
-            
+
             const SizedBox(height: 32),
-            
+
             // Description section
             _DescriptionSection(description: test.description),
-            
+
             const SizedBox(height: 32),
-            
+
             // Stats cards
-            _TestStats(duration: test.duration, questionCount: test.questions.length),
-            
+            _TestStats(
+              duration: test.duration,
+              questionCount: test.questions.length,
+            ),
+
             const SizedBox(height: 32),
-            
+
             // Questions preview
             _QuestionsPreview(questions: test.questions),
           ],
         ),
-      ),
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: () {
-          // Start the test
-        },
-        icon: const Icon(Icons.play_arrow_rounded),
-        label: const Text('Start Test'),
-        backgroundColor: Colors.blueAccent,
-        foregroundColor: Colors.white,
-        elevation: 2,
       ),
     );
   }
@@ -90,7 +83,10 @@ class _TestHeader extends StatelessWidget {
                   color: Colors.blueAccent.withOpacity(0.1),
                   shape: BoxShape.circle,
                 ),
-                child: const Icon(Icons.quiz_outlined, color: Colors.blueAccent),
+                child: const Icon(
+                  Icons.quiz_outlined,
+                  color: Colors.blueAccent,
+                ),
               ),
               const SizedBox(width: 16),
               Expanded(
@@ -106,13 +102,11 @@ class _TestHeader extends StatelessWidget {
                     ),
                     const SizedBox(height: 4),
                     Text(
-                      'Created ${DateFormat('MMM d, y').format(test.createdAt)}',
-                      style: TextStyle(
-                        fontSize: 14,
-                        color: Colors.grey[600],
-                      ),
+                      'Tạo vào ${DateFormat('dd/MM/yyyy').format(test.createdAt)}',
+                      style: TextStyle(fontSize: 14, color: Colors.grey[600]),
                     ),
-                  ]),
+                  ],
+                ),
               ),
             ],
           ),
@@ -133,11 +127,8 @@ class _DescriptionSection extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         const Text(
-          'Description',
-          style: TextStyle(
-            fontSize: 18,
-            fontWeight: FontWeight.bold,
-          ),
+          'Mô tả',
+          style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
         ),
         const SizedBox(height: 12),
         Container(
@@ -171,10 +162,7 @@ class _TestStats extends StatelessWidget {
   final int duration;
   final int questionCount;
 
-  const _TestStats({
-    required this.duration,
-    required this.questionCount,
-  });
+  const _TestStats({required this.duration, required this.questionCount});
 
   @override
   Widget build(BuildContext context) {
@@ -183,8 +171,8 @@ class _TestStats extends StatelessWidget {
         Expanded(
           child: _StatCard(
             icon: Icons.timer_outlined,
-            value: '${duration} min',
-            label: 'Duration',
+            value: '$duration phút ${duration % 60 == 0 ? '' : '${duration % 60} giây'}',
+            label: 'Thời gian',
             color: Colors.orangeAccent,
           ),
         ),
@@ -193,7 +181,7 @@ class _TestStats extends StatelessWidget {
           child: _StatCard(
             icon: Icons.question_answer_outlined,
             value: '$questionCount',
-            label: 'Questions',
+            label: 'Câu hỏi',
             color: Colors.purpleAccent,
           ),
         ),
@@ -238,23 +226,15 @@ class _StatCard extends StatelessWidget {
               color: color.withOpacity(0.1),
               shape: BoxShape.circle,
             ),
-            child: Icon(icon, color: color)),
+            child: Icon(icon, color: color),
+          ),
           const SizedBox(height: 12),
           Text(
             value,
-            style: const TextStyle(
-              fontSize: 20,
-              fontWeight: FontWeight.bold,
-            ),
+            style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 4),
-          Text(
-            label,
-            style: TextStyle(
-              fontSize: 14,
-              color: Colors.grey[600],
-            ),
-          ),
+          Text(label, style: TextStyle(fontSize: 14, color: Colors.grey[600])),
         ],
       ),
     );
@@ -272,38 +252,20 @@ class _QuestionsPreview extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         const Text(
-          'Questions Preview',
-          style: TextStyle(
-            fontSize: 18,
-            fontWeight: FontWeight.bold,
-          ),
+          'Các câu hỏi',
+          style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
         ),
         const SizedBox(height: 12),
         ListView.separated(
           physics: const NeverScrollableScrollPhysics(),
           shrinkWrap: true,
-          itemCount: questions.length > 3 ? 3 : questions.length,
+          itemCount: questions.length,
           separatorBuilder: (context, index) => const SizedBox(height: 12),
           itemBuilder: (context, index) {
             final question = questions[index];
-            return _QuestionCard(
-              question: question,
-              index: index,
-            );
+            return _QuestionCard(question: question, index: index);
           },
         ),
-        if (questions.length > 3) ...[
-          const SizedBox(height: 12),
-          Center(
-            child: Text(
-              '+ ${questions.length - 3} more questions',
-              style: TextStyle(
-                color: Colors.grey[600],
-                fontStyle: FontStyle.italic,
-              ),
-            ),
-          ),
-        ],
       ],
     );
   }
@@ -313,10 +275,7 @@ class _QuestionCard extends StatelessWidget {
   final Question question;
   final int index;
 
-  const _QuestionCard({
-    required this.question,
-    required this.index,
-  });
+  const _QuestionCard({required this.question, required this.index});
 
   @override
   Widget build(BuildContext context) {
@@ -338,10 +297,7 @@ class _QuestionCard extends StatelessWidget {
         children: [
           Text(
             '${index + 1}. ${question.questionText}',
-            style: const TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.w500,
-            ),
+            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
           ),
           const SizedBox(height: 12),
           ...question.options.asMap().entries.map((entry) {
@@ -357,13 +313,15 @@ class _QuestionCard extends StatelessWidget {
                     margin: const EdgeInsets.only(right: 12),
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
-                      color: optionIndex == question.correctAnswer
-                          ? Colors.green.withOpacity(0.2)
-                          : Colors.grey.withOpacity(0.1),
+                      color:
+                          optionIndex == question.correctAnswer
+                              ? Colors.green.withOpacity(0.2)
+                              : Colors.grey.withOpacity(0.1),
                       border: Border.all(
-                        color: optionIndex == question.correctAnswer
-                            ? Colors.green
-                            : Colors.grey.withOpacity(0.3),
+                        color:
+                            optionIndex == question.correctAnswer
+                                ? Colors.green
+                                : Colors.grey.withOpacity(0.3),
                       ),
                     ),
                     child: Center(
@@ -371,9 +329,10 @@ class _QuestionCard extends StatelessWidget {
                         String.fromCharCode(65 + optionIndex), // A, B, C, etc.
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
-                          color: optionIndex == question.correctAnswer
-                              ? Colors.green
-                              : Colors.grey[700],
+                          color:
+                              optionIndex == question.correctAnswer
+                                  ? Colors.green
+                                  : Colors.grey[700],
                         ),
                       ),
                     ),
@@ -381,9 +340,7 @@ class _QuestionCard extends StatelessWidget {
                   Expanded(
                     child: Text(
                       optionText,
-                      style: TextStyle(
-                        color: Colors.grey[800],
-                      ),
+                      style: TextStyle(color: Colors.grey[800]),
                     ),
                   ),
                 ],

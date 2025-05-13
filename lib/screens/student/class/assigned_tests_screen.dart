@@ -7,7 +7,6 @@ import 'package:flutter/material.dart';
 
 // Project packages
 import 'package:kid_arena/get_it.dart';
-import 'package:kid_arena/models/class.dart';
 import 'package:kid_arena/models/test/private_test.dart';
 import 'package:kid_arena/screens/student/quiz/quiz_screen.dart';
 import 'package:kid_arena/services/index.dart';

@@ -131,5 +131,11 @@ class ClassService {
         );
   }
 
+  //get classes for a student
+  Future<List<Class>> getClassesForStudent(String studentId) async {
+    final snapshot = await _firestore.collection('classes').where('students', arrayContains: studentId).get();
+    return snapshot.docs.map((doc) => Class.fromFirestore(doc)).toList();
+  }
 
+  //get classes for a teacher
 }

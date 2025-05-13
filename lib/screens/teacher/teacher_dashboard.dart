@@ -41,8 +41,8 @@ class _TeacherHomePageState extends State<TeacherHomePage> {
         currentIndex: _selectedIndex,
         onTap: _onItemTapped,
 
-        unselectedItemColor: Colors.grey,
-        backgroundColor: Colors.white,
+        unselectedItemColor: Theme.of(context).colorScheme.onSurfaceVariant,
+        backgroundColor: Theme.of(context).colorScheme.surface,
         type: BottomNavigationBarType.fixed,
         selectedFontSize: 12,
         unselectedFontSize: 12,

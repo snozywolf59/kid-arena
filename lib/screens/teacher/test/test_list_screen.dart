@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:kid_arena/constants/subject.dart';
 import 'package:kid_arena/models/test/private_test.dart';
 import 'package:kid_arena/screens/teacher/test/create_test_screen.dart';
@@ -43,7 +44,6 @@ class _TestListScreenState extends State<TestListScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey[50],
       appBar: AppBar(
         title: const Text('Danh sách bài thi'),
         centerTitle: true,
@@ -56,10 +56,10 @@ class _TestListScreenState extends State<TestListScreen> {
           Container(
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
-              color: Colors.white,
+              color: Theme.of(context).colorScheme.surface,
               boxShadow: [
                 BoxShadow(
-                  color: Colors.grey.withOpacity(0.1),
+                  color: Theme.of(context).colorScheme.outline.withOpacity(0.5),
                   spreadRadius: 1,
                   blurRadius: 2,
                   offset: const Offset(0, 1),
@@ -97,7 +97,7 @@ class _TestListScreenState extends State<TestListScreen> {
                         Icon(
                           Icons.assignment_outlined,
                           size: 64,
-                          color: Colors.grey[400],
+                          color: Theme.of(context).colorScheme.onSurfaceVariant,
                         ),
                         const SizedBox(height: 16),
                         Text(
@@ -106,7 +106,8 @@ class _TestListScreenState extends State<TestListScreen> {
                               : 'Không tìm thấy bài thi phù hợp',
                           style: TextStyle(
                             fontSize: 16,
-                            color: Colors.grey[600],
+                            color:
+                                Theme.of(context).colorScheme.onSurfaceVariant,
                           ),
                         ),
                       ],
@@ -116,6 +117,7 @@ class _TestListScreenState extends State<TestListScreen> {
 
                 return ListView.builder(
                   padding: const EdgeInsets.all(16),
+
                   itemCount: filteredTests.length,
                   itemBuilder: (context, index) {
                     final test = filteredTests[index];
@@ -124,7 +126,11 @@ class _TestListScreenState extends State<TestListScreen> {
                       elevation: 0,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(16),
-                        side: BorderSide(color: Colors.grey[200]!),
+                        side: BorderSide(
+                          color: Theme.of(
+                            context,
+                          ).colorScheme.outline.withOpacity(0.5),
+                        ),
                       ),
                       child: InkWell(
                         borderRadius: BorderRadius.circular(16),
@@ -132,7 +138,7 @@ class _TestListScreenState extends State<TestListScreen> {
                           // TODO: Navigate to test details
                         },
                         child: Padding(
-                          padding: const EdgeInsets.all(16),
+                          padding: const EdgeInsets.all(8),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
@@ -148,7 +154,7 @@ class _TestListScreenState extends State<TestListScreen> {
                                     ),
                                   ),
                                   PopupMenuButton(
-                                    icon: const Icon(Icons.more_vert),
+                                    icon: const Icon(Icons.more_vert, size: 20),
                                     itemBuilder:
                                         (context) => [
                                           PopupMenuItem(
@@ -183,20 +189,26 @@ class _TestListScreenState extends State<TestListScreen> {
                                               ],
                                             ),
                                           ),
-                                          const PopupMenuItem(
+                                          PopupMenuItem(
                                             value: 'delete',
                                             child: Row(
                                               children: [
                                                 Icon(
                                                   Icons.delete,
                                                   size: 20,
-                                                  color: Colors.red,
+                                                  color:
+                                                      Theme.of(
+                                                        context,
+                                                      ).colorScheme.error,
                                                 ),
                                                 SizedBox(width: 8),
                                                 Text(
                                                   'Xóa',
                                                   style: TextStyle(
-                                                    color: Colors.red,
+                                                    color:
+                                                        Theme.of(
+                                                          context,
+                                                        ).colorScheme.error,
                                                   ),
                                                 ),
                                               ],
@@ -263,7 +275,10 @@ class _TestListScreenState extends State<TestListScreen> {
                                                   content: Text(
                                                     'Lỗi khi xóa bài thi: $e',
                                                   ),
-                                                  backgroundColor: Colors.red,
+                                                  backgroundColor:
+                                                      Theme.of(context)
+                                                          .colorScheme
+                                                          .errorContainer,
                                                 ),
                                               );
                                             }
@@ -274,15 +289,17 @@ class _TestListScreenState extends State<TestListScreen> {
                                   ),
                                 ],
                               ),
-                              const SizedBox(height: 8),
+                              const SizedBox(height: 4),
                               Text(
                                 test.description,
-                                style: TextStyle(
-                                  color: Colors.grey[600],
-                                  fontSize: 14,
-                                ),
+                                style: TextStyle(fontSize: 14),
                               ),
-                              const SizedBox(height: 16),
+                              const SizedBox(height: 4),
+                              Text(
+                                'Ngày tạo: ${DateFormat('dd/MM/yyyy').format(test.createdAt)}',
+                                style: TextStyle(fontSize: 12),
+                              ),
+                              const SizedBox(height: 4),
                               Row(
                                 children: [
                                   _buildInfoChip(
@@ -300,14 +317,6 @@ class _TestListScreenState extends State<TestListScreen> {
                                     test.subject,
                                   ),
                                 ],
-                              ),
-                              const SizedBox(height: 8),
-                              Text(
-                                'Ngày tạo: ${test.createdAt.toString().split(' ')[0]}',
-                                style: TextStyle(
-                                  color: Colors.grey[500],
-                                  fontSize: 12,
-                                ),
                               ),
                             ],
                           ),
@@ -330,7 +339,6 @@ class _TestListScreenState extends State<TestListScreen> {
         },
         icon: const Icon(Icons.add),
         label: const Text('Tạo bài thi'),
-        backgroundColor: Theme.of(context).colorScheme.surface,
       ),
     );
   }
@@ -339,15 +347,21 @@ class _TestListScreenState extends State<TestListScreen> {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       decoration: BoxDecoration(
-        color: Colors.grey[100],
+        color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(8),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(icon, size: 16, color: Colors.grey[600]),
+          Icon(icon, size: 16, color: Theme.of(context).colorScheme.primary),
           const SizedBox(width: 4),
-          Text(label, style: TextStyle(color: Colors.grey[600], fontSize: 12)),
+          Text(
+            label,
+            style: TextStyle(
+              fontSize: 12,
+              color: Theme.of(context).colorScheme.primary,
+            ),
+          ),
         ],
       ),
     );

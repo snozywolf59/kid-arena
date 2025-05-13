@@ -16,6 +16,8 @@ class ProfileScreen extends StatelessWidget {
         title: const Text('Thông tin cá nhân'),
         centerTitle: true,
         elevation: 0,
+        backgroundColor: Theme.of(context).colorScheme.primary,
+        foregroundColor: Theme.of(context).colorScheme.onPrimary,
       ),
       body: FutureBuilder<AppUser>(
         future: getIt<AuthService>().getCurrentUserData(),
@@ -23,7 +25,7 @@ class ProfileScreen extends StatelessWidget {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return Center(
               child: CircularProgressIndicator(
-                color: Theme.of(context).primaryColor,
+                color: Theme.of(context).colorScheme.primary,
               ),
             );
           }
@@ -62,7 +64,7 @@ class ProfileScreen extends StatelessWidget {
 
                   _mainInfo(context, user),
 
-                  const SizedBox(height: 32),
+                  const SizedBox(height: 16),
 
                   SizedBox(
                     width: double.infinity,
@@ -83,6 +85,13 @@ class ProfileScreen extends StatelessWidget {
                     ),
                   ),
 
+                  const SizedBox(height: 16),
+
+                  Divider(
+                    color: Theme.of(context).colorScheme.primary,
+                    height: 2,
+                    thickness: 1,
+                  ),
                   const SizedBox(height: 16),
                   SizedBox(
                     width: double.infinity,
@@ -172,19 +181,19 @@ class ProfileScreen extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: Theme.of(context).primaryColor.withAlpha(26),
+        color: Theme.of(context).colorScheme.primaryContainer,
         borderRadius: BorderRadius.circular(12),
       ),
       child: Row(
         children: [
           CircleAvatar(
             radius: 40,
-            backgroundColor: Theme.of(context).primaryColor,
+            backgroundColor: Theme.of(context).colorScheme.primary,
             child: Text(
               user.fullName[0].toUpperCase(),
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 32,
-                color: Colors.white,
+                color: Theme.of(context).colorScheme.onPrimary,
                 fontWeight: FontWeight.bold,
               ),
             ),
@@ -203,9 +212,9 @@ class ProfileScreen extends StatelessWidget {
                 const SizedBox(height: 4),
                 Text(
                   '@${user.username}',
-                  style: Theme.of(
-                    context,
-                  ).textTheme.titleMedium?.copyWith(color: Colors.grey[600]),
+                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                    color: Theme.of(context).colorScheme.onSurfaceVariant,
+                  ),
                 ),
                 const SizedBox(height: 4),
                 Chip(
@@ -239,9 +248,10 @@ class ProfileScreen extends StatelessWidget {
     required String value,
   }) {
     return Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.center,
+
       children: [
-        Icon(icon, size: 24, color: Theme.of(context).primaryColor),
+        Icon(icon, size: 24, color: Theme.of(context).colorScheme.primary),
         const SizedBox(width: 16),
         Expanded(
           child: Column(
@@ -249,9 +259,9 @@ class ProfileScreen extends StatelessWidget {
             children: [
               Text(
                 label,
-                style: Theme.of(
-                  context,
-                ).textTheme.titleMedium?.copyWith(color: Colors.grey[600]),
+                style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                  color: Theme.of(context).colorScheme.onSurfaceVariant,
+                ),
               ),
               const SizedBox(height: 4),
               Text(

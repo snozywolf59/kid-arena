@@ -74,9 +74,11 @@ class _SearchBarWidgetState extends State<SearchBarWidget> {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16),
       decoration: BoxDecoration(
-        color: Colors.grey[100],
+        color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: Theme.of(context).colorScheme.outlineVariant),
       ),
+
       child: Row(
         children: [
           Icon(Icons.search, color: Theme.of(context).colorScheme.onSurface),

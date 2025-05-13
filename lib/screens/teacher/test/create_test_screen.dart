@@ -1,6 +1,8 @@
 // Dart packages
 
 // Flutter packages
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 
 // Pub packages
@@ -205,7 +207,10 @@ class _CreateTestScreenState extends State<CreateTestScreen> {
                   style: TextStyle(fontWeight: FontWeight.bold),
                 ),
                 const SizedBox(height: 8),
-                ...List.generate(4, (index) => _buildOptionInput(index)),
+                ...List.generate(
+                  4,
+                  (index) => _buildOptionInput(index, setState),
+                ),
               ],
             ),
           ),
@@ -221,7 +226,7 @@ class _CreateTestScreenState extends State<CreateTestScreen> {
     );
   }
 
-  Widget _buildOptionInput(int index) {
+  Widget _buildOptionInput(int index, StateSetter localSetState) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 8.0),
       child: Row(
@@ -230,7 +235,10 @@ class _CreateTestScreenState extends State<CreateTestScreen> {
             value: index,
             groupValue: _currentCorrectAnswer,
             onChanged:
-                (value) => setState(() => _currentCorrectAnswer = value!),
+                (value) => localSetState(() {
+                  _currentCorrectAnswer = value!;
+                  log('value: $_currentCorrectAnswer');
+                }),
           ),
           Expanded(
             child: TextFormField(
@@ -280,7 +288,6 @@ class _CreateTestScreenState extends State<CreateTestScreen> {
   }
 
   Future<void> _saveTest() async {
-    if (!_formKey.currentState!.validate()) return;
     if (_questions.isEmpty) {
       _showErrorSnackBar('Vui lòng thêm ít nhất một câu hỏi');
       return;
@@ -291,7 +298,9 @@ class _CreateTestScreenState extends State<CreateTestScreen> {
     }
 
     setState(() => _isLoading = true);
-
+    log(
+      'FirebaseAuth.instance.currentUser?.uid: ${FirebaseAuth.instance.currentUser?.uid}',
+    );
     try {
       final test = PrivateTest(
         id: '',
@@ -489,9 +498,22 @@ class _CreateTestScreenState extends State<CreateTestScreen> {
         children: [
           _buildQuestionHeader(),
           const SizedBox(height: 16),
-          ..._questions.asMap().entries.map(
-            (entry) => _buildQuestionCard(entry),
-          ),
+          if (_questions.isNotEmpty)
+            ..._questions.asMap().entries.map(
+              (entry) => _buildQuestionCard(entry),
+            )
+          else
+            Column(
+              children: [
+                Icon(
+                  Icons.info_outline,
+                  size: 96,
+                  color: Theme.of(context).colorScheme.primary,
+                ),
+                Text('Chưa có câu hỏi nào'),
+                Text('Vui lòng thêm câu hỏi'),
+              ],
+            ),
           const SizedBox(height: 24),
           _buildActionButtons(),
         ],

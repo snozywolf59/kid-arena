@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:kid_arena/blocs/theme/theme_bloc.dart';
+import 'package:kid_arena/blocs/theme/theme_event.dart';
+import 'package:kid_arena/blocs/theme/theme_state.dart';
 import 'package:kid_arena/get_it.dart';
 import 'package:kid_arena/services/user_service.dart';
 import 'package:kid_arena/services/test_service.dart';
@@ -37,7 +41,7 @@ class _HomeTeacherState extends State<HomeTeacher> {
   }
 
   String _getTimeLeft(DateTime endTime) {
-    String dateEnd = DateFormat('dd/MM/yyyy').format(endTime);
+    String dateEnd = DateFormat('dd/MM').format(endTime);
     return 'Hạn:\n$dateEnd';
   }
 
@@ -48,11 +52,11 @@ class _HomeTeacherState extends State<HomeTeacher> {
     final testDate = DateTime(dateTime.year, dateTime.month, dateTime.day);
 
     if (testDate == today) {
-      return 'Hôm nay, ${DateFormat('HH:mm').format(dateTime)}';
+      return 'Hôm nay,\n${DateFormat('HH:mm').format(dateTime)}';
     } else if (testDate == tomorrow) {
-      return 'Ngày mai, ${DateFormat('HH:mm').format(dateTime)}';
+      return 'Ngày mai,\n${DateFormat('HH:mm').format(dateTime)}';
     } else {
-      return DateFormat('dd/MM/yyyy, HH:mm').format(dateTime);
+      return DateFormat('dd/MM,\nHH:mm').format(dateTime);
     }
   }
 
@@ -129,10 +133,31 @@ class _HomeTeacherState extends State<HomeTeacher> {
             ),
           ],
         ),
-        CircleAvatar(
-          radius: 24,
-          backgroundColor: theme.colorScheme.primaryContainer,
-          child: Icon(Icons.person, color: theme.colorScheme.primary, size: 32),
+        Row(
+          children: [
+            IconButton(onPressed: () {}, icon: const Icon(Icons.notifications)),
+            BlocBuilder<ThemeBloc, ThemeState>(
+              builder: (context, state) {
+                return IconButton(
+                  icon: Icon(
+                    state.isDarkMode ? Icons.light_mode : Icons.dark_mode,
+                  ),
+                  onPressed: () {
+                    context.read<ThemeBloc>().add(ThemeToggled());
+                  },
+                );
+              },
+            ),
+            CircleAvatar(
+              radius: 24,
+              backgroundColor: theme.colorScheme.primaryContainer,
+              child: Icon(
+                Icons.person,
+                color: theme.colorScheme.primary,
+                size: 32,
+              ),
+            ),
+          ],
         ),
       ],
     );
@@ -306,7 +331,6 @@ class _HomeTeacherState extends State<HomeTeacher> {
                           test.title,
                           test.description,
                           _getTimeLeft(test.endTime),
-
                           theme.colorScheme.primary,
                         ),
                         if (test != tests.last)
@@ -323,9 +347,8 @@ class _HomeTeacherState extends State<HomeTeacher> {
   Widget _buildOngoingTestItem(
     BuildContext context,
     String title,
-    String class_,
+    String description,
     String timeLeft,
-
     Color color,
   ) {
     final theme = Theme.of(context);
@@ -355,7 +378,7 @@ class _HomeTeacherState extends State<HomeTeacher> {
                 ),
                 const SizedBox(height: 4),
                 Text(
-                  class_,
+                  description,
                   style: theme.textTheme.bodyMedium?.copyWith(
                     color: theme.colorScheme.onSurfaceVariant,
                   ),
@@ -428,7 +451,7 @@ class _HomeTeacherState extends State<HomeTeacher> {
                         _buildTestItem(
                           context,
                           test.title,
-                          test.classId,
+                          test.description,
                           _formatDateTime(test.startTime),
                           theme.colorScheme.primary,
                         ),
@@ -446,7 +469,7 @@ class _HomeTeacherState extends State<HomeTeacher> {
   Widget _buildTestItem(
     BuildContext context,
     String title,
-    String class_,
+    String description,
     String time,
     Color color,
   ) {
@@ -476,7 +499,7 @@ class _HomeTeacherState extends State<HomeTeacher> {
                   ),
                 ),
                 Text(
-                  class_,
+                  description,
                   style: theme.textTheme.bodyMedium?.copyWith(
                     color: theme.colorScheme.onSurfaceVariant,
                   ),

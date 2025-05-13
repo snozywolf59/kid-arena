@@ -119,10 +119,10 @@ class _ClassListScreenState extends State<ClassListScreen> {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Theme.of(context).colorScheme.surface,
         boxShadow: [
           BoxShadow(
-            color: Colors.grey.withOpacity(0.1),
+            color: Theme.of(context).colorScheme.outline.withOpacity(0.5),
             spreadRadius: 1,
             blurRadius: 2,
             offset: const Offset(0, 1),
@@ -183,7 +183,7 @@ class _ClassListScreenState extends State<ClassListScreen> {
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(16),
         side: BorderSide(
-          color: Theme.of(context).colorScheme.outline.withOpacity(0.2),
+          color: Theme.of(context).colorScheme.outline.withOpacity(0.5),
         ),
       ),
       child: InkWell(

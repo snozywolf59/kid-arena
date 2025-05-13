@@ -5,3 +5,5 @@ export 'package:kid_arena/services/class_service.dart';
 
 export 'package:kid_arena/services/study_streak_service.dart';
 export 'package:kid_arena/services/user_service.dart';
+
+export 'package:kid_arena/services/notification_service.dart';
