@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:kid_arena/constants/image.dart';
 import 'package:kid_arena/widgets/common/loading_indicator.dart';
 import 'package:kid_arena/screens/welcome.dart';
 
@@ -71,7 +72,7 @@ class _SplashScreenState extends State<SplashScreen>
                   child: Opacity(
                     opacity: _fadeAnimation.value,
                     child: Image.asset(
-                      'images/logo.png',
+                      ImageLink.logoImage,
                       width: 150,
                       height: 150,
                     ),

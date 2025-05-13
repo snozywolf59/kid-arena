@@ -6,9 +6,9 @@ class PrivateTest extends Test {
   final DateTime startTime;
   final DateTime endTime;
   final String classId;
-
   final String teacherId;
   final String subject;
+
   const PrivateTest({
     required super.id,
     required super.title,
@@ -56,4 +56,5 @@ class PrivateTest extends Test {
       'subject': subject,
     };
   }
+  
 }

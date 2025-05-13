@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:kid_arena/constants/image.dart';
 import 'package:kid_arena/utils/page_transitions.dart';
 import 'package:kid_arena/screens/auth/login_screen.dart';
 import 'package:kid_arena/screens/auth/register_screen.dart';
@@ -41,7 +42,7 @@ class AuthSelectionScreen extends StatelessWidget {
                       ),
                       child: Center(
                         child: Image.asset(
-                          'images/logo.png',
+                          ImageLink.logoImage,
                           width: size.width * 0.25,
                           height: size.width * 0.25,
                           fit: BoxFit.contain,

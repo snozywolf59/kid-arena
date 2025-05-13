@@ -8,12 +8,12 @@ class MaterialTheme {
   static ColorScheme lightScheme() {
     return const ColorScheme(
       brightness: Brightness.light,
-      primary: Color(0xff4c662b),
-      surfaceTint: Color(0xff4c662b),
+      primary: Color.fromARGB(255, 0, 136, 23),
+      surfaceTint: Color.fromARGB(255, 49, 115, 49),
       onPrimary: Color(0xffffffff),
-      primaryContainer: Color(0xffcdeda3),
+      primaryContainer: Color.fromARGB(255, 163, 237, 167),
       onPrimaryContainer: Color(0xff354e16),
-      secondary: Color(0xff586249),
+      secondary: Color.fromARGB(255, 78, 98, 73),
       onSecondary: Color(0xffffffff),
       secondaryContainer: Color(0xffdce7c8),
       onSecondaryContainer: Color(0xff404a33),

@@ -1,6 +1,7 @@
 // Dart packages
 // Flutter packages
 import 'package:flutter/material.dart';
+import 'package:kid_arena/constants/index.dart';
 
 // Pub packages
 // Project packages
@@ -8,7 +9,7 @@ import 'package:flutter/material.dart';
 class PrivateTestCard extends StatelessWidget {
   final String title;
   final String subject;
-  final String teacherId;
+  final String className;
   final String dueDate;
   final Color color;
   final VoidCallback onTap;
@@ -20,7 +21,7 @@ class PrivateTestCard extends StatelessWidget {
     super.key,
     required this.title,
     required this.subject,
-    required this.teacherId,
+    required this.className,
     required this.dueDate,
     required this.color,
     required this.onTap,
@@ -58,7 +59,7 @@ class PrivateTestCard extends StatelessWidget {
                     child: Icon(
                       isCompleted
                           ? Icons.check_circle_outline
-                          : Icons.assignment_outlined,
+                          : Subject.getIcon(subject),
                       color: color,
                     ),
                   ),
@@ -76,7 +77,7 @@ class PrivateTestCard extends StatelessWidget {
                         ),
                         const SizedBox(height: 4),
                         Text(
-                          '$subject • Teacher ID: $teacherId',
+                          '$subject • Lớp: $className',
                           style: TextStyle(
                             fontSize: 14,
                             color: Colors.grey[600],

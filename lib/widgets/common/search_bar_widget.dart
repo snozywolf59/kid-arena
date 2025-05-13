@@ -104,10 +104,6 @@ class _SearchBarWidgetState extends State<SearchBarWidget> {
             ),
             onPressed: _startListening,
           ),
-          Icon(
-            Icons.filter_list,
-            color: Theme.of(context).colorScheme.onSurface,
-          ),
         ],
       ),
     );

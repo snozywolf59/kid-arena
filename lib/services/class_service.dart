@@ -130,4 +130,6 @@ class ClassService {
               snapshot.docs.map((doc) => Class.fromFirestore(doc)).toList(),
         );
   }
+
+
 }

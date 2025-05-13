@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 
 // Project packages
 import 'package:kid_arena/get_it.dart';
+import 'package:kid_arena/models/class.dart';
 import 'package:kid_arena/models/test/private_test.dart';
 import 'package:kid_arena/screens/student/quiz/quiz_screen.dart';
 import 'package:kid_arena/services/index.dart';
@@ -15,6 +16,7 @@ import 'package:kid_arena/widgets/common/loading_indicator.dart';
 import 'package:kid_arena/widgets/index.dart';
 import 'package:kid_arena/models/student_answer.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:kid_arena/widgets/common/search_bar_widget.dart';
 
 class AssignedTestsScreen extends StatefulWidget {
   const AssignedTestsScreen({super.key});
@@ -29,6 +31,9 @@ class _AssignedTestsScreenState extends State<AssignedTestsScreen>
   List<StudentAnswer> _studentAnswers = [];
   bool isLoading = false;
   late TabController _tabController;
+  final TextEditingController _searchController = TextEditingController();
+  String _searchQuery = '';
+  final Map<String, String> _classNameCache = {};
 
   @override
   void initState() {
@@ -40,6 +45,7 @@ class _AssignedTestsScreenState extends State<AssignedTestsScreen>
   @override
   void dispose() {
     _tabController.dispose();
+    _searchController.dispose();
     super.dispose();
   }
 
@@ -54,6 +60,14 @@ class _AssignedTestsScreenState extends State<AssignedTestsScreen>
       final tests = await getIt<TestService>().getTestsForStudent();
       final answers = await getIt<TestService>()
           .getStudentAnswersForPublicTests(currentUser.uid);
+
+      // Load class names for all tests
+      for (final test in tests) {
+        if (!_classNameCache.containsKey(test.classId)) {
+          final className = await _getClassName(test.classId);
+          _classNameCache[test.classId] = className;
+        }
+      }
 
       setState(() {
         _tests = tests;
@@ -91,28 +105,51 @@ class _AssignedTestsScreenState extends State<AssignedTestsScreen>
     );
   }
 
+  void _onSearch(String query) {
+    setState(() {
+      _searchQuery = query.toLowerCase();
+    });
+  }
+
   List<PrivateTest> _getFilteredTests(int tabIndex) {
     final now = DateTime.now();
+    List<PrivateTest> filteredTests;
+
     switch (tabIndex) {
       case 0: // Scheduled tests
-        return _tests.where((test) {
-          final timeRemaining = test.endTime.difference(now);
-          return !timeRemaining.isNegative && timeRemaining.inDays <= 0;
-        }).toList();
+        filteredTests =
+            _tests.where((test) {
+              final timeRemaining = test.endTime.difference(now);
+              return !timeRemaining.isNegative && timeRemaining.inDays <= 0;
+            }).toList();
+        break;
       case 1: // Ongoing tests
-        return _tests.where((test) {
-          final timeRemaining = test.endTime.difference(now);
-          return !timeRemaining.isNegative && timeRemaining.inDays > 0;
-        }).toList();
-
+        filteredTests =
+            _tests.where((test) {
+              final timeRemaining = test.endTime.difference(now);
+              return !timeRemaining.isNegative && timeRemaining.inDays > 0;
+            }).toList();
+        break;
       case 2: // Overdue tests
-        return _tests.where((test) {
-          final timeRemaining = test.endTime.difference(now);
-          return timeRemaining.isNegative;
-        }).toList();
+        filteredTests =
+            _tests.where((test) {
+              final timeRemaining = test.endTime.difference(now);
+              return timeRemaining.isNegative;
+            }).toList();
+        break;
       default:
-        return [];
+        filteredTests = [];
     }
+
+    if (_searchQuery.isNotEmpty) {
+      filteredTests =
+          filteredTests.where((test) {
+            return test.title.toLowerCase().contains(_searchQuery) ||
+                test.subject.toLowerCase().contains(_searchQuery);
+          }).toList();
+    }
+
+    return filteredTests;
   }
 
   String _getTimeText(PrivateTest test) {
@@ -164,14 +201,37 @@ class _AssignedTestsScreenState extends State<AssignedTestsScreen>
               floating: true,
               pinned: true,
               automaticallyImplyLeading: false,
-              bottom: TabBar(
-                controller: _tabController,
-                tabs: const [
-                  Tab(text: 'Đang diễn ra'),
-                  Tab(text: 'Sắp tới'),
-
-                  Tab(text: 'Quá hạn'),
-                ],
+              bottom: PreferredSize(
+                preferredSize: const Size.fromHeight(120),
+                child: Column(
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 8,
+                      ),
+                      child: Row(
+                        children: [
+                          Expanded(
+                            child: SearchBarWidget(
+                              controller: _searchController,
+                              onSearch: _onSearch,
+                              hintText: 'Tìm kiếm bài thi...',
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    TabBar(
+                      controller: _tabController,
+                      tabs: const [
+                        Tab(text: 'Đang diễn ra'),
+                        Tab(text: 'Sắp tới'),
+                        Tab(text: 'Quá hạn'),
+                      ],
+                    ),
+                  ],
+                ),
               ),
             ),
           ];
@@ -194,7 +254,8 @@ class _AssignedTestsScreenState extends State<AssignedTestsScreen>
                       return PrivateTestCard(
                         title: test.title,
                         subject: test.subject,
-                        teacherId: test.teacherId,
+                        className:
+                            _classNameCache[test.classId] ?? 'Đang tải...',
                         dueDate: _getTimeText(test),
                         color: _getStatusColor(test),
                         isCompleted: isCompleted,
@@ -228,4 +289,10 @@ class _AssignedTestsScreenState extends State<AssignedTestsScreen>
       ),
     );
   }
+}
+
+Future<String> _getClassName(String classId) async {
+  final classService = getIt<ClassService>();
+  final classData = await classService.getClassById(classId);
+  return classData?.name ?? '';
 }

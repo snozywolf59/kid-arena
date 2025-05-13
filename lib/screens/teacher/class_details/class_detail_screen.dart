@@ -2,8 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:kid_arena/models/class.dart';
 import 'package:kid_arena/screens/teacher/class_details/manage_test_in_class_screen.dart';
 import 'package:kid_arena/screens/teacher/class_details/manage_students_screen.dart';
-import 'package:kid_arena/screens/teacher/test/create_test_screen.dart';
-import 'package:kid_arena/utils/page_transitions.dart';
+
 
 class ClassDetailScreen extends StatefulWidget {
   final Class classroom;

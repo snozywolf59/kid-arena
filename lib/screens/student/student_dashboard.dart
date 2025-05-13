@@ -42,26 +42,42 @@ class _StudentDashboardState extends State<StudentDashboard> {
             _selectedIndex = index;
           });
         },
-        items: const <BottomNavigationBarItem>[
+        items: <BottomNavigationBarItem>[
           BottomNavigationBarItem(
-            icon: Icon(Icons.quiz_rounded),
+            icon: Icon(
+              _selectedIndex == 0 ? Icons.quiz_rounded : Icons.quiz_outlined,
+            ),
             label: 'Tự luyện',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.assignment_rounded),
+            icon: Icon(
+              _selectedIndex == 1
+                  ? Icons.assignment_rounded
+                  : Icons.assignment_outlined,
+            ),
             label: 'Bài kiểm tra',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.school_rounded),
+            icon: Icon(
+              _selectedIndex == 2 ? Icons.school_sharp : Icons.school_outlined,
+            ),
             label: 'Lớp học',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.leaderboard_rounded),
+            icon: Icon(
+              _selectedIndex == 3
+                  ? Icons.leaderboard_rounded
+                  : Icons.leaderboard_outlined,
+            ),
             label: 'Bảng xếp hạng',
           ),
 
           BottomNavigationBarItem(
-            icon: Icon(Icons.person_rounded),
+            icon: Icon(
+              _selectedIndex == 4
+                  ? Icons.person_rounded
+                  : Icons.person_outlined,
+            ),
             label: 'Hồ sơ',
           ),
         ],

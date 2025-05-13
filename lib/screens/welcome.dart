@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 
 // Pub packages
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:kid_arena/constants/image.dart';
 
 // Project packages
 import 'package:kid_arena/models/user/index.dart';
@@ -55,7 +56,7 @@ class WelcomeScreen extends StatelessWidget {
                           ),
                           child: Center(
                             child: Image.asset(
-                              'images/logo.png',
+                              ImageLink.logoImage,
                               width: 60,
                               height: 60,
                               fit: BoxFit.cover,
