@@ -3,6 +3,7 @@ import 'dart:developer';
 
 // Flutter packages
 import 'package:flutter/material.dart';
+import 'package:kid_arena/blocs/theme/theme_event.dart';
 
 // Pub packages
 
@@ -15,6 +16,9 @@ import 'package:kid_arena/screens/teacher/class_details/class_detail_screen.dart
 import 'package:kid_arena/utils/page_transitions.dart';
 import 'package:kid_arena/widgets/common/search_bar_widget.dart';
 import 'package:kid_arena/widgets/confirmation_dialog.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:kid_arena/blocs/theme/theme_bloc.dart';
+import 'package:kid_arena/blocs/theme/theme_state.dart';
 
 class ClassListScreen extends StatefulWidget {
   const ClassListScreen({super.key});
@@ -340,43 +344,78 @@ class _ClassListScreenState extends State<ClassListScreen> {
       return _buildLoadingIndicator();
     }
 
-    return StreamBuilder<List<Class>>(
-      stream: getIt<ClassService>().getClassesForTeacherUser(),
-      builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return _buildLoadingIndicator();
-        }
-
-        if (snapshot.hasError) {
-          log(snapshot.error.toString());
-          return _buildErrorWidget(snapshot.error.toString());
-        }
-
-        final classes = snapshot.data ?? [];
-
-        if (classes.isEmpty) {
-          return _buildEmptyState();
-        }
-
-        return Column(
-          children: [
-            _buildSearchBar(),
-            Expanded(child: _buildClassList(classes)),
+    return Container(
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+          colors: [
+            Theme.of(context).colorScheme.primary.withOpacity(0.7),
+            Theme.of(context).colorScheme.surface,
           ],
-        );
-      },
+        ),
+      ),
+      child: StreamBuilder<List<Class>>(
+        stream: getIt<ClassService>().getClassesForTeacherUser(),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return _buildLoadingIndicator();
+          }
+
+          if (snapshot.hasError) {
+            log(snapshot.error.toString());
+            return _buildErrorWidget(snapshot.error.toString());
+          }
+
+          final classes = snapshot.data ?? [];
+
+          if (classes.isEmpty) {
+            return _buildEmptyState();
+          }
+
+          return Column(
+            children: [
+              _buildSearchBar(),
+              Expanded(child: _buildClassList(classes)),
+            ],
+          );
+        },
+      ),
     );
   }
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return Scaffold(
       appBar: AppBar(
         title: const Text('Danh sách lớp học'),
-        centerTitle: true,
-        backgroundColor: Theme.of(context).colorScheme.primary,
-        foregroundColor: Colors.white,
         elevation: 0,
+
+        actions: [
+          IconButton(onPressed: () {}, icon: const Icon(Icons.notifications)),
+          BlocBuilder<ThemeBloc, ThemeState>(
+            builder: (context, state) {
+              return IconButton(
+                icon: Icon(
+                  state.isDarkMode ? Icons.light_mode : Icons.dark_mode,
+                ),
+                onPressed: () {
+                  context.read<ThemeBloc>().add(ThemeToggled());
+                },
+              );
+            },
+          ),
+          CircleAvatar(
+            radius: 24,
+            backgroundColor: theme.colorScheme.primaryContainer,
+            child: Icon(
+              Icons.person,
+              color: theme.colorScheme.primary,
+              size: 32,
+            ),
+          ),
+        ],
       ),
       body: _buildBody(),
       floatingActionButton: FloatingActionButton.extended(

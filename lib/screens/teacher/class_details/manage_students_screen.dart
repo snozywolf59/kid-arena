@@ -243,8 +243,20 @@ class _ManageStudentsScreenState extends State<ManageStudentsScreen> {
     }
 
     return Scaffold(
-      body: Column(
-        children: [_buildSearchBar(), Expanded(child: _buildStudentList())],
+      body: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [
+              Theme.of(context).colorScheme.primary.withOpacity(0.7),
+              Theme.of(context).colorScheme.surface,
+            ],
+          ),
+        ),
+        child: Column(
+          children: [_buildSearchBar(), Expanded(child: _buildStudentList())],
+        ),
       ),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: _showAddStudentDialog,

@@ -88,76 +88,90 @@ class _ManageTestInClassScreenState extends State<ManageTestInClassScreen> {
         label: const Text('Tạo bài thi'),
         icon: const Icon(Icons.add_box_rounded),
       ),
-      body: Column(
-        children: [
-          Padding(
-            padding: const EdgeInsets.all(16.0),
-
-            child: SearchBarWidget(
-              controller: _searchController,
-              onSearch: _filterTests,
-              hintText: 'Tìm kiếm bài thi...',
-            ),
+      body: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [
+              Theme.of(context).colorScheme.primary.withOpacity(0.7),
+              Theme.of(context).colorScheme.surface,
+            ],
           ),
-          if (_filteredTests.isEmpty)
-            const Expanded(
-              child: Center(child: Text('Không tìm thấy bài thi nào')),
-            )
-          else
-            Expanded(
-              child: ListView.builder(
-                itemCount: _filteredTests.length,
-                itemBuilder: (context, index) {
-                  final test = _filteredTests[index];
-                  return Card(
-                    margin: const EdgeInsets.symmetric(
-                      horizontal: 16,
-                      vertical: 8,
-                    ),
-                    child: ListTile(
-                      title: Text(test.title),
-                      subtitle: Text(test.description),
-                      trailing: IconButton(
-                        icon: const Icon(Icons.delete),
-                        onPressed: () async {
-                          final shouldDelete = await ConfirmationDialog.show(
-                            context: context,
-                            title: 'Xác nhận xóa',
-                            message:
-                                'Bạn có chắc chắn muốn xóa bài thi ${test.title}?',
-                            confirmText: 'Xóa',
-                            isDestructive: true,
-                          );
+        ),
+        child: Column(
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(16.0),
 
-                          if (shouldDelete == true) {
-                            try {
-                              await getIt<TestService>().deleteTest(test.id);
-                              await _loadData();
-                              if (context.mounted) {
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(
-                                    content: Text('Đã xóa bài thi thành công'),
-                                  ),
-                                );
-                              }
-                            } catch (e) {
-                              if (context.mounted) {
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  SnackBar(
-                                    content: Text('Lỗi khi xóa bài thi: $e'),
-                                  ),
-                                );
-                              }
-                            }
-                          }
-                        },
-                      ),
-                    ),
-                  );
-                },
+              child: SearchBarWidget(
+                controller: _searchController,
+                onSearch: _filterTests,
+                hintText: 'Tìm kiếm bài thi...',
               ),
             ),
-        ],
+            if (_filteredTests.isEmpty)
+              const Expanded(
+                child: Center(child: Text('Không tìm thấy bài thi nào')),
+              )
+            else
+              Expanded(
+                child: ListView.builder(
+                  itemCount: _filteredTests.length,
+                  itemBuilder: (context, index) {
+                    final test = _filteredTests[index];
+                    return Card(
+                      margin: const EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 8,
+                      ),
+                      child: ListTile(
+                        title: Text(test.title),
+                        subtitle: Text(test.description),
+                        trailing: IconButton(
+                          icon: const Icon(Icons.delete),
+                          onPressed: () async {
+                            final shouldDelete = await ConfirmationDialog.show(
+                              context: context,
+                              title: 'Xác nhận xóa',
+                              message:
+                                  'Bạn có chắc chắn muốn xóa bài thi ${test.title}?',
+                              confirmText: 'Xóa',
+                              isDestructive: true,
+                            );
+
+                            if (shouldDelete == true) {
+                              try {
+                                await getIt<TestService>().deleteTest(test.id);
+                                await _loadData();
+                                if (context.mounted) {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    const SnackBar(
+                                      content: Text(
+                                        'Đã xóa bài thi thành công',
+                                      ),
+                                    ),
+                                  );
+                                }
+                              } catch (e) {
+                                if (context.mounted) {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(
+                                      content: Text('Lỗi khi xóa bài thi: $e'),
+                                    ),
+                                  );
+                                }
+                              }
+                            }
+                          },
+                        ),
+                      ),
+                    );
+                  },
+                ),
+              ),
+          ],
+        ),
       ),
     );
   }

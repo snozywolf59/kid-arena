@@ -1,6 +1,10 @@
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:kid_arena/blocs/theme/theme_bloc.dart';
+import 'package:kid_arena/blocs/theme/theme_event.dart';
+import 'package:kid_arena/blocs/theme/theme_state.dart';
 import 'package:kid_arena/models/user/index.dart';
 import 'package:kid_arena/services/auth_service.dart';
 import 'package:kid_arena/get_it.dart';
@@ -11,13 +15,35 @@ class ProfileScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Thông tin cá nhân'),
-        centerTitle: true,
+        title: const Text('Hồ sơ cá nhân'),
         elevation: 0,
-        backgroundColor: Theme.of(context).colorScheme.primary,
-        foregroundColor: Theme.of(context).colorScheme.onPrimary,
+        actions: [
+          IconButton(onPressed: () {}, icon: const Icon(Icons.notifications)),
+          BlocBuilder<ThemeBloc, ThemeState>(
+            builder: (context, state) {
+              return IconButton(
+                icon: Icon(
+                  state.isDarkMode ? Icons.light_mode : Icons.dark_mode,
+                ),
+                onPressed: () {
+                  context.read<ThemeBloc>().add(ThemeToggled());
+                },
+              );
+            },
+          ),
+          CircleAvatar(
+            radius: 24,
+            backgroundColor: theme.colorScheme.primaryContainer,
+            child: Icon(
+              Icons.person,
+              color: theme.colorScheme.primary,
+              size: 32,
+            ),
+          ),
+        ],
       ),
       body: FutureBuilder<AppUser>(
         future: getIt<AuthService>().getCurrentUserData(),

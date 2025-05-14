@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:kid_arena/blocs/theme/theme_event.dart';
 import 'package:kid_arena/constants/subject.dart';
 import 'package:kid_arena/models/test/private_test.dart';
 import 'package:kid_arena/screens/teacher/test/create_test_screen.dart';
@@ -9,6 +10,9 @@ import 'package:kid_arena/services/test_service.dart';
 import 'package:kid_arena/utils/page_transitions.dart';
 import 'package:kid_arena/widgets/common/search_bar_widget.dart';
 import 'package:kid_arena/widgets/confirmation_dialog.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:kid_arena/blocs/theme/theme_bloc.dart';
+import 'package:kid_arena/blocs/theme/theme_state.dart';
 
 class TestListScreen extends StatefulWidget {
   const TestListScreen({super.key});
@@ -43,13 +47,35 @@ class _TestListScreenState extends State<TestListScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return Scaffold(
       appBar: AppBar(
         title: const Text('Danh sách bài thi'),
-        centerTitle: true,
-        backgroundColor: Theme.of(context).colorScheme.primary,
-        foregroundColor: Colors.white,
         elevation: 0,
+        actions: [
+          IconButton(onPressed: () {}, icon: const Icon(Icons.notifications)),
+          BlocBuilder<ThemeBloc, ThemeState>(
+            builder: (context, state) {
+              return IconButton(
+                icon: Icon(
+                  state.isDarkMode ? Icons.light_mode : Icons.dark_mode,
+                ),
+                onPressed: () {
+                  context.read<ThemeBloc>().add(ThemeToggled());
+                },
+              );
+            },
+          ),
+          CircleAvatar(
+            radius: 24,
+            backgroundColor: theme.colorScheme.primaryContainer,
+            child: Icon(
+              Icons.person,
+              color: theme.colorScheme.primary,
+              size: 32,
+            ),
+          ),
+        ],
       ),
       body: Column(
         children: [
@@ -73,259 +99,277 @@ class _TestListScreenState extends State<TestListScreen> {
             ),
           ),
           Expanded(
-            child: StreamBuilder<List<PrivateTest>>(
-              stream: _testService.getTestsForTeacher(),
-              builder: (context, snapshot) {
-                if (snapshot.hasError) {
-                  return Center(
-                    child: SelectableText('Error: ${snapshot.error}'),
-                  );
-                }
+            child: Container(
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  colors: [
+                    theme.colorScheme.primary.withOpacity(0.7),
+                    theme.colorScheme.surface,
+                  ],
+                ),
+              ),
+              child: StreamBuilder<List<PrivateTest>>(
+                stream: _testService.getTestsForTeacher(),
+                builder: (context, snapshot) {
+                  if (snapshot.hasError) {
+                    return Center(
+                      child: SelectableText('Error: ${snapshot.error}'),
+                    );
+                  }
 
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                  return const Center(child: CircularProgressIndicator());
-                }
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return const Center(child: CircularProgressIndicator());
+                  }
 
-                final tests = snapshot.data ?? [];
-                final filteredTests = _filterTests(tests);
+                  final tests = snapshot.data ?? [];
+                  final filteredTests = _filterTests(tests);
 
-                if (filteredTests.isEmpty) {
-                  return Center(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(
-                          Icons.assignment_outlined,
-                          size: 64,
-                          color: Theme.of(context).colorScheme.onSurfaceVariant,
-                        ),
-                        const SizedBox(height: 16),
-                        Text(
-                          _searchQuery.isEmpty
-                              ? 'Chưa có bài thi nào'
-                              : 'Không tìm thấy bài thi phù hợp',
-                          style: TextStyle(
-                            fontSize: 16,
+                  if (filteredTests.isEmpty) {
+                    return Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(
+                            Icons.assignment_outlined,
+                            size: 64,
                             color:
                                 Theme.of(context).colorScheme.onSurfaceVariant,
                           ),
-                        ),
-                      ],
-                    ),
-                  );
-                }
-
-                return ListView.builder(
-                  padding: const EdgeInsets.all(16),
-
-                  itemCount: filteredTests.length,
-                  itemBuilder: (context, index) {
-                    final test = filteredTests[index];
-                    return Card(
-                      margin: const EdgeInsets.only(bottom: 16),
-                      elevation: 0,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(16),
-                        side: BorderSide(
-                          color: Theme.of(
-                            context,
-                          ).colorScheme.outline.withOpacity(0.5),
-                        ),
+                          const SizedBox(height: 16),
+                          Text(
+                            _searchQuery.isEmpty
+                                ? 'Chưa có bài thi nào'
+                                : 'Không tìm thấy bài thi phù hợp',
+                            style: TextStyle(
+                              fontSize: 16,
+                              color:
+                                  Theme.of(
+                                    context,
+                                  ).colorScheme.onSurfaceVariant,
+                            ),
+                          ),
+                        ],
                       ),
-                      child: InkWell(
-                        borderRadius: BorderRadius.circular(16),
-                        onTap: () {
-                          // TODO: Navigate to test details
-                        },
-                        child: Padding(
-                          padding: const EdgeInsets.all(8),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Row(
-                                children: [
-                                  Expanded(
-                                    child: Text(
-                                      test.title,
-                                      style: const TextStyle(
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 18,
+                    );
+                  }
+
+                  return ListView.builder(
+                    padding: const EdgeInsets.all(16),
+
+                    itemCount: filteredTests.length,
+                    itemBuilder: (context, index) {
+                      final test = filteredTests[index];
+                      return Card(
+                        margin: const EdgeInsets.only(bottom: 16),
+                        elevation: 0,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(16),
+                          side: BorderSide(
+                            color: Theme.of(
+                              context,
+                            ).colorScheme.outline.withOpacity(0.5),
+                          ),
+                        ),
+                        child: InkWell(
+                          borderRadius: BorderRadius.circular(16),
+                          onTap: () {
+                            // TODO: Navigate to test details
+                          },
+                          child: Padding(
+                            padding: const EdgeInsets.all(8),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Row(
+                                  children: [
+                                    Expanded(
+                                      child: Text(
+                                        test.title,
+                                        style: const TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 18,
+                                        ),
                                       ),
                                     ),
-                                  ),
-                                  PopupMenuButton(
-                                    icon: const Icon(Icons.more_vert, size: 20),
-                                    itemBuilder:
-                                        (context) => [
-                                          PopupMenuItem(
-                                            value: 'view',
-                                            child: Row(
-                                              children: [
-                                                Icon(
-                                                  Icons.visibility,
-                                                  size: 20,
-                                                ),
-                                                SizedBox(width: 8),
-                                                Text('Xem chi tiết'),
-                                              ],
-                                            ),
-                                            onTap:
-                                                () => Navigator.push(
-                                                  context,
-                                                  PageTransitions.slideTransition(
-                                                    TestDetailScreen(
-                                                      test: test,
+                                    PopupMenuButton(
+                                      icon: const Icon(
+                                        Icons.more_vert,
+                                        size: 20,
+                                      ),
+                                      itemBuilder:
+                                          (context) => [
+                                            PopupMenuItem(
+                                              value: 'view',
+                                              child: Row(
+                                                children: [
+                                                  Icon(
+                                                    Icons.visibility,
+                                                    size: 20,
+                                                  ),
+                                                  SizedBox(width: 8),
+                                                  Text('Xem chi tiết'),
+                                                ],
+                                              ),
+                                              onTap:
+                                                  () => Navigator.push(
+                                                    context,
+                                                    PageTransitions.slideTransition(
+                                                      TestDetailScreen(
+                                                        test: test,
+                                                      ),
                                                     ),
                                                   ),
-                                                ),
-                                          ),
-                                          const PopupMenuItem(
-                                            value: 'edit',
-                                            child: Row(
-                                              children: [
-                                                Icon(Icons.edit, size: 20),
-                                                SizedBox(width: 8),
-                                                Text('Chỉnh sửa'),
-                                              ],
                                             ),
-                                          ),
-                                          PopupMenuItem(
-                                            value: 'delete',
-                                            child: Row(
-                                              children: [
-                                                Icon(
-                                                  Icons.delete,
-                                                  size: 20,
-                                                  color:
-                                                      Theme.of(
-                                                        context,
-                                                      ).colorScheme.error,
-                                                ),
-                                                SizedBox(width: 8),
-                                                Text(
-                                                  'Xóa',
-                                                  style: TextStyle(
+                                            const PopupMenuItem(
+                                              value: 'edit',
+                                              child: Row(
+                                                children: [
+                                                  Icon(Icons.edit, size: 20),
+                                                  SizedBox(width: 8),
+                                                  Text('Chỉnh sửa'),
+                                                ],
+                                              ),
+                                            ),
+                                            PopupMenuItem(
+                                              value: 'delete',
+                                              child: Row(
+                                                children: [
+                                                  Icon(
+                                                    Icons.delete,
+                                                    size: 20,
                                                     color:
                                                         Theme.of(
                                                           context,
                                                         ).colorScheme.error,
                                                   ),
-                                                ),
-                                              ],
-                                            ),
-                                          ),
-                                        ],
-                                    onSelected: (value) async {
-                                      if (value == 'edit') {
-                                        final shouldEdit =
-                                            await ConfirmationDialog.show(
-                                              context: context,
-                                              title: 'Xác nhận chỉnh sửa',
-                                              message:
-                                                  'Bạn có chắc chắn muốn chỉnh sửa bài thi ${test.title}?',
-                                              confirmText: 'Chỉnh sửa',
-                                              isDestructive: false,
-                                            );
-
-                                        if (shouldEdit == true &&
-                                            context.mounted) {
-                                          ScaffoldMessenger.of(
-                                            context,
-                                          ).showSnackBar(
-                                            const SnackBar(
-                                              content: Text(
-                                                'Tính năng đang được phát triển',
+                                                  SizedBox(width: 8),
+                                                  Text(
+                                                    'Xóa',
+                                                    style: TextStyle(
+                                                      color:
+                                                          Theme.of(
+                                                            context,
+                                                          ).colorScheme.error,
+                                                    ),
+                                                  ),
+                                                ],
                                               ),
                                             ),
-                                          );
-                                        }
-                                      } else if (value == 'delete') {
-                                        final shouldDelete =
-                                            await ConfirmationDialog.show(
-                                              context: context,
-                                              title: 'Xác nhận xóa',
-                                              message:
-                                                  'Bạn có chắc chắn muốn xóa bài thi này?',
-                                              confirmText: 'Xóa',
-                                              isDestructive: true,
-                                            );
+                                          ],
+                                      onSelected: (value) async {
+                                        if (value == 'edit') {
+                                          final shouldEdit =
+                                              await ConfirmationDialog.show(
+                                                context: context,
+                                                title: 'Xác nhận chỉnh sửa',
+                                                message:
+                                                    'Bạn có chắc chắn muốn chỉnh sửa bài thi ${test.title}?',
+                                                confirmText: 'Chỉnh sửa',
+                                                isDestructive: false,
+                                              );
 
-                                        if (shouldDelete == true) {
-                                          try {
-                                            await _testService.deleteTest(
-                                              test.id,
+                                          if (shouldEdit == true &&
+                                              context.mounted) {
+                                            ScaffoldMessenger.of(
+                                              context,
+                                            ).showSnackBar(
+                                              const SnackBar(
+                                                content: Text(
+                                                  'Tính năng đang được phát triển',
+                                                ),
+                                              ),
                                             );
-                                            if (context.mounted) {
-                                              ScaffoldMessenger.of(
-                                                context,
-                                              ).showSnackBar(
-                                                const SnackBar(
-                                                  content: Text(
-                                                    'Đã xóa bài thi thành công',
-                                                  ),
-                                                ),
+                                          }
+                                        } else if (value == 'delete') {
+                                          final shouldDelete =
+                                              await ConfirmationDialog.show(
+                                                context: context,
+                                                title: 'Xác nhận xóa',
+                                                message:
+                                                    'Bạn có chắc chắn muốn xóa bài thi này?',
+                                                confirmText: 'Xóa',
+                                                isDestructive: true,
                                               );
-                                            }
-                                          } catch (e) {
-                                            if (context.mounted) {
-                                              ScaffoldMessenger.of(
-                                                context,
-                                              ).showSnackBar(
-                                                SnackBar(
-                                                  content: Text(
-                                                    'Lỗi khi xóa bài thi: $e',
-                                                  ),
-                                                  backgroundColor:
-                                                      Theme.of(context)
-                                                          .colorScheme
-                                                          .errorContainer,
-                                                ),
+
+                                          if (shouldDelete == true) {
+                                            try {
+                                              await _testService.deleteTest(
+                                                test.id,
                                               );
+                                              if (context.mounted) {
+                                                ScaffoldMessenger.of(
+                                                  context,
+                                                ).showSnackBar(
+                                                  const SnackBar(
+                                                    content: Text(
+                                                      'Đã xóa bài thi thành công',
+                                                    ),
+                                                  ),
+                                                );
+                                              }
+                                            } catch (e) {
+                                              if (context.mounted) {
+                                                ScaffoldMessenger.of(
+                                                  context,
+                                                ).showSnackBar(
+                                                  SnackBar(
+                                                    content: Text(
+                                                      'Lỗi khi xóa bài thi: $e',
+                                                    ),
+                                                    backgroundColor:
+                                                        Theme.of(context)
+                                                            .colorScheme
+                                                            .errorContainer,
+                                                  ),
+                                                );
+                                              }
                                             }
                                           }
                                         }
-                                      }
-                                    },
-                                  ),
-                                ],
-                              ),
-                              const SizedBox(height: 4),
-                              Text(
-                                test.description,
-                                style: TextStyle(fontSize: 14),
-                              ),
-                              const SizedBox(height: 4),
-                              Text(
-                                'Ngày tạo: ${DateFormat('dd/MM/yyyy').format(test.createdAt)}',
-                                style: TextStyle(fontSize: 12),
-                              ),
-                              const SizedBox(height: 4),
-                              Row(
-                                children: [
-                                  _buildInfoChip(
-                                    Icons.question_answer,
-                                    '${test.questions.length} câu hỏi',
-                                  ),
-                                  const SizedBox(width: 8),
-                                  _buildInfoChip(
-                                    Icons.access_time,
-                                    '${test.duration} phút',
-                                  ),
-                                  const SizedBox(width: 8),
-                                  _buildInfoChip(
-                                    Subject.getIcon(test.subject),
-                                    test.subject,
-                                  ),
-                                ],
-                              ),
-                            ],
+                                      },
+                                    ),
+                                  ],
+                                ),
+                                const SizedBox(height: 4),
+                                Text(
+                                  test.description,
+                                  style: TextStyle(fontSize: 14),
+                                ),
+                                const SizedBox(height: 4),
+                                Text(
+                                  'Ngày tạo: ${DateFormat('dd/MM/yyyy').format(test.createdAt)}',
+                                  style: TextStyle(fontSize: 12),
+                                ),
+                                const SizedBox(height: 4),
+                                Row(
+                                  children: [
+                                    _buildInfoChip(
+                                      Icons.question_answer,
+                                      '${test.questions.length} câu hỏi',
+                                    ),
+                                    const SizedBox(width: 8),
+                                    _buildInfoChip(
+                                      Icons.access_time,
+                                      '${test.duration} phút',
+                                    ),
+                                    const SizedBox(width: 8),
+                                    _buildInfoChip(
+                                      Subject.getIcon(test.subject),
+                                      test.subject,
+                                    ),
+                                  ],
+                                ),
+                              ],
+                            ),
                           ),
                         ),
-                      ),
-                    );
-                  },
-                );
-              },
+                      );
+                    },
+                  );
+                },
+              ),
             ),
           ),
         ],

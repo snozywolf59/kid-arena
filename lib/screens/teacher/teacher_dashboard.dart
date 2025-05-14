@@ -40,7 +40,7 @@ class _TeacherHomePageState extends State<TeacherHomePage> {
         ],
         currentIndex: _selectedIndex,
         onTap: _onItemTapped,
-
+        selectedItemColor: Theme.of(context).colorScheme.primary,
         unselectedItemColor: Theme.of(context).colorScheme.onSurfaceVariant,
         backgroundColor: Theme.of(context).colorScheme.surface,
         type: BottomNavigationBarType.fixed,

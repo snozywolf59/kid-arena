@@ -65,44 +65,56 @@ class _HomeTeacherState extends State<HomeTeacher> {
     final theme = Theme.of(context);
     return Scaffold(
       backgroundColor: theme.colorScheme.surface,
-      body: SafeArea(
-        child: SingleChildScrollView(
-          child: Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                _buildHeader(context),
-                const SizedBox(height: 24),
-                _buildStatsGrid(context),
-                const SizedBox(height: 24),
-                StreamBuilder<List<PrivateTest>>(
-                  stream: _testsStream,
-                  builder: (context, snapshot) {
-                    if (snapshot.hasError) {
-                      return Center(child: Text('Error: ${snapshot.error}'));
-                    }
+      body: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [
+              Theme.of(context).colorScheme.primary.withOpacity(0.7),
+              Theme.of(context).colorScheme.surface,
+            ],
+          ),
+        ),
+        child: SafeArea(
+          child: SingleChildScrollView(
+            child: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  _buildHeader(context),
+                  const SizedBox(height: 24),
+                  _buildStatsGrid(context),
+                  const SizedBox(height: 24),
+                  StreamBuilder<List<PrivateTest>>(
+                    stream: _testsStream,
+                    builder: (context, snapshot) {
+                      if (snapshot.hasError) {
+                        return Center(child: Text('Error: ${snapshot.error}'));
+                      }
 
-                    if (!snapshot.hasData) {
-                      return const Center(child: CircularProgressIndicator());
-                    }
+                      if (!snapshot.hasData) {
+                        return const Center(child: CircularProgressIndicator());
+                      }
 
-                    final tests = snapshot.data!;
-                    final ongoingTests = _getOngoingTests(tests);
-                    final upcomingTests = _getUpcomingTests(tests);
+                      final tests = snapshot.data!;
+                      final ongoingTests = _getOngoingTests(tests);
+                      final upcomingTests = _getUpcomingTests(tests);
 
-                    return Column(
-                      children: [
-                        _buildOngoingTests(context, ongoingTests),
-                        const SizedBox(height: 24),
-                        _buildUpcomingTests(context, upcomingTests),
-                        const SizedBox(height: 24),
-                        _buildClassProgress(context),
-                      ],
-                    );
-                  },
-                ),
-              ],
+                      return Column(
+                        children: [
+                          _buildOngoingTests(context, ongoingTests),
+                          const SizedBox(height: 24),
+                          _buildUpcomingTests(context, upcomingTests),
+                          const SizedBox(height: 24),
+                          _buildClassProgress(context),
+                        ],
+                      );
+                    },
+                  ),
+                ],
+              ),
             ),
           ),
         ),

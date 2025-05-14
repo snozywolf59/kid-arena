@@ -147,29 +147,49 @@ class _NotificationManageState extends State<NotificationManage> {
     final groupedNotifications = _groupNotificationsByDate();
     final theme = Theme.of(context);
 
-    return ListView(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      children: [
-        for (final entry in groupedNotifications.entries)
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Padding(
-                padding: const EdgeInsets.only(left: 8, top: 16, bottom: 8),
-                child: Text(
-                  entry.key,
-                  style: theme.textTheme.titleSmall?.copyWith(
-                    color: theme.colorScheme.primary,
-                    fontWeight: FontWeight.bold,
+    return Container(
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+          colors: [
+            theme.colorScheme.primary.withOpacity(0.7),
+            theme.colorScheme.surface,
+          ],
+        ),
+      ),
+      child: RefreshIndicator(
+        onRefresh: _getNotifications,
+        color: theme.colorScheme.primary,
+        child: ListView(
+          padding: const EdgeInsets.all(16),
+          children: [
+            for (final entry in groupedNotifications.entries)
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 8.0),
+                    child: Text(
+                      entry.key,
+                      style: theme.textTheme.titleSmall?.copyWith(
+                        color: theme.colorScheme.onSurfaceVariant,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
                   ),
-                ),
+                  ...entry.value.map(
+                    (notification) => Padding(
+                      padding: const EdgeInsets.only(bottom: 12),
+                      child: _buildNotificationCard(notification),
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                ],
               ),
-              ...entry.value
-                  .map((notification) => _buildNotificationCard(notification))
-                  .toList(),
-            ],
-          ),
-      ],
+          ],
+        ),
+      ),
     );
   }
 
