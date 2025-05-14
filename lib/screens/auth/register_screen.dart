@@ -4,6 +4,8 @@ import 'package:flutter/services.dart';
 
 import 'package:kid_arena/services/auth_service.dart';
 import 'package:kid_arena/get_it.dart';
+import 'package:kid_arena/utils/index.dart';
+import 'package:kid_arena/screens/auth/login_screen.dart';
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});
@@ -289,7 +291,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 const SizedBox(height: 20),
                 TextButton(
                   onPressed: () {
-                    Navigator.pop(context);
+                    Navigator.pushReplacement(
+                      context,
+                      PageTransitions.slideTransition(const LoginScreen()),
+                    );
                   },
                   child: const Text('Đã có tài khoản? Đăng nhập ngay'),
                 ),

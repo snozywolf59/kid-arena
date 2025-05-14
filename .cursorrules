@@ -19,6 +19,14 @@ const flutterBestPractices = [
     "Use proper localization techniques",
 ];
 
+// Import pattern
+const importPattern = '
+  dart
+  flutter
+  3rd side packages
+  internal packages
+'
+
 // Project Structure
 
 // Note: This is a reference structure. Adapt to the project's existing organization

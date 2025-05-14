@@ -44,6 +44,7 @@ dependencies:
   percent_indicator: ^4.2.5
   intl: ^0.18.1
   speech_to_text: ^7.0.0
+  flutter_splash_screen: ^3.0.0
   
   
 
@@ -59,3 +60,4 @@ flutter:
 
   assets:
   - assets/images/
+  

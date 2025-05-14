@@ -71,10 +71,13 @@ class _SplashScreenState extends State<SplashScreen>
                   scale: _scaleAnimation.value,
                   child: Opacity(
                     opacity: _fadeAnimation.value,
-                    child: Image.asset(
-                      ImageLink.logoImage,
-                      width: 150,
-                      height: 150,
+                    child: Hero(
+                      tag: 'app_logo',
+                      child: Image.asset(
+                        ImageLink.logoImage,
+                        width: 150,
+                        height: 150,
+                      ),
                     ),
                   ),
                 );
