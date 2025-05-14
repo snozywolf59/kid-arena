@@ -16,6 +16,7 @@ import 'package:kid_arena/models/class.dart';
 import 'package:kid_arena/services/test_service.dart';
 import 'package:kid_arena/services/class_service.dart';
 import 'package:kid_arena/get_it.dart';
+import 'package:kid_arena/widgets/common/custom_snackbar.dart';
 
 class CreateTestScreen extends StatefulWidget {
   final String? classId;
@@ -165,15 +166,11 @@ class _CreateTestScreenState extends State<CreateTestScreen> {
   }
 
   void _showErrorSnackBar(String message) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(message), backgroundColor: Colors.red),
-    );
+    CustomSnackBar.showError(context, message);
   }
 
   void _showSuccessSnackBar(String message) {
-    ScaffoldMessenger.of(
-      context,
-    ).showSnackBar(SnackBar(content: Text(message)));
+    CustomSnackBar.showSuccess(context, message);
   }
 
   void _addQuestion() {
@@ -320,7 +317,7 @@ class _CreateTestScreenState extends State<CreateTestScreen> {
 
       if (mounted) {
         _showSuccessSnackBar('Tạo bài thi thành công!');
-        Navigator.pop(context);
+        Navigator.pop(context, true);
       }
     } catch (e) {
       if (mounted) {

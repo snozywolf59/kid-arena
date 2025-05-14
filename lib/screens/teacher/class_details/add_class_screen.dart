@@ -35,6 +35,7 @@ class _AddClassScreenState extends State<AddClassScreen> {
         await getIt<ClassService>().addClass(
           _nameController.text.trim(),
           _descriptionController.text.trim(),
+          _students,
         );
 
         if (mounted) {

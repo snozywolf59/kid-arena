@@ -3,7 +3,6 @@ import 'package:kid_arena/models/class.dart';
 import 'package:kid_arena/screens/teacher/class_details/manage_test_in_class_screen.dart';
 import 'package:kid_arena/screens/teacher/class_details/manage_students_screen.dart';
 import 'package:kid_arena/screens/teacher/class_details/manage_notification.dart';
-import 'package:kid_arena/screens/teacher/class_details/ranking.dart';
 
 class ClassDetailScreen extends StatefulWidget {
   final Class classroom;
@@ -21,7 +20,7 @@ class _ClassDetailScreenState extends State<ClassDetailScreen>
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 4, vsync: this);
+    _tabController = TabController(length: 3, vsync: this);
   }
 
   @override
@@ -41,7 +40,7 @@ class _ClassDetailScreenState extends State<ClassDetailScreen>
             Tab(text: 'Học sinh'),
             Tab(text: 'Bài thi'),
             Tab(text: 'Thông báo'),
-            Tab(text: 'BXH'),
+            //Tab(text: 'BXH'),
           ],
         ),
       ),
@@ -51,7 +50,7 @@ class _ClassDetailScreenState extends State<ClassDetailScreen>
           ManageStudentsScreen(classroom: widget.classroom),
           ManageTestInClassScreen(classroom: widget.classroom),
           NotificationManage(classroom: widget.classroom),
-          Ranking(classroom: widget.classroom),
+          //Ranking(classroom: widget.classroom),
         ],
       ),
     );

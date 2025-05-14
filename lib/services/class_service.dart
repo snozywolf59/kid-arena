@@ -34,12 +34,29 @@ class ClassService {
   }
 
   // Thêm lớp học mới
-  Future<String> addClass(String name, String description) async {
+  Future<String> addClass(
+    String name,
+    String description,
+    List<String> studentUsernames,
+  ) async {
     try {
+      // Convert usernames to student IDs
+      List<String> studentIds = [];
+      if (studentUsernames.isNotEmpty) {
+        final QuerySnapshot studentDocs =
+            await _firestore
+                .collection('users')
+                .where('username', whereIn: studentUsernames)
+                .where('role', isEqualTo: 'student')
+                .get();
+
+        studentIds = studentDocs.docs.map((doc) => doc.id).toList();
+      }
+
       DocumentReference docRef = await _firestore.collection('classes').add({
         'name': name,
         'description': description,
-        'studentIds': [],
+        'students': studentIds,
         'teacherId': currentUserId,
         'createdAt': Timestamp.now(),
       });
@@ -133,7 +150,11 @@ class ClassService {
 
   //get classes for a student
   Future<List<Class>> getClassesForStudent(String studentId) async {
-    final snapshot = await _firestore.collection('classes').where('students', arrayContains: studentId).get();
+    final snapshot =
+        await _firestore
+            .collection('classes')
+            .where('students', arrayContains: studentId)
+            .get();
     return snapshot.docs.map((doc) => Class.fromFirestore(doc)).toList();
   }
 

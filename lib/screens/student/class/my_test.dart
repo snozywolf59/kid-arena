@@ -11,6 +11,7 @@ import 'package:kid_arena/utils/index.dart';
 import 'package:kid_arena/widgets/common/loading_indicator.dart';
 import 'package:kid_arena/widgets/common/search_bar_widget.dart';
 import 'package:kid_arena/widgets/index.dart';
+import 'package:kid_arena/widgets/common/custom_snackbar.dart';
 
 class MyTest extends StatefulWidget {
   final Future<List<PrivateTest>> testFuture;
@@ -55,9 +56,7 @@ class _MyTestState extends State<MyTest> {
       });
       log('tests: $_tests');
     } catch (e) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text('Lỗi khi tải bài thi: $e')));
+      CustomSnackBar.showError(context, 'Lỗi khi tải bài thi: $e');
     } finally {
       setState(() {
         _isLoading = false;
@@ -183,11 +182,9 @@ class _MyTestState extends State<MyTest> {
                 timeTaken: studentAnswer?.timeTaken,
                 onTap: () {
                   if (isCompleted) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: Text('Xem lại bài thi: ${test.title}'),
-                        behavior: SnackBarBehavior.floating,
-                      ),
+                    CustomSnackBar.showSuccess(
+                      context,
+                      'Xem lại bài thi: ${test.title}',
                     );
                   } else {
                     Navigator.push(

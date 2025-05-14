@@ -5,14 +5,8 @@ import 'package:kid_arena/models/class.dart';
 import 'package:kid_arena/models/notification.dart';
 import 'package:kid_arena/services/index.dart';
 import 'package:kid_arena/utils/page_transitions.dart';
+import 'package:kid_arena/widgets/common/custom_snackbar.dart';
 
-import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
-import 'package:kid_arena/get_it.dart';
-import 'package:kid_arena/models/class.dart';
-import 'package:kid_arena/models/notification.dart';
-import 'package:kid_arena/services/index.dart';
-import 'package:kid_arena/utils/page_transitions.dart';
 import 'package:collection/collection.dart';
 
 class NotificationManage extends StatefulWidget {
@@ -47,11 +41,9 @@ class _NotificationManageState extends State<NotificationManage> {
       });
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Có lỗi xảy ra khi lấy thông báo: ${e.toString()}'),
-            backgroundColor: Colors.red,
-          ),
+        CustomSnackBar.showError(
+          context,
+          'Có lỗi xảy ra khi lấy thông báo: ${e.toString()}',
         );
       }
     } finally {
@@ -201,6 +193,7 @@ class _NotificationManageState extends State<NotificationManage> {
 
     return Card(
       margin: const EdgeInsets.only(bottom: 12),
+      color: Theme.of(context).colorScheme.onTertiary,
       elevation: 2,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       child: InkWell(
@@ -323,11 +316,9 @@ class _CreateNotificationScreenState extends State<CreateNotificationScreen> {
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Có lỗi xảy ra khi tạo thông báo ${e.toString()}'),
-            backgroundColor: Colors.red,
-          ),
+        CustomSnackBar.showError(
+          context,
+          'Có lỗi xảy ra khi tạo thông báo ${e.toString()}',
         );
       }
     } finally {

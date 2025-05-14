@@ -12,6 +12,7 @@ import 'package:kid_arena/services/auth_service.dart';
 import 'package:kid_arena/get_it.dart';
 import 'package:kid_arena/utils/page_transitions.dart';
 import 'package:kid_arena/widgets/common/loading_indicator.dart';
+import 'package:kid_arena/widgets/common/custom_snackbar.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -51,9 +52,7 @@ class _LoginScreenState extends State<LoginScreen> {
         );
         log('${user.uid} logged in');
         if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Đăng nhập thành công!')),
-          );
+          CustomSnackBar.showSuccess(context, 'Đăng nhập thành công!');
 
           // Chuyển hướng dựa trên role
           if (appUser is StudentUser) {
@@ -80,15 +79,12 @@ class _LoginScreenState extends State<LoginScreen> {
           message = 'Tên đăng nhập không hợp lệ';
         }
         if (!mounted) return;
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text(message)));
+        CustomSnackBar.showError(context, message);
       } catch (e) {
         if (!mounted) return;
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Đã xảy ra lỗi không xác định: ${e.toString()}'),
-          ),
+        CustomSnackBar.showError(
+          context,
+          'Đã xảy ra lỗi không xác định: ${e.toString()}',
         );
       } finally {
         if (mounted) {

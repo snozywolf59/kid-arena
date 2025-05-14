@@ -13,6 +13,7 @@ import '../../../widgets/student/test/option_widget.dart';
 import '../../../widgets/confirmation_dialog.dart';
 import 'result_screen.dart';
 import '../../../models/student_answer.dart';
+import '../../../widgets/common/custom_snackbar.dart';
 
 class QuizScreen extends StatefulWidget {
   final Test test;
@@ -183,15 +184,12 @@ class _QuizScreenState extends State<QuizScreen> with TickerProviderStateMixin {
         );
       }
       await getIt<StudyStreakService>().addStudyDay();
+      CustomSnackBar.showSuccess(context, 'Bài thi đã được nộp thành công!');
     } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Có lỗi xảy ra khi nộp bài: ${e.toString()}'),
-            backgroundColor: Colors.red,
-          ),
-        );
-      }
+      CustomSnackBar.showError(
+        context,
+        'Có lỗi xảy ra khi nộp bài: ${e.toString()}',
+      );
     } finally {
       if (mounted) {
         setState(() {

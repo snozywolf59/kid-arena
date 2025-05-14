@@ -206,26 +206,33 @@ class _ManageStudentsScreenState extends State<ManageStudentsScreen> {
   }
 
   Widget _buildStudentListItem(Student student) {
-    return ListTile(
-      leading: CircleAvatar(child: Text(student.fullName[0])),
-      title: Text(student.fullName),
-      subtitle: Text(student.username),
-      trailing: IconButton(
-        icon: const Icon(Icons.close),
-        onPressed: () async {
-          final shouldRemove = await ConfirmationDialog.show(
-            context: context,
-            title: 'Xác nhận xóa',
-            message:
-                'Bạn có chắc chắn muốn xóa học sinh ${student.fullName} khỏi lớp?',
-            confirmText: 'Xóa',
-            isDestructive: true,
-          );
+    return Container(
+      margin: const EdgeInsets.symmetric(vertical: 4, horizontal: 8),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(10),
+        boxShadow: [BoxShadow(color: Theme.of(context).colorScheme.onTertiary)],
+      ),
+      child: ListTile(
+        leading: CircleAvatar(child: Text(student.fullName[0])),
+        title: Text(student.fullName),
+        subtitle: Text(student.username),
+        trailing: IconButton(
+          icon: const Icon(Icons.close),
+          onPressed: () async {
+            final shouldRemove = await ConfirmationDialog.show(
+              context: context,
+              title: 'Xác nhận xóa',
+              message:
+                  'Bạn có chắc chắn muốn xóa học sinh ${student.fullName} khỏi lớp?',
+              confirmText: 'Xóa',
+              isDestructive: true,
+            );
 
-          if (shouldRemove == true) {
-            _removeStudent(student.id);
-          }
-        },
+            if (shouldRemove == true) {
+              _removeStudent(student.id);
+            }
+          },
+        ),
       ),
     );
   }

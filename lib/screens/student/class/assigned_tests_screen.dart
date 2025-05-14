@@ -21,6 +21,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:kid_arena/blocs/theme/theme_bloc.dart';
 import 'package:kid_arena/blocs/theme/theme_event.dart';
 import 'package:kid_arena/blocs/theme/theme_state.dart';
+import 'package:kid_arena/widgets/common/custom_snackbar.dart';
 
 class AssignedTestsScreen extends StatefulWidget {
   const AssignedTestsScreen({super.key});
@@ -83,8 +84,9 @@ class _AssignedTestsScreenState extends State<AssignedTestsScreen>
         isLoading = false;
       });
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Lỗi khi tải dữ liệu: ${e.toString()}')),
+        CustomSnackBar.showError(
+          context,
+          'Lỗi khi tải dữ liệu: ${e.toString()}',
         );
       }
     }
@@ -303,11 +305,9 @@ class _AssignedTestsScreenState extends State<AssignedTestsScreen>
                         timeTaken: studentAnswer?.timeTaken,
                         onTap: () {
                           if (isCompleted) {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                content: Text('Xem lại bài thi: ${test.title}'),
-                                behavior: SnackBarBehavior.floating,
-                              ),
+                            CustomSnackBar.showSuccess(
+                              context,
+                              'Xem lại bài thi: ${test.title}',
                             );
                           } else {
                             Navigator.push(

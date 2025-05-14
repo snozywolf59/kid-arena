@@ -20,6 +20,7 @@ import 'package:kid_arena/widgets/confirmation_dialog.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:kid_arena/blocs/theme/theme_bloc.dart';
 import 'package:kid_arena/blocs/theme/theme_state.dart';
+import 'package:kid_arena/widgets/common/custom_snackbar.dart';
 
 class ClassListScreen extends StatefulWidget {
   const ClassListScreen({super.key});
@@ -61,23 +62,11 @@ class _ClassListScreenState extends State<ClassListScreen> {
   }
 
   void _showSuccessMessage(String message) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(message),
-        backgroundColor: Colors.green,
-        behavior: SnackBarBehavior.floating,
-      ),
-    );
+    CustomSnackBar.showSuccess(context, message);
   }
 
   void _showErrorMessage(String error) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('Lỗi: $error'),
-        backgroundColor: Colors.red,
-        behavior: SnackBarBehavior.floating,
-      ),
-    );
+    CustomSnackBar.showError(context, error);
   }
 
   void _showDeleteConfirmationDialog(Class classroom) {

@@ -10,14 +10,15 @@ class TestDetailScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return Scaffold(
-      backgroundColor: Colors.grey[50],
+      backgroundColor: theme.colorScheme.surface,
       appBar: AppBar(
         title: Text(test.title),
         centerTitle: true,
         elevation: 0,
         backgroundColor: Colors.transparent,
-        foregroundColor: Colors.black,
+        foregroundColor: theme.colorScheme.onSurface,
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(20),
@@ -58,13 +59,14 @@ class _TestHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Container(
           padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
-            color: Colors.white,
+            color: theme.colorScheme.onTertiary,
             borderRadius: BorderRadius.circular(12),
             boxShadow: [
               BoxShadow(
@@ -80,12 +82,12 @@ class _TestHeader extends StatelessWidget {
                 width: 56,
                 height: 56,
                 decoration: BoxDecoration(
-                  color: Colors.blueAccent.withOpacity(0.1),
+                  color: theme.colorScheme.primary.withOpacity(0.1),
                   shape: BoxShape.circle,
                 ),
-                child: const Icon(
+                child: Icon(
                   Icons.quiz_outlined,
-                  color: Colors.blueAccent,
+                  color: theme.colorScheme.primary,
                 ),
               ),
               const SizedBox(width: 16),
@@ -103,7 +105,10 @@ class _TestHeader extends StatelessWidget {
                     const SizedBox(height: 4),
                     Text(
                       'Tạo vào ${DateFormat('dd/MM/yyyy').format(test.createdAt)}',
-                      style: TextStyle(fontSize: 14, color: Colors.grey[600]),
+                      style: TextStyle(
+                        fontSize: 14,
+                        color: theme.colorScheme.onSurface,
+                      ),
                     ),
                   ],
                 ),
@@ -134,7 +139,7 @@ class _DescriptionSection extends StatelessWidget {
         Container(
           padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
-            color: Colors.white,
+            color: Theme.of(context).colorScheme.onTertiary,
             borderRadius: BorderRadius.circular(12),
             boxShadow: [
               BoxShadow(
@@ -149,7 +154,7 @@ class _DescriptionSection extends StatelessWidget {
             style: TextStyle(
               fontSize: 15,
               height: 1.5,
-              color: Colors.grey[800],
+              color: Theme.of(context).colorScheme.onSurface,
             ),
           ),
         ),
@@ -171,7 +176,8 @@ class _TestStats extends StatelessWidget {
         Expanded(
           child: _StatCard(
             icon: Icons.timer_outlined,
-            value: '$duration phút ${duration % 60 == 0 ? '' : '${duration % 60} giây'}',
+            value:
+                '$duration phút ${duration % 60 == 0 ? '' : '${duration % 60} giây'}',
             label: 'Thời gian',
             color: Colors.orangeAccent,
           ),
@@ -208,7 +214,7 @@ class _StatCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Theme.of(context).colorScheme.onTertiary,
         borderRadius: BorderRadius.circular(12),
         boxShadow: [
           BoxShadow(
@@ -234,7 +240,13 @@ class _StatCard extends StatelessWidget {
             style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 4),
-          Text(label, style: TextStyle(fontSize: 14, color: Colors.grey[600])),
+          Text(
+            label,
+            style: TextStyle(
+              fontSize: 14,
+              color: Theme.of(context).colorScheme.onSurface,
+            ),
+          ),
         ],
       ),
     );
@@ -282,7 +294,7 @@ class _QuestionCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Theme.of(context).colorScheme.onTertiary,
         borderRadius: BorderRadius.circular(12),
         boxShadow: [
           BoxShadow(
@@ -332,7 +344,7 @@ class _QuestionCard extends StatelessWidget {
                           color:
                               optionIndex == question.correctAnswer
                                   ? Colors.green
-                                  : Colors.grey[700],
+                                  : Theme.of(context).colorScheme.onSurface,
                         ),
                       ),
                     ),
@@ -340,7 +352,9 @@ class _QuestionCard extends StatelessWidget {
                   Expanded(
                     child: Text(
                       optionText,
-                      style: TextStyle(color: Colors.grey[800]),
+                      style: TextStyle(
+                        color: Theme.of(context).colorScheme.onSurface,
+                      ),
                     ),
                   ),
                 ],

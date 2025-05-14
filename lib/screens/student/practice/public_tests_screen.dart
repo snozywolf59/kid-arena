@@ -9,6 +9,7 @@ import 'package:kid_arena/widgets/student/test/public_test_card.dart';
 import 'package:kid_arena/services/test_service.dart';
 import 'package:kid_arena/get_it.dart';
 import 'package:kid_arena/utils/page_transitions.dart';
+import 'package:kid_arena/widgets/common/custom_snackbar.dart';
 
 class ExamsScreen extends StatefulWidget {
   final Subject subject;
@@ -91,9 +92,7 @@ class _ExamsScreenState extends State<ExamsScreen>
     } catch (e) {
       setState(() => _isLoading = false);
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: SelectableText('Lỗi khi tải dữ liệu: $e')),
-        );
+        CustomSnackBar.showError(context, 'Lỗi khi tải dữ liệu: $e');
       }
     }
   }
@@ -309,11 +308,9 @@ class _ExamsScreenState extends State<ExamsScreen>
           score: studentAnswer.score,
           timeTaken: studentAnswer.timeTaken,
           onTap: () {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text('Xem lại bài thi: ${exam.title}'),
-                behavior: SnackBarBehavior.floating,
-              ),
+            CustomSnackBar.showSuccess(
+              context,
+              'Xem lại bài thi: ${exam.title}',
             );
           },
         );

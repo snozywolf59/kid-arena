@@ -6,6 +6,7 @@ import 'package:kid_arena/services/auth_service.dart';
 import 'package:kid_arena/get_it.dart';
 import 'package:kid_arena/utils/index.dart';
 import 'package:kid_arena/screens/auth/login_screen.dart';
+import 'package:kid_arena/widgets/common/custom_snackbar.dart';
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});
@@ -74,9 +75,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
           );
 
           if (mounted) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text('Đăng ký thành công!')),
-            );
+            CustomSnackBar.showSuccess(context, 'Đăng ký thành công!');
             Navigator.pop(context);
           }
         }
@@ -90,14 +89,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
         if (!mounted) {
           return;
         }
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text(message)));
+        CustomSnackBar.showError(context, message);
       } catch (e) {
         if (!mounted) return;
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Đã xảy ra lỗi không xác định')),
-        );
+        CustomSnackBar.showError(context, 'Đã xảy ra lỗi không xác định');
       } finally {
         if (mounted) {
           setState(() {
