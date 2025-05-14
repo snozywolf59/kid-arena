@@ -255,22 +255,22 @@ class _StudentProfileScreenState extends State<StudentProfileScreen>
       padding: const EdgeInsets.all(16),
       children: [
         _buildAchievementCard(
-          'Math Champion',
-          'Achieved highest score in Mathematics',
+          'Vô địch Toán',
+          'Đạt điểm cao nhất trong môn Toán',
           Icons.emoji_events,
           Colors.amber,
         ),
         const SizedBox(height: 16),
         _buildAchievementCard(
-          'Perfect Attendance',
-          'No absences for 3 months',
+          'Ngoan nhất nhà',
+          'Học liên tục trong 1 tuần',
           Icons.calendar_today,
           Colors.green,
         ),
         const SizedBox(height: 16),
         _buildAchievementCard(
-          'Science Explorer',
-          'Completed all science experiments',
+          'Chuyên gia khoa học',
+          'Hoàn thành toàn bộ bài tập khoa học',
           Icons.science,
           Colors.blue,
         ),

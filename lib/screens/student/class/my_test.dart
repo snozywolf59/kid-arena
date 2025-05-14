@@ -80,6 +80,8 @@ class _MyTestState extends State<MyTest> {
             testId: testId,
             submittedAt: DateTime.now(),
             timeTaken: 0,
+            score: 0,
+            numOfWrongAnswers: 0,
           ),
     );
   }

@@ -77,7 +77,7 @@ class PrivateTestCard extends StatelessWidget {
                         ),
                         const SizedBox(height: 4),
                         Text(
-                          '$subject • Tên lớp: $className',
+                          '$subject • $className',
                           style: TextStyle(
                             fontSize: 14,
                             color: Colors.grey[600],

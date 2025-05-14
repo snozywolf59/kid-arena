@@ -155,6 +155,7 @@ class _QuizScreenState extends State<QuizScreen> with TickerProviderStateMixin {
       submittedAt: DateTime.now(),
       timeTaken: timeTaken,
       score: score,
+      numOfWrongAnswers: widget.test.questions.length - correctAnswers,
     );
 
     Navigator.pushReplacement(
@@ -170,6 +171,7 @@ class _QuizScreenState extends State<QuizScreen> with TickerProviderStateMixin {
           timeTaken,
           _selectedAnswers,
           score,
+          widget.test.questions.length - correctAnswers,
         );
       } else if (widget.test is PrivateTest) {
         await getIt<TestService>().submitStudentAnswerForAnAssignedTest(
@@ -177,6 +179,7 @@ class _QuizScreenState extends State<QuizScreen> with TickerProviderStateMixin {
           timeTaken,
           _selectedAnswers,
           score,
+          widget.test.questions.length - correctAnswers,
         );
       }
       await getIt<StudyStreakService>().addStudyDay();

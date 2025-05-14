@@ -104,6 +104,7 @@ class TestService {
           score++;
         }
       }
+      final numOfWrongAnswers = test.questions.length - score.toInt();
       score = score / test.questions.length;
       final studentAnswer = StudentAnswer(
         id: test.id,
@@ -112,6 +113,8 @@ class TestService {
         testId: test.id,
         submittedAt: DateTime.now(),
         timeTaken: timeTaken,
+        score: score,
+        numOfWrongAnswers: numOfWrongAnswers,
       );
       final result = await _firestore.collection('student_answers').add({
         ...studentAnswer.toMap(),
@@ -168,12 +171,12 @@ class TestService {
         .toList();
   }
 
-
   Future<void> submitStudentAnswerForAnAssignedTest(
     String testId,
     int timeTaken,
     List<int> answers,
     double score,
+    int numOfWrongAnswers,
   ) async {
     try {
       final studentId = _auth.currentUser?.uid ?? '';
@@ -184,6 +187,8 @@ class TestService {
         testId: testId,
         submittedAt: DateTime.now(),
         timeTaken: timeTaken,
+        score: score,
+        numOfWrongAnswers: numOfWrongAnswers,
       );
 
       final result = await _firestore
@@ -195,7 +200,9 @@ class TestService {
         throw Exception('Failed to submit student answer for an assigned test');
       }
     } catch (e) {
-      throw Exception('Failed to submit student answer for an assigned test: $e');
+      throw Exception(
+        'Failed to submit student answer for an assigned test: $e',
+      );
     }
   }
 
@@ -258,6 +265,7 @@ class TestService {
     int timeTaken,
     List<int> answers,
     double score,
+    int numOfWrongAnswers,
   ) async {
     try {
       final studentId = _auth.currentUser?.uid ?? '';
@@ -268,6 +276,8 @@ class TestService {
         testId: testId,
         submittedAt: DateTime.now(),
         timeTaken: timeTaken,
+        score: score,
+        numOfWrongAnswers: numOfWrongAnswers,
       );
 
       final result = await _firestore

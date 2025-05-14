@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter/material.dart';
 import 'package:kid_arena/constants/subject.dart';
 import 'package:kid_arena/firebase_options.dart';
 import 'package:kid_arena/models/question.dart';
@@ -56,83 +57,75 @@ class PublicTest extends Test {
 }
 
 void main() async {
-  final String title = 'Kiểm tra tiếng Anh chào hỏi';
-  final String description = 'Kiểm tra tiếng Anh chào hỏi của bạn';
+  final String title = 'Kiểm tra kiến thức Toán học cơ bản';
+  final String description =
+      'Bài kiểm tra giúp bạn ôn lại các kiến thức toán học cơ bản như cộng, trừ, nhân, chia và hình học.';
   final List<Question> questions = [
     Question(
-      questionText: 'How do you say hello in English?',
-      correctAnswer: 0,
-      options: ['Hello', 'Goodbye', 'Thanks', 'Please'],
-    ),
-    Question(
-      questionText: 'What do you say when you leave?',
-      correctAnswer: 3,
-      options: ['Hi', 'Good morning', 'Thanks', 'Goodbye'],
-    ),
-    Question(
-      questionText: 'How do you ask someone\'s name?',
+      questionText: '2 cộng 3 bằng bao nhiêu?',
       correctAnswer: 1,
-      options: [
-        'How old are you?',
-        'What is your name?',
-        'Where are you from?',
-        'How are you?',
-      ],
+      options: ['4', '5', '6', '3'],
     ),
     Question(
-      questionText: 'What do you say when you receive a gift?',
+      questionText: 'Số nào sau đây là số chẵn?',
       correctAnswer: 2,
-      options: ['Sorry', 'Hello', 'Thank you', 'Good night'],
+      options: ['3', '5', '8', '7'],
     ),
     Question(
-      questionText: 'What do you say if you hurt someone by accident?',
-      correctAnswer: 1,
-      options: ['Thank you', 'Sorry', 'Yes', 'Hi'],
-    ),
-    Question(
-      questionText: 'How do you greet someone in the morning?',
+      questionText: 'Hình nào có 4 cạnh bằng nhau?',
       correctAnswer: 0,
-      options: ['Good morning', 'Good night', 'See you', 'Hello'],
+      options: ['Hình vuông', 'Hình tròn', 'Hình tam giác', 'Hình chữ nhật'],
     ),
     Question(
-      questionText: 'How do you reply to "How are you?"',
+      questionText: '10 trừ 6 bằng bao nhiêu?',
       correctAnswer: 3,
-      options: [
-        'What is your name?',
-        'Yes, I am.',
-        'Goodbye!',
-        "I'm fine, thank you.",
-      ],
+      options: ['3', '2', '5', '4'],
     ),
     Question(
-      questionText: 'What do you say when asking for something?',
-      correctAnswer: 2,
-      options: ['Hello', 'Thanks', 'Please', 'Sorry'],
-    ),
-    Question(
-      questionText: 'How do you say "Tạm biệt" in English?',
+      questionText: 'Số tiếp theo sau số 9 là gì?',
       correctAnswer: 1,
-      options: ['Hello', 'Goodbye', 'Thank you', 'Nice to meet you'],
+      options: ['9', '10', '11', '8'],
     ),
     Question(
-      questionText: 'What do you say when meeting someone for the first time?',
-      correctAnswer: 3,
-      options: ['See you', 'Please', 'Sorry', 'Nice to meet you'],
+      questionText: 'Kết quả của 4 nhân 2 là bao nhiêu?',
+      correctAnswer: 0,
+      options: ['8', '6', '10', '7'],
+    ),
+    Question(
+      questionText: '12 chia cho 3 bằng bao nhiêu?',
+      correctAnswer: 2,
+      options: ['6', '5', '4', '3'],
+    ),
+    Question(
+      questionText: 'Số nào nhỏ nhất trong các số sau: 5, 2, 8, 3?',
+      correctAnswer: 1,
+      options: ['3', '2', '5', '8'],
+    ),
+    Question(
+      questionText: 'Hình nào không có cạnh?',
+      correctAnswer: 0,
+      options: ['Hình tròn', 'Hình vuông', 'Hình tam giác', 'Hình chữ nhật'],
+    ),
+    Question(
+      questionText: '5 cộng 0 bằng bao nhiêu?',
+      correctAnswer: 2,
+      options: ['0', '10', '5', '1'],
     ),
   ];
-  final Subject subject = Subject.english;
+  final Subject subject = Subject.mathematics;
 
   //create a function that will create a public test to firestore
   PublicTest test = PublicTest(
     id: '1',
     title: title,
     description: description,
-    duration: 5,
+    duration: 10,
     subject: subject.name,
     questions: questions,
     createdAt: DateTime.now(),
-    grade: 1,
+    grade: 2,
   );
+  WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   await FirebaseFirestore.instance.collection('public_tests').add(test.toMap());
 }

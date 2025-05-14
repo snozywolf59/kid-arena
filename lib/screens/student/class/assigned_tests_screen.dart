@@ -105,6 +105,8 @@ class _AssignedTestsScreenState extends State<AssignedTestsScreen>
             testId: testId,
             submittedAt: DateTime.now(),
             timeTaken: 0,
+            score: 0,
+            numOfWrongAnswers: 0,
           ),
     );
   }
@@ -238,9 +240,13 @@ class _AssignedTestsScreenState extends State<AssignedTestsScreen>
                   onPressed: () {
                     Navigator.push(
                       context,
-                      PageTransitions.slideTransition(MyNotification(
-                        notificationFuture: getIt<NotificationService>().getNotificationsForStudent(),
-                      )),
+                      PageTransitions.slideTransition(
+                        MyNotification(
+                          notificationFuture:
+                              getIt<NotificationService>()
+                                  .getNotificationsForStudent(),
+                        ),
+                      ),
                     );
                   },
                   icon: Icon(Icons.notifications),

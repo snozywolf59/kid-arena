@@ -5,6 +5,7 @@ import 'package:kid_arena/services/class_service.dart';
 import 'package:kid_arena/get_it.dart';
 import 'package:kid_arena/widgets/common/search_bar_widget.dart';
 import 'package:kid_arena/widgets/confirmation_dialog.dart';
+import 'package:kid_arena/widgets/common/custom_snackbar.dart';
 
 class ManageStudentsScreen extends StatefulWidget {
   final Class classroom;
@@ -176,15 +177,11 @@ class _ManageStudentsScreenState extends State<ManageStudentsScreen> {
   }
 
   void _showSuccessMessage(String message) {
-    ScaffoldMessenger.of(
-      context,
-    ).showSnackBar(SnackBar(content: Text(message)));
+    CustomSnackBar.showSuccess(context, message);
   }
 
   void _showErrorMessage(String error) {
-    ScaffoldMessenger.of(
-      context,
-    ).showSnackBar(SnackBar(content: Text('Lỗi: $error')));
+    CustomSnackBar.showError(context, error);
   }
 
   Widget _buildSearchBar() {

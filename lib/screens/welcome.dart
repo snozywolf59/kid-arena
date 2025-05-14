@@ -191,12 +191,24 @@ class WelcomeScreen extends StatelessWidget {
   }
 
   Future<void> _toNextScreen(BuildContext context) async {
+    // Show loading dialog
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return const Center(child: CircularProgressIndicator());
+      },
+    );
+
     if (FirebaseAuth.instance.currentUser != null) {
       AppUser user = await getIt<AuthService>().getUserData(
         FirebaseAuth.instance.currentUser!.uid,
       );
 
       if (!context.mounted) return;
+
+      // Pop loading dialog
+      Navigator.pop(context);
 
       if (user is StudentUser) {
         Navigator.pushAndRemoveUntil(
@@ -212,6 +224,9 @@ class WelcomeScreen extends StatelessWidget {
         );
       }
     } else {
+      // Pop loading dialog
+      Navigator.pop(context);
+
       Navigator.pushAndRemoveUntil(
         context,
         PageTransitions.slideTransition(const AuthSelectionScreen()),

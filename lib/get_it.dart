@@ -15,5 +15,7 @@ Future<void> getItInit() async {
   getIt.registerLazySingleton<TestService>(() => TestService());
   getIt.registerLazySingleton<StudyStreakService>(() => StudyStreakService());
   getIt.registerLazySingleton<NotificationService>(() => NotificationService());
-
+  getIt.registerLazySingleton<RankingService>(() => RankingService());
+  getIt.registerLazySingleton<AchievementService>(() => AchievementService());
+  getIt.registerLazySingleton<StudentService>(() => StudentService());
 }

@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:kid_arena/constants/index.dart';
@@ -10,8 +9,6 @@ import 'package:kid_arena/widgets/student/test/public_test_card.dart';
 import 'package:kid_arena/services/test_service.dart';
 import 'package:kid_arena/get_it.dart';
 import 'package:kid_arena/utils/page_transitions.dart';
-
-
 
 class ExamsScreen extends StatefulWidget {
   final Subject subject;
@@ -299,6 +296,8 @@ class _ExamsScreenState extends State<ExamsScreen>
                 testId: exam.id,
                 submittedAt: DateTime.now(),
                 timeTaken: 0,
+                score: 0,
+                numOfWrongAnswers: 0,
               ),
         );
         return PublicTestCard(
