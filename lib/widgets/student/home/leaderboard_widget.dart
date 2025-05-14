@@ -35,7 +35,7 @@ class LeaderboardWidget extends StatelessWidget {
                     bottom: 0,
                     child: _buildPodiumItem(
                       context,
-                      name: 'Học sinh 2',
+                      name: 'Lê Toàn',
                       rank: 2,
                       height: 100,
                       color: Colors.grey,
@@ -46,7 +46,7 @@ class LeaderboardWidget extends StatelessWidget {
                     bottom: 0,
                     child: _buildPodiumItem(
                       context,
-                      name: 'Học sinh 1',
+                      name: 'Nguyễn Hà',
                       rank: 1,
                       height: 140,
                       color: Colors.amber,
@@ -58,7 +58,7 @@ class LeaderboardWidget extends StatelessWidget {
                     bottom: 0,
                     child: _buildPodiumItem(
                       context,
-                      name: 'Học sinh 3',
+                      name: 'Tô Bằng',
                       rank: 3,
                       height: 80,
                       color: Colors.orange,
