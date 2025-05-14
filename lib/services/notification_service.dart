@@ -32,8 +32,12 @@ class NotificationService {
 
   //get notifications for a student
   Future<List<ClassNotification>> getNotificationsForStudent(
-    String studentId,
+    
   ) async {
+    final studentId = _auth.currentUser?.uid;
+    if (studentId == null) {
+      throw Exception('Student ID is null');
+    }
     final classes = await getIt<ClassService>().getClassesForStudent(studentId);
     final notifications = <ClassNotification>[];
     for (final classData in classes) {

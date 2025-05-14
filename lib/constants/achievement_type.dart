@@ -1,0 +1,6 @@
+enum AchievementType {
+  champion,
+  topStudent,
+  
+}
+

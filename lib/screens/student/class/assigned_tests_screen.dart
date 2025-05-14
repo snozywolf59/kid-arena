@@ -8,6 +8,7 @@ import 'package:flutter/material.dart';
 // Project packages
 import 'package:kid_arena/get_it.dart';
 import 'package:kid_arena/models/test/private_test.dart';
+import 'package:kid_arena/screens/student/class/my_notification.dart';
 import 'package:kid_arena/screens/student/quiz/quiz_screen.dart';
 import 'package:kid_arena/services/index.dart';
 import 'package:kid_arena/utils/page_transitions.dart';
@@ -16,6 +17,10 @@ import 'package:kid_arena/widgets/index.dart';
 import 'package:kid_arena/models/student_answer.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:kid_arena/widgets/common/search_bar_widget.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:kid_arena/blocs/theme/theme_bloc.dart';
+import 'package:kid_arena/blocs/theme/theme_event.dart';
+import 'package:kid_arena/blocs/theme/theme_state.dart';
 
 class AssignedTestsScreen extends StatefulWidget {
   const AssignedTestsScreen({super.key});
@@ -117,24 +122,20 @@ class _AssignedTestsScreenState extends State<AssignedTestsScreen>
     switch (tabIndex) {
       case 0: // Scheduled tests
         filteredTests =
-            _tests.where((test) {
-              final timeRemaining = test.endTime.difference(now);
-              return !timeRemaining.isNegative && timeRemaining.inDays <= 0;
-            }).toList();
+            _tests
+                .where(
+                  (test) =>
+                      test.startTime.isBefore(now) && test.endTime.isAfter(now),
+                )
+                .toList();
         break;
       case 1: // Ongoing tests
         filteredTests =
-            _tests.where((test) {
-              final timeRemaining = test.endTime.difference(now);
-              return !timeRemaining.isNegative && timeRemaining.inDays > 0;
-            }).toList();
+            _tests.where((test) => test.startTime.isAfter(now)).toList();
         break;
       case 2: // Overdue tests
         filteredTests =
-            _tests.where((test) {
-              final timeRemaining = test.endTime.difference(now);
-              return timeRemaining.isNegative;
-            }).toList();
+            _tests.where((test) => test.endTime.isBefore(now)).toList();
         break;
       default:
         filteredTests = [];
@@ -172,14 +173,13 @@ class _AssignedTestsScreenState extends State<AssignedTestsScreen>
     }
 
     final now = DateTime.now();
-    final timeRemaining = test.endTime.difference(now);
 
-    if (timeRemaining.isNegative) {
+    if (test.startTime.isAfter(now)) {
+      return Colors.indigo;
+    } else if (test.endTime.isBefore(now)) {
       return Colors.red;
-    } else if (timeRemaining.inDays > 0) {
-      return Colors.orange;
     } else {
-      return Colors.red;
+      return Colors.green;
     }
   }
 
@@ -188,6 +188,7 @@ class _AssignedTestsScreenState extends State<AssignedTestsScreen>
     if (isLoading) {
       return const LoadingIndicator();
     }
+    final theme = Theme.of(context);
     return Scaffold(
       body: NestedScrollView(
         headerSliverBuilder: (context, innerBoxIsScrolled) {
@@ -232,6 +233,35 @@ class _AssignedTestsScreenState extends State<AssignedTestsScreen>
                   ],
                 ),
               ),
+              actions: [
+                IconButton(
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      PageTransitions.slideTransition(const MyNotification()),
+                    );
+                  },
+                  icon: Icon(Icons.notifications),
+                ),
+                BlocBuilder<ThemeBloc, ThemeState>(
+                  builder: (context, state) {
+                    return IconButton(
+                      icon: Icon(
+                        state.isDarkMode ? Icons.light_mode : Icons.dark_mode,
+                      ),
+                      onPressed: () {
+                        context.read<ThemeBloc>().add(ThemeToggled());
+                      },
+                    );
+                  },
+                ),
+                CircleAvatar(
+                  radius: 16,
+                  backgroundColor: theme.colorScheme.primary,
+                  child: const Icon(Icons.person, size: 16),
+                ),
+                const SizedBox(width: 16),
+              ],
             ),
           ];
         },
@@ -239,6 +269,9 @@ class _AssignedTestsScreenState extends State<AssignedTestsScreen>
           controller: _tabController,
           children: List.generate(3, (index) {
             final filteredTests = _getFilteredTests(index);
+            if (filteredTests.isEmpty) {
+              return const Center(child: Text('Không có bài kiểm tra nào'));
+            }
             return CustomScrollView(
               slivers: [
                 SliverPadding(

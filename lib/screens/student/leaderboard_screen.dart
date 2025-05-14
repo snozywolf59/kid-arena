@@ -1,33 +1,62 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:kid_arena/blocs/theme/theme_bloc.dart';
+import 'package:kid_arena/blocs/theme/theme_event.dart';
+import 'package:kid_arena/blocs/theme/theme_state.dart';
+import 'package:kid_arena/screens/student/class/my_notification.dart';
+import 'package:kid_arena/utils/index.dart';
 
 class LeaderboardScreen extends StatelessWidget {
   const LeaderboardScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return Scaffold(
       body: CustomScrollView(
         slivers: [
-          SliverAppBar.medium(
+          SliverAppBar(
             title: const Text(
-              'Leaderboard',
+              'Bảng xếp hạng',
               style: TextStyle(fontWeight: FontWeight.bold),
             ),
             floating: true,
+            pinned: true,
+            automaticallyImplyLeading: false,
+
             actions: [
               IconButton(
-                icon: const Icon(Icons.filter_list),
                 onPressed: () {
-                  // TODO: Implement filter
+                  Navigator.push(
+                    context,
+                    PageTransitions.slideTransition(const MyNotification()),
+                  );
+                },
+                icon: Icon(Icons.notifications),
+              ),
+              BlocBuilder<ThemeBloc, ThemeState>(
+                builder: (context, state) {
+                  return IconButton(
+                    icon: Icon(
+                      state.isDarkMode ? Icons.light_mode : Icons.dark_mode,
+                    ),
+                    onPressed: () {
+                      context.read<ThemeBloc>().add(ThemeToggled());
+                    },
+                  );
                 },
               ),
-              const SizedBox(width: 8),
+              CircleAvatar(
+                radius: 16,
+                backgroundColor: theme.colorScheme.primary,
+                child: const Icon(Icons.person, size: 16),
+              ),
+              const SizedBox(width: 16),
             ],
-            automaticallyImplyLeading: false,
           ),
           SliverToBoxAdapter(
             child: Padding(
-              padding: const EdgeInsets.all(16),
+              padding: const EdgeInsets.all(8),
               child: Column(
                 children: [
                   _buildTopThree(),
@@ -84,7 +113,7 @@ class LeaderboardScreen extends StatelessWidget {
         children: [
           Container(
             width: 80,
-            height: 80,
+            height: 120,
             decoration: BoxDecoration(
               color: color.withAlpha(26),
               shape: BoxShape.circle,

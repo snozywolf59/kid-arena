@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:kid_arena/get_it.dart';
+import 'package:kid_arena/models/notification.dart';
+import 'package:kid_arena/services/index.dart';
+import 'package:collection/collection.dart'; // Thêm thư viện này
 
 class MyNotification extends StatefulWidget {
   const MyNotification({super.key});
@@ -9,370 +13,251 @@ class MyNotification extends StatefulWidget {
 }
 
 class _MyNotificationState extends State<MyNotification> {
-  final List<StudentNotification> _notifications = [
-    StudentNotification(
-      title: 'Bài tập mới: Toán',
-      body: 'Bài tập chương 3 đã được đăng. Hạn nộp: 15/05/2024',
-      createdAt: DateTime.now().subtract(const Duration(minutes: 30)),
-      isRead: false,
-      type: NotificationType.assignment,
-      subject: 'Toán',
-    ),
-    StudentNotification(
-      title: 'Điểm kiểm tra Văn',
-      body: 'Điểm bài kiểm tra giữa kỳ đã có. Bạn được 8.5 điểm',
-      createdAt: DateTime.now().subtract(const Duration(hours: 2)),
-      isRead: true,
-      type: NotificationType.grade,
-      subject: 'Ngữ Văn',
-    ),
-    StudentNotification(
-      title: 'Lịch học thay đổi',
-      body: 'Lịch học thứ 5 sẽ dời sang sáng thứ 7 tuần này',
-      createdAt: DateTime.now().subtract(const Duration(days: 1)),
-      isRead: false,
-      type: NotificationType.schedule,
-    ),
-    StudentNotification(
-      title: 'Thông báo từ lớp trưởng',
-      body: 'Nhớ mang đồng phục thể dục cho buổi học ngày mai',
-      createdAt: DateTime.now().subtract(const Duration(days: 2)),
-      isRead: true,
-      type: NotificationType.announcement,
-      sender: 'Nguyễn Văn A',
-    ),
-    StudentNotification(
-      title: 'Hoạt động ngoại khóa',
-      body: 'Đăng ký tham gia câu lạc bộ Robotics trước 10/05',
-      createdAt: DateTime.now().subtract(const Duration(days: 3)),
-      isRead: false,
-      type: NotificationType.event,
-    ),
-  ];
+  List<ClassNotification> notifications = [];
+  bool isLoading = true;
+  String errorMessage = '';
 
-  bool _showUnreadOnly = false;
-  NotificationType? _selectedFilter;
+  @override
+  void initState() {
+    super.initState();
+    _fetchNotifications();
+  }
+
+  Future<void> _fetchNotifications() async {
+    setState(() {
+      isLoading = true;
+      errorMessage = '';
+    });
+
+    try {
+      final notifications =
+          await getIt<NotificationService>().getNotificationsForStudent();
+      setState(() {
+        this.notifications = notifications;
+      });
+    } catch (e) {
+      errorMessage = 'Error loading notifications: ${e.toString()}';
+    } finally {
+      setState(() {
+        isLoading = false;
+      });
+    }
+  }
+
+  // Hàm nhóm thông báo theo ngày
+  Map<String, List<ClassNotification>> _groupNotificationsByDate() {
+    return groupBy(notifications, (notification) {
+      final now = DateTime.now();
+      final notificationDate = notification.createdAt;
+
+      if (now.year == notificationDate.year &&
+          now.month == notificationDate.month &&
+          now.day == notificationDate.day) {
+        return 'Hôm nay';
+      } else if (now.year == notificationDate.year &&
+          now.month == notificationDate.month &&
+          now.day - notificationDate.day == 1) {
+        return 'Hôm qua';
+      } else {
+        return DateFormat('dd/MM/yyyy').format(notificationDate);
+      }
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
-    final filteredNotifications =
-        _notifications.where((notification) {
-          if (_showUnreadOnly && notification.isRead) return false;
-          if (_selectedFilter != null && notification.type != _selectedFilter) {
-            return false;
-          }
-          return true;
-        }).toList();
-
+    final theme = Theme.of(context);
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Thông báo của bạn'),
-        centerTitle: true,
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.filter_alt),
-            onPressed: _showFilterOptions,
-            tooltip: 'Lọc thông báo',
-          ),
-        ],
-      ),
-      body: Column(
-        children: [
-          if (_selectedFilter != null || _showUnreadOnly)
-            _buildActiveFiltersChip(),
-          Expanded(
-            child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              child:
-                  filteredNotifications.isEmpty
-                      ? const Center(
-                        child: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Icon(
-                              Icons.notifications_off,
-                              size: 48,
-                              color: Colors.grey,
-                            ),
-                            SizedBox(height: 16),
-                            Text(
-                              'Không có thông báo nào',
-                              style: TextStyle(
-                                fontSize: 16,
-                                color: Colors.grey,
-                              ),
-                            ),
-                          ],
-                        ),
-                      )
-                      : RefreshIndicator(
-                        onRefresh: () async {
-                          // Simulate refresh
-                          await Future.delayed(const Duration(seconds: 1));
-                          setState(() {});
-                        },
-                        child: ListView.separated(
-                          itemCount: filteredNotifications.length,
-                          separatorBuilder:
-                              (context, index) => const Divider(height: 1),
-                          itemBuilder: (context, index) {
-                            final notification = filteredNotifications[index];
-                            return _buildNotificationCard(notification);
-                          },
-                        ),
-                      ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildActiveFiltersChip() {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      child: Wrap(
-        spacing: 8,
-        children: [
-          if (_showUnreadOnly)
-            InputChip(
-              label: const Text('Chưa đọc'),
-              onDeleted: () {
-                setState(() {
-                  _showUnreadOnly = false;
-                });
-              },
-              deleteIcon: const Icon(Icons.close, size: 16),
-            ),
-          if (_selectedFilter != null)
-            InputChip(
-              label: Text(_getNotificationTypeLabel(_selectedFilter!)),
-              onDeleted: () {
-                setState(() {
-                  _selectedFilter = null;
-                });
-              },
-              deleteIcon: const Icon(Icons.close, size: 16),
-            ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildNotificationCard(StudentNotification notification) {
-    final timeAgo = _formatTimeAgo(notification.createdAt);
-    final icon = _getNotificationIcon(notification.type);
-    final color = _getNotificationColor(notification.type);
-
-    return InkWell(
-      onTap: () {
-        setState(() {
-          notification.isRead = true;
-        });
-        _showNotificationDetails(notification);
-      },
-      borderRadius: BorderRadius.circular(12),
-      child: Container(
-        padding: const EdgeInsets.all(16),
-        margin: const EdgeInsets.symmetric(vertical: 8),
-        decoration: BoxDecoration(
-          color:
-              notification.isRead
-                  ? Theme.of(context).colorScheme.surface
-                  : Theme.of(
-                    context,
-                  ).colorScheme.primaryContainer.withOpacity(0.1),
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(
-            color:
-                notification.isRead
-                    ? Colors.transparent
-                    : Theme.of(context).colorScheme.primary.withOpacity(0.2),
+        title: Text(
+          'Thông báo lớp học',
+          style: theme.textTheme.titleLarge?.copyWith(
+            fontWeight: FontWeight.bold,
+            color: theme.colorScheme.onPrimary,
           ),
         ),
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
+        centerTitle: true,
+        elevation: 0,
+        backgroundColor: theme.colorScheme.primary,
+        actions: [
+          IconButton(
+            icon: Icon(Icons.refresh, color: theme.colorScheme.onPrimary),
+            onPressed: _fetchNotifications,
+          ),
+        ],
+      ),
+      body: _buildBody(),
+    );
+  }
+
+  Widget _buildBody() {
+    final theme = Theme.of(context);
+
+    if (isLoading) {
+      return Center(
+        child: CircularProgressIndicator(color: theme.colorScheme.primary),
+      );
+    }
+
+    if (errorMessage.isNotEmpty) {
+      return Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Container(
-              padding: const EdgeInsets.all(8),
-              margin: const EdgeInsets.only(right: 12),
-              decoration: BoxDecoration(
-                color: color.withOpacity(0.2),
-                shape: BoxShape.circle,
+            Text(
+              errorMessage,
+              style: theme.textTheme.bodyLarge?.copyWith(
+                color: theme.colorScheme.error,
               ),
-              child: Icon(icon, size: 20, color: color),
             ),
-            Expanded(
-              child: Column(
+            const SizedBox(height: 16),
+            ElevatedButton(
+              onPressed: _fetchNotifications,
+              style: ElevatedButton.styleFrom(
+                backgroundColor: theme.colorScheme.primary,
+                foregroundColor: theme.colorScheme.onPrimary,
+              ),
+              child: const Text('Thử lại'),
+            ),
+          ],
+        ),
+      );
+    }
+
+    if (notifications.isEmpty) {
+      return Center(
+        child: Text(
+          'Không có thông báo nào',
+          style: theme.textTheme.bodyLarge?.copyWith(
+            color: theme.colorScheme.onSurfaceVariant,
+          ),
+        ),
+      );
+    }
+
+    final groupedNotifications = _groupNotificationsByDate();
+
+    return Container(
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+          colors: [
+            theme.colorScheme.surfaceContainerLowest,
+            theme.colorScheme.surface,
+          ],
+        ),
+      ),
+      child: RefreshIndicator(
+        onRefresh: _fetchNotifications,
+        color: theme.colorScheme.primary,
+        child: ListView(
+          padding: const EdgeInsets.all(16),
+          children: [
+            for (final entry in groupedNotifications.entries)
+              Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Row(
-                    children: [
-                      Expanded(
-                        child: Text(
-                          notification.title,
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight:
-                                notification.isRead
-                                    ? FontWeight.normal
-                                    : FontWeight.bold,
-                            color: Theme.of(context).colorScheme.onSurface,
-                          ),
-                        ),
-                      ),
-                      Text(
-                        timeAgo,
-                        style: TextStyle(
-                          fontSize: 12,
-                          color: Colors.grey.shade600,
-                        ),
-                      ),
-                    ],
-                  ),
-                  if (notification.subject != null ||
-                      notification.sender != null)
-                    Padding(
-                      padding: const EdgeInsets.only(top: 4),
-                      child: Text(
-                        notification.subject ?? 'Từ: ${notification.sender!}',
-                        style: TextStyle(
-                          fontSize: 12,
-                          color: Theme.of(
-                            context,
-                          ).colorScheme.onSurface.withOpacity(0.6),
-                        ),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 8.0),
+                    child: Text(
+                      entry.key,
+                      style: theme.textTheme.titleSmall?.copyWith(
+                        color: theme.colorScheme.onSurfaceVariant,
+                        fontWeight: FontWeight.bold,
                       ),
                     ),
+                  ),
+                  ...entry.value.map(
+                    (notification) => Padding(
+                      padding: const EdgeInsets.only(bottom: 12),
+                      child: _buildNotificationCard(notification),
+                    ),
+                  ),
                   const SizedBox(height: 8),
-                  Text(
-                    notification.body,
-                    style: TextStyle(
-                      fontSize: 14,
-                      color: Theme.of(
-                        context,
-                      ).colorScheme.onSurface.withOpacity(0.8),
-                    ),
-                  ),
                 ],
               ),
-            ),
           ],
         ),
       ),
     );
   }
 
-  void _showNotificationDetails(StudentNotification notification) {
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      builder: (context) {
-        return Container(
+  Widget _buildNotificationCard(ClassNotification notification) {
+    final theme = Theme.of(context);
+
+    return Card(
+      elevation: 3,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      color: theme.colorScheme.surface,
+      child: InkWell(
+        borderRadius: BorderRadius.circular(12),
+        onTap: () {
+          // Handle notification tap
+        },
+        child: Padding(
           padding: const EdgeInsets.all(16),
           child: Column(
-            mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Container(
-                    padding: const EdgeInsets.all(8),
-                    margin: const EdgeInsets.only(right: 12),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 12,
+                      vertical: 6,
+                    ),
                     decoration: BoxDecoration(
-                      color: _getNotificationColor(
-                        notification.type,
-                      ).withOpacity(0.2),
-                      shape: BoxShape.circle,
+                      color: _getClassColor(notification.classId),
+                      borderRadius: BorderRadius.circular(20),
                     ),
-                    child: Icon(
-                      _getNotificationIcon(notification.type),
-                      size: 20,
-                      color: _getNotificationColor(notification.type),
-                    ),
-                  ),
-                  Expanded(
                     child: Text(
-                      notification.title,
-                      style: const TextStyle(
-                        fontSize: 18,
+                      notification.className,
+                      style: theme.textTheme.labelMedium?.copyWith(
+                        color: theme.colorScheme.onPrimary,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
                   ),
+                  Text(
+                    _formatTimeAgo(notification.createdAt),
+                    style: theme.textTheme.bodySmall?.copyWith(
+                      color: theme.colorScheme.onSurfaceVariant,
+                    ),
+                  ),
                 ],
               ),
-              const SizedBox(height: 16),
-              if (notification.subject != null)
-                Padding(
-                  padding: const EdgeInsets.only(bottom: 8),
-                  child: Row(
-                    children: [
-                      const Icon(Icons.subject, size: 16),
-                      const SizedBox(width: 8),
-                      Text(
-                        notification.subject!,
-                        style: TextStyle(
-                          color: Theme.of(
-                            context,
-                          ).colorScheme.onSurface.withOpacity(0.7),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              if (notification.sender != null)
-                Padding(
-                  padding: const EdgeInsets.only(bottom: 8),
-                  child: Row(
-                    children: [
-                      const Icon(Icons.person, size: 16),
-                      const SizedBox(width: 8),
-                      Text(
-                        'Từ: ${notification.sender!}',
-                        style: TextStyle(
-                          color: Theme.of(
-                            context,
-                          ).colorScheme.onSurface.withOpacity(0.7),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              Padding(
-                padding: const EdgeInsets.only(bottom: 8),
-                child: Row(
-                  children: [
-                    const Icon(Icons.access_time, size: 16),
-                    const SizedBox(width: 8),
-                    Text(
-                      DateFormat(
-                        'HH:mm dd/MM/yyyy',
-                      ).format(notification.createdAt),
-                      style: TextStyle(
-                        color: Theme.of(
-                          context,
-                        ).colorScheme.onSurface.withOpacity(0.7),
-                      ),
-                    ),
-                  ],
+              const SizedBox(height: 8),
+              Text(
+                notification.title,
+                style: theme.textTheme.titleMedium?.copyWith(
+                  fontWeight: FontWeight.bold,
+                  color: theme.colorScheme.onSurface,
                 ),
               ),
-              const Divider(),
               const SizedBox(height: 8),
-              Text(notification.body, style: const TextStyle(fontSize: 16)),
-              const SizedBox(height: 24),
-              SizedBox(
-                width: double.infinity,
-                child: ElevatedButton(
-                  onPressed: () => Navigator.pop(context),
-                  child: const Text('Đóng'),
+              Text(
+                notification.body,
+                style: theme.textTheme.bodyMedium?.copyWith(
+                  color: theme.colorScheme.onSurfaceVariant,
+                  height: 1.4,
+                ),
+              ),
+              const SizedBox(height: 12),
+              Align(
+                alignment: Alignment.centerRight,
+                child: Text(
+                  DateFormat('HH:mm').format(notification.createdAt),
+                  style: theme.textTheme.bodySmall?.copyWith(
+                    color: theme.colorScheme.onSurfaceVariant,
+                  ),
                 ),
               ),
             ],
           ),
-        );
-      },
+        ),
+      ),
     );
   }
 
@@ -386,161 +271,13 @@ class _MyNotificationState extends State<MyNotification> {
       return '${difference.inMinutes} phút trước';
     } else if (difference.inHours < 24) {
       return '${difference.inHours} giờ trước';
-    } else if (difference.inDays < 7) {
-      return '${difference.inDays} ngày trước';
     } else {
-      return DateFormat('dd/MM/yyyy').format(date);
+      return '';
     }
   }
 
-  void _showFilterOptions() {
-    showModalBottomSheet(
-      context: context,
-      builder: (context) {
-        return StatefulBuilder(
-          builder: (context, setModalState) {
-            return Container(
-              padding: const EdgeInsets.all(16),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Text(
-                    'Lọc thông báo',
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                  ),
-                  const SizedBox(height: 16),
-                  SwitchListTile(
-                    title: const Text('Chỉ hiển thị chưa đọc'),
-                    value: _showUnreadOnly,
-                    onChanged: (value) {
-                      setModalState(() {
-                        _showUnreadOnly = value;
-                      });
-                    },
-                  ),
-                  const Divider(),
-                  const Text(
-                    'Loại thông báo',
-                    style: TextStyle(fontWeight: FontWeight.bold),
-                  ),
-                  ...NotificationType.values.map((type) {
-                    return RadioListTile<NotificationType>(
-                      title: Text(_getNotificationTypeLabel(type)),
-                      value: type,
-                      groupValue: _selectedFilter,
-                      onChanged: (value) {
-                        setModalState(() {
-                          _selectedFilter = value;
-                        });
-                      },
-                    );
-                  }).toList(),
-                  const SizedBox(height: 16),
-                  Row(
-                    children: [
-                      Expanded(
-                        child: OutlinedButton(
-                          onPressed: () {
-                            setModalState(() {
-                              _showUnreadOnly = false;
-                              _selectedFilter = null;
-                            });
-                          },
-                          child: const Text('Đặt lại'),
-                        ),
-                      ),
-                      const SizedBox(width: 16),
-                      Expanded(
-                        child: ElevatedButton(
-                          onPressed: () {
-                            Navigator.pop(context);
-                            setState(() {});
-                          },
-                          child: const Text('Áp dụng'),
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            );
-          },
-        );
-      },
-    );
-  }
-
-  IconData _getNotificationIcon(NotificationType type) {
-    switch (type) {
-      case NotificationType.assignment:
-        return Icons.assignment;
-      case NotificationType.grade:
-        return Icons.grade;
-      case NotificationType.schedule:
-        return Icons.schedule;
-      case NotificationType.announcement:
-        return Icons.announcement;
-      case NotificationType.event:
-        return Icons.event;
-      default:
-        return Icons.notifications;
-    }
-  }
-
-  Color _getNotificationColor(NotificationType type) {
-    switch (type) {
-      case NotificationType.assignment:
-        return Colors.blue;
-      case NotificationType.grade:
-        return Colors.green;
-      case NotificationType.schedule:
-        return Colors.orange;
-      case NotificationType.announcement:
-        return Colors.purple;
-      case NotificationType.event:
-        return Colors.red;
-      default:
-        return Colors.grey;
-    }
-  }
-
-  String _getNotificationTypeLabel(NotificationType type) {
-    switch (type) {
-      case NotificationType.assignment:
-        return 'Bài tập';
-      case NotificationType.grade:
-        return 'Điểm số';
-      case NotificationType.schedule:
-        return 'Lịch học';
-      case NotificationType.announcement:
-        return 'Thông báo';
-      case NotificationType.event:
-        return 'Sự kiện';
-      default:
-        return 'Khác';
-    }
+  Color _getClassColor(String classId) {
+    final theme = Theme.of(context);
+    return theme.colorScheme.primary;
   }
 }
-
-class StudentNotification {
-  final String title;
-  final String body;
-  final DateTime createdAt;
-  bool isRead;
-  final NotificationType type;
-  final String? subject;
-  final String? sender;
-
-  StudentNotification({
-    required this.title,
-    required this.body,
-    required this.createdAt,
-    required this.isRead,
-    required this.type,
-    this.subject,
-    this.sender,
-  });
-}
-
-enum NotificationType { assignment, grade, schedule, announcement, event }

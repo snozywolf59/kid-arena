@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:kid_arena/get_it.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:speech_to_text/speech_to_text.dart' as stt;
 
 class SearchBarWidget extends StatefulWidget {
@@ -22,6 +24,17 @@ class _SearchBarWidgetState extends State<SearchBarWidget> {
   bool _isListening = false;
   final FocusNode _focusNode = FocusNode();
 
+  List<String> _searchHistory = [];
+  final String _searchHistoryKey = 'search_history';
+
+  @override
+  void didUpdateWidget(SearchBarWidget oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.controller.text != widget.controller.text) {
+      _saveSearchTerm(widget.controller.text);
+    }
+  }
+
   @override
   void initState() {
     super.initState();
@@ -33,6 +46,7 @@ class _SearchBarWidgetState extends State<SearchBarWidget> {
   void dispose() {
     _focusNode.removeListener(_onFocusChange);
     _focusNode.dispose();
+    _loadSearchHistory();
     super.dispose();
   }
 
@@ -69,6 +83,35 @@ class _SearchBarWidgetState extends State<SearchBarWidget> {
     }
   }
 
+  Future<void> _loadSearchHistory() async {
+    final prefs = getIt<SharedPreferences>();
+    setState(() {
+      _searchHistory = prefs.getStringList(_searchHistoryKey) ?? [];
+    });
+  }
+
+  Future<void> _saveSearchTerm(String term) async {
+    final prefs = getIt<SharedPreferences>();
+
+    // Xoá từ khoá trùng nếu đã có và thêm mới vào đầu danh sách
+    _searchHistory.remove(term);
+    _searchHistory.insert(0, term);
+
+    // Giới hạn số lượng lịch sử (tuỳ chọn)
+    if (_searchHistory.length > 5) {
+      _searchHistory = _searchHistory.sublist(0, 5);
+    }
+
+    await prefs.setStringList(_searchHistoryKey, _searchHistory);
+  }
+
+  void _removeHistoryItem(String term) async {
+    final prefs = getIt<SharedPreferences>();
+    _searchHistory.remove(term);
+    await prefs.setStringList(_searchHistoryKey, _searchHistory);
+    setState(() {});
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -79,33 +122,52 @@ class _SearchBarWidgetState extends State<SearchBarWidget> {
         border: Border.all(color: Theme.of(context).colorScheme.outlineVariant),
       ),
 
-      child: Row(
+      child: Column(
         children: [
-          Icon(Icons.search, color: Theme.of(context).colorScheme.onSurface),
-          Expanded(
-            child: TextField(
-              controller: widget.controller,
-              focusNode: _focusNode,
-              decoration: InputDecoration(
-                hintText: widget.hintText,
-                border: InputBorder.none,
+          Row(
+            children: [
+              Icon(
+                Icons.search,
+                color: Theme.of(context).colorScheme.onSurface,
               ),
-              onSubmitted: (value) {
-                widget.onSearch(value);
-                _focusNode.unfocus();
+              Expanded(
+                child: TextField(
+                  controller: widget.controller,
+                  focusNode: _focusNode,
+                  decoration: InputDecoration(
+                    hintText: widget.hintText,
+                    border: InputBorder.none,
+                  ),
+                  onSubmitted: (value) {
+                    widget.onSearch(value);
+                    _focusNode.unfocus();
+                  },
+                ),
+              ),
+              IconButton(
+                icon: Icon(
+                  _isListening ? Icons.mic : Icons.mic_none,
+                  color:
+                      _isListening
+                          ? Theme.of(context).colorScheme.primary
+                          : Theme.of(context).colorScheme.onSurface,
+                ),
+                onPressed: _startListening,
+              ),
+            ],
+          ),
+          if (_searchHistory.isNotEmpty)
+            ListView.builder(
+              itemBuilder: (context, index) {
+                return ListTile(
+                  title: Text(_searchHistory[index]),
+                  trailing: IconButton(
+                    icon: Icon(Icons.delete),
+                    onPressed: () => _removeHistoryItem(_searchHistory[index]),
+                  ),
+                );
               },
             ),
-          ),
-          IconButton(
-            icon: Icon(
-              _isListening ? Icons.mic : Icons.mic_none,
-              color:
-                  _isListening
-                      ? Theme.of(context).colorScheme.primary
-                      : Theme.of(context).colorScheme.onSurface,
-            ),
-            onPressed: _startListening,
-          ),
         ],
       ),
     );

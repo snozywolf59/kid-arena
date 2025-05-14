@@ -168,6 +168,37 @@ class TestService {
         .toList();
   }
 
+
+  Future<void> submitStudentAnswerForAnAssignedTest(
+    String testId,
+    int timeTaken,
+    List<int> answers,
+    double score,
+  ) async {
+    try {
+      final studentId = _auth.currentUser?.uid ?? '';
+      final studentAnswer = StudentAnswer(
+        id: '',
+        studentId: studentId,
+        answers: answers,
+        testId: testId,
+        submittedAt: DateTime.now(),
+        timeTaken: timeTaken,
+      );
+
+      final result = await _firestore
+          .collection(_studentAnswersForAssignedTestCollection)
+          .add({...studentAnswer.toMap(), 'score': score});
+      if (result.id.isNotEmpty) {
+        return;
+      } else {
+        throw Exception('Failed to submit student answer for an assigned test');
+      }
+    } catch (e) {
+      throw Exception('Failed to submit student answer for an assigned test: $e');
+    }
+  }
+
   //////////////////////////////
   //// PUBLIC TESTS SERVICE ////
   //////////////////////////////

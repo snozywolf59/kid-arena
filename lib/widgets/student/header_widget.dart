@@ -1,8 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:kid_arena/blocs/theme/theme_bloc.dart';
-import 'package:kid_arena/blocs/theme/theme_event.dart';
-import 'package:kid_arena/blocs/theme/theme_state.dart';
+
 import 'package:kid_arena/models/user/index.dart';
 import 'package:kid_arena/services/auth_service.dart';
 import 'package:kid_arena/get_it.dart';
@@ -13,7 +10,7 @@ class HeaderWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.all(24),
+      padding: const EdgeInsets.only(left: 8),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [

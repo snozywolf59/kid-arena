@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:kid_arena/screens/student/class/assigned_tests_screen.dart';
+import 'package:kid_arena/screens/student/home/home_student.dart';
 import 'package:kid_arena/screens/student/leaderboard_screen.dart';
 import 'package:kid_arena/screens/student/class/my_classes_screen.dart';
 import 'package:kid_arena/screens/student/practice/public_tests_screen.dart';
@@ -24,7 +25,7 @@ class _StudentDashboardState extends State<StudentDashboard> {
   }
 
   final List<Widget> _pages = const [
-    PublicTestsScreen(),
+    HomeStudent(),
     AssignedTestsScreen(),
     MyClassesScreen(),
     LeaderboardScreen(),

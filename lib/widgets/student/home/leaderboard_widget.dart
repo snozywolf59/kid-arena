@@ -5,101 +5,126 @@ class LeaderboardWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
+    final theme = Theme.of(context);
+    return Container(
       padding: const EdgeInsets.symmetric(horizontal: 24),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const Text(
-            'Bảng vinh danh',
-            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-          ),
-          const SizedBox(height: 16),
-          Container(
-            padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(16),
-              boxShadow: [
-                BoxShadow(
-                  color: Theme.of(context).colorScheme.surfaceContainerHigh,
-                  spreadRadius: 1,
 
-                  offset: const Offset(0, 2),
-                ),
-              ],
+      child: Container(
+        padding: const EdgeInsets.all(4),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(16),
+          boxShadow: [
+            BoxShadow(
+              color: theme.colorScheme.shadow.withOpacity(0.1),
+              blurRadius: 10,
             ),
-            child: Column(
-              children: List.generate(3, (index) {
-                return Padding(
-                  padding: EdgeInsets.only(bottom: index < 2 ? 12 : 0),
-                  child: Row(
-                    children: [
-                      Icon(
-                        Icons.emoji_events_outlined,
-                        size: 40,
-                        color:
-                            index == 0
-                                ? Colors.amber
-                                : index == 1
-                                ? Colors.grey
-                                : Colors.orange,
-                      ),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              'Học sinh ${index + 1}',
-                              style: const TextStyle(
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                            Text(
-                              '${(100 - index * 10)} điểm',
-                              style: TextStyle(
-                                color: Colors.grey[600],
-                                fontSize: 12,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 12,
-                          vertical: 6,
-                        ),
-                        decoration: BoxDecoration(
-                          color:
-                              index == 0
-                                  ? Colors.amber[50]
-                                  : index == 1
-                                  ? Colors.grey[100]
-                                  : Colors.orange[50],
-                          borderRadius: BorderRadius.circular(20),
-                        ),
-                        child: Text(
-                          '${(100 - index * 10)}%',
-                          style: TextStyle(
-                            color:
-                                index == 0
-                                    ? Colors.amber[700]
-                                    : index == 1
-                                    ? Colors.grey[700]
-                                    : Colors.orange[700],
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ),
-                    ],
+          ],
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Bậc thang top 3
+            SizedBox(
+              height: 220,
+              child: Stack(
+                alignment: Alignment.bottomCenter,
+                children: [
+                  // Hạng 2 (bên trái)
+                  Positioned(
+                    left: 30,
+                    bottom: 0,
+                    child: _buildPodiumItem(
+                      context,
+                      name: 'Học sinh 2',
+                      rank: 2,
+                      height: 100,
+                      color: Colors.grey,
+                    ),
                   ),
-                );
-              }),
+                  // Hạng 1 (giữa, cao nhất)
+                  Positioned(
+                    bottom: 0,
+                    child: _buildPodiumItem(
+                      context,
+                      name: 'Học sinh 1',
+                      rank: 1,
+                      height: 140,
+                      color: Colors.amber,
+                    ),
+                  ),
+                  // Hạng 3 (bên phải)
+                  Positioned(
+                    right: 30,
+                    bottom: 0,
+                    child: _buildPodiumItem(
+                      context,
+                      name: 'Học sinh 3',
+                      rank: 3,
+                      height: 80,
+                      color: Colors.orange,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildPodiumItem(
+    BuildContext context, {
+    required String name,
+    required int rank,
+    required double height,
+    required Color color,
+  }) {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.end,
+      children: [
+        CircleAvatar(
+          radius: 20,
+          backgroundColor: color.withOpacity(0.2),
+          child: Text(
+            '$rank',
+            style: TextStyle(
+              fontWeight: FontWeight.bold,
+              fontSize: 18,
+              color: color,
             ),
           ),
-        ],
-      ),
+        ),
+        const SizedBox(height: 8),
+        Container(
+          width: 80,
+          height: height,
+          decoration: BoxDecoration(
+            color: color,
+            borderRadius: const BorderRadius.only(
+              topLeft: Radius.circular(8),
+              topRight: Radius.circular(8),
+            ),
+            border: Border.all(color: color.withOpacity(0.3), width: 1),
+          ),
+          child: Center(
+            child: Text(
+              '${100 - (rank - 1) * 10} điểm',
+              style: TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ),
+        ),
+        Text(
+          name,
+          style: TextStyle(
+            color: Theme.of(context).colorScheme.onSurface,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+      ],
     );
   }
 }

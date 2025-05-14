@@ -1,6 +1,8 @@
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:kid_arena/blocs/theme/theme_bloc.dart';
 import 'package:kid_arena/models/class.dart';
 import 'package:kid_arena/screens/student/class/my_notification.dart';
 import 'package:kid_arena/services/class_service.dart';
@@ -8,6 +10,9 @@ import 'package:kid_arena/get_it.dart';
 import 'package:kid_arena/utils/page_transitions.dart';
 import 'package:kid_arena/widgets/student/class/class_card.dart';
 import 'package:kid_arena/widgets/common/search_bar_widget.dart';
+
+import 'package:kid_arena/blocs/theme/theme_event.dart';
+import 'package:kid_arena/blocs/theme/theme_state.dart';
 
 class MyClassesScreen extends StatefulWidget {
   const MyClassesScreen({super.key});
@@ -71,6 +76,35 @@ class _MyClassesScreenState extends State<MyClassesScreen> {
                   ),
                 ),
               ),
+              actions: [
+                IconButton(
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      PageTransitions.slideTransition(const MyNotification()),
+                    );
+                  },
+                  icon: Icon(Icons.notifications),
+                ),
+                BlocBuilder<ThemeBloc, ThemeState>(
+                  builder: (context, state) {
+                    return IconButton(
+                      icon: Icon(
+                        state.isDarkMode ? Icons.light_mode : Icons.dark_mode,
+                      ),
+                      onPressed: () {
+                        context.read<ThemeBloc>().add(ThemeToggled());
+                      },
+                    );
+                  },
+                ),
+                CircleAvatar(
+                  radius: 16,
+                  backgroundColor: colorScheme.primary,
+                  child: const Icon(Icons.person, size: 16),
+                ),
+                const SizedBox(width: 16),
+              ],
             ),
           ];
         },

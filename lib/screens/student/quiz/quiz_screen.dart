@@ -126,7 +126,6 @@ class _QuizScreenState extends State<QuizScreen> with TickerProviderStateMixin {
 
     if (shouldExit == true) {
       if (!context.mounted) return;
-      Navigator.pop(context);
     }
   }
 
@@ -165,12 +164,21 @@ class _QuizScreenState extends State<QuizScreen> with TickerProviderStateMixin {
       ),
     );
     try {
-      await getIt<TestService>().submitStudentAnswerForAPublicTest(
-        widget.test.id,
-        timeTaken,
-        _selectedAnswers,
-        score,
-      );
+      if (widget.test is PublicTest) {
+        await getIt<TestService>().submitStudentAnswerForAPublicTest(
+          widget.test.id,
+          timeTaken,
+          _selectedAnswers,
+          score,
+        );
+      } else if (widget.test is PrivateTest) {
+        await getIt<TestService>().submitStudentAnswerForAnAssignedTest(
+          widget.test.id,
+          timeTaken,
+          _selectedAnswers,
+          score,
+        );
+      }
       await getIt<StudyStreakService>().addStudyDay();
     } catch (e) {
       if (mounted) {

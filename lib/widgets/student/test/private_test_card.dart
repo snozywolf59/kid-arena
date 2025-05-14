@@ -77,7 +77,7 @@ class PrivateTestCard extends StatelessWidget {
                         ),
                         const SizedBox(height: 4),
                         Text(
-                          '$subject • Lớp: $className',
+                          '$subject • Tên lớp: $className',
                           style: TextStyle(
                             fontSize: 14,
                             color: Colors.grey[600],
@@ -95,14 +95,19 @@ class PrivateTestCard extends StatelessWidget {
               const SizedBox(height: 16),
               Row(
                 children: [
-                  Icon(Icons.access_time, size: 16, color: color),
-                  const SizedBox(width: 4),
-                  Text(
-                    dueDate,
-                    style: TextStyle(color: color, fontWeight: FontWeight.bold),
-                  ),
-                  if (isCompleted && timeTaken != null) ...[
+                  if (!isCompleted) ...[
+                    Icon(Icons.access_time, size: 16, color: color),
+                    const SizedBox(width: 4),
+                    Text(
+                      dueDate,
+                      style: TextStyle(
+                        color: color,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
                     const SizedBox(width: 16),
+                  ],
+                  if (isCompleted && timeTaken != null) ...[
                     _buildTimeTakenChip(),
                   ],
                   const Spacer(),
@@ -152,7 +157,7 @@ class PrivateTestCard extends StatelessWidget {
           const SizedBox(width: 8),
           Flexible(
             child: Text(
-              'Điểm số: ${(score! * 100).toStringAsFixed(0)}%',
+              'Điểm số: ${(score!).toStringAsFixed(0)}',
               style: TextStyle(
                 color: scoreColor,
                 fontWeight: FontWeight.bold,
@@ -184,7 +189,7 @@ class PrivateTestCard extends StatelessWidget {
           const SizedBox(width: 4),
           Flexible(
             child: Text(
-              'Thời gian: ${minutes}m ${seconds}s',
+              'Hết: ${minutes}m ${seconds}s',
               style: TextStyle(
                 color: Colors.purple[700],
                 fontWeight: FontWeight.bold,

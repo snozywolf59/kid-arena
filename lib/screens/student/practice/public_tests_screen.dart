@@ -1,111 +1,17 @@
-import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:kid_arena/blocs/theme/theme_bloc.dart';
-import 'package:kid_arena/blocs/theme/theme_event.dart';
-import 'package:kid_arena/blocs/theme/theme_state.dart';
-import 'package:kid_arena/constants/subject.dart';
+import 'package:kid_arena/constants/index.dart';
 import 'package:kid_arena/models/test/index.dart';
 import 'package:kid_arena/models/student_answer.dart';
 import 'package:kid_arena/screens/student/quiz/quiz_screen.dart';
-import 'package:kid_arena/widgets/student/home/leaderboard_widget.dart';
 import 'package:kid_arena/widgets/common/search_bar_widget.dart';
-import 'package:kid_arena/widgets/student/home/study_streak_widget.dart';
-import 'package:kid_arena/widgets/student/test/subject_card.dart';
 import 'package:kid_arena/widgets/student/test/public_test_card.dart';
 import 'package:kid_arena/services/test_service.dart';
 import 'package:kid_arena/get_it.dart';
 import 'package:kid_arena/utils/page_transitions.dart';
-import 'package:kid_arena/widgets/student/header_widget.dart';
 
-class PublicTestsScreen extends StatefulWidget {
-  const PublicTestsScreen({super.key});
 
-  @override
-  State<PublicTestsScreen> createState() => _PublicTestsScreenState();
-}
-
-class _PublicTestsScreenState extends State<PublicTestsScreen> {
-  @override
-  void dispose() {
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      body: SafeArea(
-        child: CustomScrollView(
-          physics: const BouncingScrollPhysics(),
-          slivers: [
-            SliverAppBar(
-              floating: true,
-              title: HeaderWidget(),
-              actions: [
-                IconButton(onPressed: () {}, icon: Icon(Icons.notifications)),
-                BlocBuilder<ThemeBloc, ThemeState>(
-                  builder: (context, state) {
-                    return IconButton(
-                      icon: Icon(
-                        state.isDarkMode ? Icons.light_mode : Icons.dark_mode,
-                      ),
-                      onPressed: () {
-                        context.read<ThemeBloc>().add(ThemeToggled());
-                      },
-                    );
-                  },
-                ),
-                CircleAvatar(
-                  radius: 24,
-                  backgroundColor: Colors.blue[100],
-                  child: const Icon(Icons.person, color: Colors.blue, size: 30),
-                ),
-              ],
-            ),
-            const SliverToBoxAdapter(child: SizedBox(height: 8)),
-            const SliverToBoxAdapter(child: StudyStreakWidget()),
-            const SliverToBoxAdapter(child: LeaderboardWidget()),
-            SliverPadding(
-              padding: const EdgeInsets.only(left: 24, top: 24),
-              sliver: SliverToBoxAdapter(
-                child: const Text(
-                  'Chọn môn học',
-                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-                ),
-              ),
-            ),
-            SliverPadding(
-              padding: const EdgeInsets.all(20),
-              sliver: SliverGrid(
-                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 2,
-                  childAspectRatio: 1.1,
-                  crossAxisSpacing: 20,
-                  mainAxisSpacing: 20,
-                ),
-                delegate: SliverChildBuilderDelegate((context, index) {
-                  return SubjectCard(
-                    subject: Subject.values[index],
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        PageTransitions.slideTransition(
-                          ExamsScreen(subject: Subject.values[index]),
-                        ),
-                      );
-                    },
-                  );
-                }, childCount: Subject.values.length),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
 
 class ExamsScreen extends StatefulWidget {
   final Subject subject;

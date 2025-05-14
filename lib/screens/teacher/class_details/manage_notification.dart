@@ -6,6 +6,15 @@ import 'package:kid_arena/models/notification.dart';
 import 'package:kid_arena/services/index.dart';
 import 'package:kid_arena/utils/page_transitions.dart';
 
+import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
+import 'package:kid_arena/get_it.dart';
+import 'package:kid_arena/models/class.dart';
+import 'package:kid_arena/models/notification.dart';
+import 'package:kid_arena/services/index.dart';
+import 'package:kid_arena/utils/page_transitions.dart';
+import 'package:collection/collection.dart';
+
 class NotificationManage extends StatefulWidget {
   final Class classroom;
   const NotificationManage({super.key, required this.classroom});
@@ -30,14 +39,18 @@ class _NotificationManageState extends State<NotificationManage> {
       _isLoading = true;
     });
     try {
-      _notifications = await _notificationService.getNotificationsForClass(
+      final notifications = await _notificationService.getNotificationsForClass(
         widget.classroom.id,
       );
+      setState(() {
+        _notifications = notifications;
+      });
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Có lỗi xảy ra khi lấy thông báo ${e.toString()}'),
+            content: Text('Có lỗi xảy ra khi lấy thông báo: ${e.toString()}'),
+            backgroundColor: Colors.red,
           ),
         );
       }
@@ -50,6 +63,25 @@ class _NotificationManageState extends State<NotificationManage> {
     }
   }
 
+  Map<String, List<ClassNotification>> _groupNotificationsByDate() {
+    return groupBy(_notifications, (notification) {
+      final now = DateTime.now();
+      final notificationDate = notification.createdAt;
+
+      if (now.year == notificationDate.year &&
+          now.month == notificationDate.month &&
+          now.day == notificationDate.day) {
+        return 'Hôm nay';
+      } else if (now.year == notificationDate.year &&
+          now.month == notificationDate.month &&
+          now.day - notificationDate.day == 1) {
+        return 'Hôm qua';
+      } else {
+        return DateFormat('dd/MM/yyyy').format(notificationDate);
+      }
+    });
+  }
+
   void _navigateToCreateNotification() {
     Navigator.push(
       context,
@@ -57,9 +89,8 @@ class _NotificationManageState extends State<NotificationManage> {
         CreateNotificationScreen(
           classroom: widget.classroom,
           onNotificationCreated: (notification) {
-            setState(() {
-              _notificationService.sendNotification(notification);
-            });
+            _notificationService.sendNotification(notification);
+            _getNotifications(); // Refresh list after creation
           },
         ),
       ),
@@ -68,35 +99,160 @@ class _NotificationManageState extends State<NotificationManage> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     return Scaffold(
-      body: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 16),
-        child:
-            _isLoading
-                ? const Center(child: CircularProgressIndicator())
-                : _notifications.isEmpty
-                ? const Center(
-                  child: Text(
-                    'Không có thông báo nào',
-                    style: TextStyle(fontSize: 16, color: Colors.grey),
-                  ),
-                )
-                : ListView.separated(
-                  itemCount: _notifications.length,
-                  separatorBuilder:
-                      (context, index) => const Divider(height: 1),
-                  itemBuilder: (context, index) {
-                    final notification = _notifications[index];
-                    return _buildNotificationCard(context, notification);
-                  },
-                ),
-      ),
+      body: _buildBody(),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: _navigateToCreateNotification,
-        icon: const Icon(Icons.add_alarm),
+        icon: const Icon(Icons.add),
         label: const Text('Tạo thông báo'),
       ),
     );
+  }
+
+  Widget _buildBody() {
+    if (_isLoading) {
+      return const Center(child: CircularProgressIndicator());
+    }
+
+    if (_notifications.isEmpty) {
+      return Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const Icon(Icons.notifications_off, size: 64, color: Colors.grey),
+            const SizedBox(height: 16),
+            Text(
+              'Chưa có thông báo nào',
+              style: TextStyle(fontSize: 18, color: Colors.grey.shade600),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              'Nhấn nút bên dưới để tạo thông báo mới',
+              style: TextStyle(fontSize: 14, color: Colors.grey.shade500),
+            ),
+          ],
+        ),
+      );
+    }
+
+    return RefreshIndicator(
+      onRefresh: _getNotifications,
+      child: _buildNotificationList(),
+    );
+  }
+
+  Widget _buildNotificationList() {
+    final groupedNotifications = _groupNotificationsByDate();
+    final theme = Theme.of(context);
+
+    return ListView(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      children: [
+        for (final entry in groupedNotifications.entries)
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Padding(
+                padding: const EdgeInsets.only(left: 8, top: 16, bottom: 8),
+                child: Text(
+                  entry.key,
+                  style: theme.textTheme.titleSmall?.copyWith(
+                    color: theme.colorScheme.primary,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+              ...entry.value
+                  .map((notification) => _buildNotificationCard(notification))
+                  .toList(),
+            ],
+          ),
+      ],
+    );
+  }
+
+  Widget _buildNotificationCard(ClassNotification notification) {
+    final theme = Theme.of(context);
+    final isNew =
+        DateTime.now().difference(notification.createdAt) <
+        const Duration(days: 1);
+
+    return Card(
+      margin: const EdgeInsets.only(bottom: 12),
+      elevation: 2,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      child: InkWell(
+        borderRadius: BorderRadius.circular(12),
+        onTap: () {
+          // Handle notification tap
+        },
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  if (isNew)
+                    Container(
+                      width: 8,
+                      height: 8,
+                      margin: const EdgeInsets.only(right: 8),
+                      decoration: BoxDecoration(
+                        color: theme.colorScheme.primary,
+                        shape: BoxShape.circle,
+                      ),
+                    ),
+                  Expanded(
+                    child: Text(
+                      notification.title,
+                      style: theme.textTheme.titleMedium?.copyWith(
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                  Text(
+                    _formatTimeAgo(notification.createdAt),
+                    style: theme.textTheme.bodySmall?.copyWith(
+                      color: theme.colorScheme.onSurface.withOpacity(0.6),
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 8),
+              Text(notification.body, style: theme.textTheme.bodyMedium),
+              const SizedBox(height: 8),
+              Align(
+                alignment: Alignment.centerRight,
+                child: Text(
+                  DateFormat('HH:mm').format(notification.createdAt),
+                  style: theme.textTheme.bodySmall?.copyWith(
+                    color: theme.colorScheme.onSurface.withOpacity(0.6),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  String _formatTimeAgo(DateTime date) {
+    final now = DateTime.now();
+    final difference = now.difference(date);
+
+    if (difference.inSeconds < 60) {
+      return 'Vừa xong';
+    } else if (difference.inMinutes < 60) {
+      return '${difference.inMinutes} phút trước';
+    } else if (difference.inHours < 24) {
+      return '${difference.inHours} giờ trước';
+    } else {
+      return '';
+    }
   }
 }
 
@@ -135,6 +291,7 @@ class _CreateNotificationScreenState extends State<CreateNotificationScreen> {
       final notification = ClassNotification(
         id: '',
         classId: widget.classroom.id,
+        className: widget.classroom.name,
         title: _titleController.text,
         body: _bodyController.text,
         createdAt: DateTime.now(),

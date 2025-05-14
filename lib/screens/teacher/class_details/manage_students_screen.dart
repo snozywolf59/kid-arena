@@ -97,7 +97,6 @@ class _ManageStudentsScreenState extends State<ManageStudentsScreen> {
               ),
               TextButton(
                 onPressed: () {
-                  Navigator.pop(context);
                   _addStudent();
                 },
                 child: const Text('Thêm'),
