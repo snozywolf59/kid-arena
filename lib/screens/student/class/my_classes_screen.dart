@@ -4,9 +4,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:kid_arena/blocs/theme/theme_bloc.dart';
 import 'package:kid_arena/models/class.dart';
+import 'package:kid_arena/screens/student/class/my_class_detail_screen.dart';
 import 'package:kid_arena/screens/student/class/my_notification.dart';
 import 'package:kid_arena/services/class_service.dart';
 import 'package:kid_arena/get_it.dart';
+import 'package:kid_arena/services/index.dart';
 import 'package:kid_arena/utils/page_transitions.dart';
 import 'package:kid_arena/widgets/student/class/class_card.dart';
 import 'package:kid_arena/widgets/common/search_bar_widget.dart';
@@ -81,7 +83,13 @@ class _MyClassesScreenState extends State<MyClassesScreen> {
                   onPressed: () {
                     Navigator.push(
                       context,
-                      PageTransitions.slideTransition(const MyNotification()),
+                      PageTransitions.slideTransition(
+                        MyNotification(
+                          notificationFuture:
+                              getIt<NotificationService>()
+                                  .getNotificationsForStudent(),
+                        ),
+                      ),
                     );
                   },
                   icon: Icon(Icons.notifications),
@@ -211,7 +219,9 @@ class _MyClassesScreenState extends State<MyClassesScreen> {
                     log('to class notification ${classData.id}');
                     Navigator.push(
                       context,
-                      PageTransitions.slideTransition(MyNotification()),
+                      PageTransitions.slideTransition(
+                        MyClassDetailScreen(classData: classData),
+                      ),
                     );
                   },
                 );

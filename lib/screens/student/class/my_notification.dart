@@ -6,7 +6,14 @@ import 'package:kid_arena/services/index.dart';
 import 'package:collection/collection.dart'; // Thêm thư viện này
 
 class MyNotification extends StatefulWidget {
-  const MyNotification({super.key});
+  final Future<List<ClassNotification>> notificationFuture;
+  final bool showAppbar;
+
+  const MyNotification({
+    super.key,
+    required this.notificationFuture,
+    this.showAppbar = true,
+  });
 
   @override
   State<MyNotification> createState() => _MyNotificationState();
@@ -30,8 +37,7 @@ class _MyNotificationState extends State<MyNotification> {
     });
 
     try {
-      final notifications =
-          await getIt<NotificationService>().getNotificationsForStudent();
+      final notifications = await widget.notificationFuture;
       setState(() {
         this.notifications = notifications;
       });
@@ -68,24 +74,30 @@ class _MyNotificationState extends State<MyNotification> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     return Scaffold(
-      appBar: AppBar(
-        title: Text(
-          'Thông báo lớp học',
-          style: theme.textTheme.titleLarge?.copyWith(
-            fontWeight: FontWeight.bold,
-            color: theme.colorScheme.onPrimary,
-          ),
-        ),
-        centerTitle: true,
-        elevation: 0,
-        backgroundColor: theme.colorScheme.primary,
-        actions: [
-          IconButton(
-            icon: Icon(Icons.refresh, color: theme.colorScheme.onPrimary),
-            onPressed: _fetchNotifications,
-          ),
-        ],
-      ),
+      appBar:
+          widget.showAppbar
+              ? AppBar(
+                title: Text(
+                  'Thông báo lớp học',
+                  style: theme.textTheme.titleLarge?.copyWith(
+                    fontWeight: FontWeight.bold,
+                    color: theme.colorScheme.onPrimary,
+                  ),
+                ),
+                centerTitle: true,
+                elevation: 0,
+                backgroundColor: theme.colorScheme.primary,
+                actions: [
+                  IconButton(
+                    icon: Icon(
+                      Icons.refresh,
+                      color: theme.colorScheme.onPrimary,
+                    ),
+                    onPressed: _fetchNotifications,
+                  ),
+                ],
+              )
+              : null,
       body: _buildBody(),
     );
   }

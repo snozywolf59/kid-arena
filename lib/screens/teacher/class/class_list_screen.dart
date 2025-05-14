@@ -14,6 +14,7 @@ import 'package:kid_arena/get_it.dart';
 import 'package:kid_arena/screens/teacher/class_details/add_class_screen.dart';
 import 'package:kid_arena/screens/teacher/class_details/class_detail_screen.dart';
 import 'package:kid_arena/utils/page_transitions.dart';
+import 'package:kid_arena/widgets/common/loading_indicator.dart';
 import 'package:kid_arena/widgets/common/search_bar_widget.dart';
 import 'package:kid_arena/widgets/confirmation_dialog.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -288,7 +289,7 @@ class _ClassListScreenState extends State<ClassListScreen> {
   }
 
   Widget _buildLoadingIndicator() {
-    return const Center(child: CircularProgressIndicator());
+    return const LoadingIndicator();
   }
 
   Widget _buildErrorWidget(String error) {

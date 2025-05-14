@@ -86,12 +86,13 @@ class PrivateTestCard extends StatelessWidget {
                       ],
                     ),
                   ),
+                  if (isCompleted && score != null) ...[
+                    const SizedBox(height: 16),
+                    _buildScoreIndicator(),
+                  ],
                 ],
               ),
-              if (isCompleted && score != null) ...[
-                const SizedBox(height: 16),
-                _buildScoreIndicator(),
-              ],
+
               const SizedBox(height: 16),
               Row(
                 children: [
@@ -157,7 +158,7 @@ class PrivateTestCard extends StatelessWidget {
           const SizedBox(width: 8),
           Flexible(
             child: Text(
-              'Điểm số: ${(score!).toStringAsFixed(0)}',
+              'Điểm: ${(score!).toStringAsFixed(0)}',
               style: TextStyle(
                 color: scoreColor,
                 fontWeight: FontWeight.bold,

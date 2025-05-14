@@ -17,7 +17,7 @@ class NotificationService {
 
   //get notifications for a class
   Future<List<ClassNotification>> getNotificationsForClass(
-    String classId
+    String classId,
   ) async {
     log('Lấy noti từ lớp ${classId}');
     final snapshot =
@@ -31,9 +31,7 @@ class NotificationService {
   }
 
   //get notifications for a student
-  Future<List<ClassNotification>> getNotificationsForStudent(
-    
-  ) async {
+  Future<List<ClassNotification>> getNotificationsForStudent() async {
     final studentId = _auth.currentUser?.uid;
     if (studentId == null) {
       throw Exception('Student ID is null');
@@ -52,5 +50,18 @@ class NotificationService {
     }
     notifications.sort((a, b) => b.createdAt.compareTo(a.createdAt));
     return notifications;
+  }
+
+  Future<List<ClassNotification>> getNotificationsForStudentInAClass(
+    String id,
+  ) async {
+    final snapshot =
+        await _firestore
+            .collection(_collection)
+            .where('classId', isEqualTo: id)
+            .get();
+    return snapshot.docs
+        .map((doc) => ClassNotification.fromFirestore(doc))
+        .toList();
   }
 }

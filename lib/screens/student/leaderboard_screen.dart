@@ -3,7 +3,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:kid_arena/blocs/theme/theme_bloc.dart';
 import 'package:kid_arena/blocs/theme/theme_event.dart';
 import 'package:kid_arena/blocs/theme/theme_state.dart';
+import 'package:kid_arena/get_it.dart';
 import 'package:kid_arena/screens/student/class/my_notification.dart';
+import 'package:kid_arena/services/index.dart';
 import 'package:kid_arena/utils/index.dart';
 
 class LeaderboardScreen extends StatelessWidget {
@@ -29,7 +31,9 @@ class LeaderboardScreen extends StatelessWidget {
                 onPressed: () {
                   Navigator.push(
                     context,
-                    PageTransitions.slideTransition(const MyNotification()),
+                    PageTransitions.slideTransition(MyNotification(
+                      notificationFuture: getIt<NotificationService>().getNotificationsForStudent(),
+                    )),
                   );
                 },
                 icon: Icon(Icons.notifications),

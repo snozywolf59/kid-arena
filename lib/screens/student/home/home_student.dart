@@ -351,7 +351,9 @@ class _HomeStudentState extends State<HomeStudent> {
                   onPressed: () {
                     Navigator.push(
                       context,
-                      PageTransitions.slideTransition(const MyNotification()),
+                      PageTransitions.slideTransition(MyNotification(
+                        notificationFuture: getIt<NotificationService>().getNotificationsForStudent(),
+                      )),
                     );
                   },
                   icon: Icon(Icons.notifications),

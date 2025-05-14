@@ -46,7 +46,7 @@ class _SearchBarWidgetState extends State<SearchBarWidget> {
   void dispose() {
     _focusNode.removeListener(_onFocusChange);
     _focusNode.dispose();
-    _loadSearchHistory();
+
     super.dispose();
   }
 

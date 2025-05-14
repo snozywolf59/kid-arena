@@ -238,7 +238,9 @@ class _AssignedTestsScreenState extends State<AssignedTestsScreen>
                   onPressed: () {
                     Navigator.push(
                       context,
-                      PageTransitions.slideTransition(const MyNotification()),
+                      PageTransitions.slideTransition(MyNotification(
+                        notificationFuture: getIt<NotificationService>().getNotificationsForStudent(),
+                      )),
                     );
                   },
                   icon: Icon(Icons.notifications),
